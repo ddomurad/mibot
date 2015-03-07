@@ -1,27 +1,39 @@
 #include <QCoreApplication>
 #include <mibLogger.h>
+#include <mibStandardLoggerBuilder.h>
 #include <cstdio>
 
 #include <QIODevice>
 #include <QFile>
 
 
+QJsonObject GetJsonObjectFromFile(QString path)
+{
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly))
+        exit(1);
+
+    QByteArray arr = file.readAll();
+    file.close();
+    QJsonDocument jsonDoc;
+    return jsonDoc.fromJson(arr).object();
+}
 
 int main(int argc, char *argv[])
 {   
-    qDebug() << "da";
-    CREATE_LOGGER("test", mibot::LogLevel::Debug);
+    mibot::StandardLoggerBuilder buildier;
 
-    DEF_LOGGER +=
-    {
-            new mibot::LoggerConsoleOutput(),
-            new mibot::LoggerFileOutput("./test")
-    };
+    QJsonObject jsonObj = GetJsonObjectFromFile("./json_file");
 
-    DEFLOG_MESSAGE(" -----------------  START --------------- \n");
-    DEFLOG_ERROR("Error");
-    DEFLOG_WARNING("Warnign");
-    DEFLOG_IMPORTANT("Important");
-    DEFLOG_INFO("Info");
-    DEFLOG_DEBUG("Debug");
+    buildier.BuildLogger(jsonObj);
+    if(buildier.AreErrors())
+        for(auto log : buildier.GetBuildLog(false))
+        {
+            if(log.type == mibot::StandardLoggerBuilder::LOG_TYPE::ERROR)
+                printf("ERROR: ");
+            else printf("OK: ");
+
+            printf("%s\n", log.message.toStdString().c_str());
+        }
+
 }

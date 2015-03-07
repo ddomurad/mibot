@@ -22,6 +22,17 @@ QString LoggerSimpleStringFormater::LogLevel2Str(LogLevel level)
     return "UNKNOWN";
 }
 
+LogLevel LoggerSimpleStringFormater::Str2LogLevel(QString str)
+{
+    if(str.toLower() == "debug") return LogLevel::Debug;
+    if(str.toLower() == "error") return LogLevel::Error;
+    if(str.toLower() == "important") return LogLevel::ImportantInfo;
+    if(str.toLower() == "info") return LogLevel::Info;
+    if(str.toLower() == "warning") return LogLevel::Warning;
+
+    LogLevel::Error;
+}
+
 
 QString mibot::LoggerSimpleStringFormater::FormatMessage(
         mibot::LogLevel level, QString file,

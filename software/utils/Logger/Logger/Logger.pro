@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT       += testlib
-
 QT       -= gui
 
 TARGET = mibLogger
@@ -19,7 +17,9 @@ SOURCES += \
     src/mibLoggerOutput.cpp \
     src/mibLoggerChannel.cpp \
     src/mibLoggerStandardOutputs.cpp \
-    src/mibLoggerStandardFormaters.cpp
+    src/mibLoggerStandardFormaters.cpp \
+    src/mibStandardLoggerBuilder.cpp \
+    src/mibLoggerBuilder.cpp
 
 HEADERS += \
     inc/mibLogger.h \
@@ -28,7 +28,9 @@ HEADERS += \
     inc/mibLoggerFormater.h \
     inc/mibLoggerOutput.h \
     inc/mibLoggerStandardOutputs.h \
-    inc/mibLoggerStandardFormaters.h
+    inc/mibLoggerStandardFormaters.h \
+    inc/mibLoggerBuilder.h \
+    inc/mibStandardLoggerBuilder.h
 
 unix {
     target.path = /usr/local/mi_bot

@@ -14,6 +14,7 @@ public:
     ~LoggerSimpleStringFormater();
 
     static QString LogLevel2Str(LogLevel level);
+    static LogLevel Str2LogLevel(QString str);
 
     // LoggerFormater interface
 public:
