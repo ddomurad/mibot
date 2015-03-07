@@ -2,17 +2,35 @@
 #define LOGGER_H
 
 #include <QObject>
+#include "mibLogger_global.h"
+#include "mibLoggerChannel.h"
 
-class Logger : public QObject
+#include "mibLoggerStandardFormaters.h"
+#include "mibLoggerStandardOutputs.h"
+
+namespace mibot
 {
-    Q_OBJECT
+
+class LOGGERSHARED_EXPORT LoggerManager final
+{
+
 public:
-    explicit Logger(QObject *parent = 0);
-    ~Logger();
+    ~LoggerManager();
+    static LoggerManager *instance();
 
-signals:
+    static LoggerChannel *GetChannel(QString name);
+    static LoggerChannel *GetDefaultChannel();
 
-public slots:
+    static void AddChannel(QString name, LoggerChannel * channel);
+    static void SelectDefaultChannel(QString name);
+
+private:
+    LoggerManager();
+    QMap<QString, LoggerChannel*> _channels;
+    static LoggerChannel* _default_channel;
+
+    static QString _given_channel_dont_exists;
 };
 
+}
 #endif // LOGGER_H

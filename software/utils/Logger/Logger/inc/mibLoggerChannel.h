@@ -1,18 +1,34 @@
 #ifndef LOGGERCHANNEL_H
 #define LOGGERCHANNEL_H
 
-#include <QObject>
+#include <QtCore>
+#include <initializer_list>
 
-class LoggerChannel : public QObject
+#include "mibLogger_global.h"
+#include "mibLoggerOutput.h"
+
+namespace mibot
 {
-    Q_OBJECT
+
+class LOGGERSHARED_EXPORT LoggerChannel final
+{
 public:
-    explicit LoggerChannel(QObject *parent = 0);
+    LoggerChannel(LogLevel level);
+    LoggerChannel(LogLevel level, std::initializer_list<LoggerOutput*>);
     ~LoggerChannel();
 
-signals:
+    void Append(std::initializer_list<LoggerOutput*>);
 
-public slots:
+    void operator += (LoggerOutput*);
+    void operator += (std::initializer_list<LoggerOutput*>);
+
+    void WriteLog(LogLevel level, QString file, QString function, uint line, QString message);
+    void WriteMessage(QString msg);
+
+private:
+    LogLevel _level;
+    QList<LoggerOutput*> _outputs;
 };
 
+}
 #endif // LOGGERCHANNEL_H

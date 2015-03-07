@@ -1,18 +1,21 @@
 #ifndef LOGGERFORMATER_H
 #define LOGGERFORMATER_H
 
-#include <QObject>
+#include <QString>
+#include "mibLogger_global.h"
 
-class LoggerFormater : public QObject
+namespace mibot
 {
-    Q_OBJECT
+
+class LOGGERSHARED_EXPORT LoggerFormater
+{
 public:
-    explicit LoggerFormater(QObject *parent = 0);
-    ~LoggerFormater();
-
-signals:
-
-public slots:
+    virtual ~LoggerFormater(){}
+    virtual QString FormatMessage(
+            LogLevel level, QString file,
+            QString function, qint32 line,
+            QString message) = 0;
 };
 
+}
 #endif // LOGGERFORMATER_H

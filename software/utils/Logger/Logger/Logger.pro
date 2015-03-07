@@ -8,17 +8,29 @@ QT       += testlib
 
 QT       -= gui
 
-TARGET = Logger
+TARGET = mibLogger
 TEMPLATE = lib
+CONFIG += c++11
 
 DEFINES += LOGGER_LIBRARY
 
-SOURCES += logger.cpp
+SOURCES += \
+    src/mibLogger.cpp \
+    src/mibLoggerOutput.cpp \
+    src/mibLoggerChannel.cpp \
+    src/mibLoggerStandardOutputs.cpp \
+    src/mibLoggerStandardFormaters.cpp
 
-HEADERS += logger.h\
-        logger_global.h
+HEADERS += \
+    inc/mibLogger.h \
+    inc/mibLogger_global.h \
+    inc/mibLoggerChannel.h \
+    inc/mibLoggerFormater.h \
+    inc/mibLoggerOutput.h \
+    inc/mibLoggerStandardOutputs.h \
+    inc/mibLoggerStandardFormaters.h
 
 unix {
-    target.path = /usr/lib
+    target.path = /usr/local/mi_bot
     INSTALLS += target
 }

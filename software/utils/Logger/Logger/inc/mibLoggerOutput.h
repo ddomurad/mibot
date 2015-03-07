@@ -1,18 +1,26 @@
 #ifndef LOGGEROUTPUT_H
 #define LOGGEROUTPUT_H
 
-#include <QObject>
+#include <QtCore>
+#include "mibLogger_global.h"
+#include "mibLoggerFormater.h"
 
-class LoggerOutput : public QObject
+namespace mibot
 {
-    Q_OBJECT
+
+class LOGGERSHARED_EXPORT LoggerOutput
+{
 public:
-    explicit LoggerOutput(QObject *parent = 0);
-    ~LoggerOutput();
+    explicit LoggerOutput(LoggerFormater * formater);
+    virtual ~LoggerOutput();
 
-signals:
+    virtual void Write(QString message) = 0;
 
-public slots:
+    void WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message);
+
+private:
+    LoggerFormater * _formater;
 };
 
+}
 #endif // LOGGEROUTPUT_H

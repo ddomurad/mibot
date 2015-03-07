@@ -1,12 +1,20 @@
-#include "inc/loggeroutput.h"
+#include "inc/mibLoggerOutput.h"
 
-LoggerOutput::LoggerOutput(QObject *parent) : QObject(parent)
-{
+using namespace mibot;
 
-}
+LoggerOutput::LoggerOutput(LoggerFormater *formater) :
+    _formater(formater)
+{}
 
 LoggerOutput::~LoggerOutput()
 {
-
+    delete _formater;
 }
 
+void LoggerOutput::WriteLog(
+        LogLevel level, QString file,
+        QString function, qint32 line,
+        QString message)
+{
+    this->Write( _formater->FormatMessage(level, file, function, line, message) );
+}
