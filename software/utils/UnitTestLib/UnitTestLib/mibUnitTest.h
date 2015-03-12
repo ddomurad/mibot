@@ -9,6 +9,8 @@
 namespace mibot
 {
 
+typedef QList<QPair<QString,QString>> TestResult;
+
 class UNITTESTLIBSHARED_EXPORT UnitTest
 {
 public:
@@ -27,9 +29,11 @@ public:
     static QList<QPair<QString,QString>> Flush();
     static void RegTest(QString, UnitTest *);
 
+    static void ResultsPtr(QList<QPair<QString,QString>>);
+    static void ResultsToTextFile(QString fileName, QList<QPair<QString,QString>>);
+
 private:
     static QList<QPair<QString, UnitTest*>> _utests;
-
     static QList<QPair<QString,QString>> ExecuteTest(QString, UnitTest*);
 };
 
@@ -89,5 +93,10 @@ private:
 };
 
 #define Assert _Assert(__LINE__)
+#define TEST_ADD(_TEST_CLASS, ... ) mibot::UnitTestManager::RegTest( #_TEST_CLASS , new _TEST_CLASS( __VA_ARGS__ ) );
+#define TEST_FLUSH() mibot::UnitTestManager::Flush()
+
+#define TEST_RES_PRINT(_RES) mibot::UnitTestManager::ResultsPtr( _RES );
+#define TEST_RES_FILE(_RES, _FNAME) mibot::UnitTestManager::ResultsToTextFile( _FNAME, _RES );
 }
 #endif // UNITTEST_H

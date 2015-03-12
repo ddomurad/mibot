@@ -1,4 +1,5 @@
 #include "mibUnitTest.h"
+#include <QFile>
 
 using namespace mibot;
 
@@ -9,9 +10,36 @@ QList<QPair<QString, QString> > UnitTestManager::Flush()
     for( QPair<QString, UnitTest*> test : _utests )
     {
         out.append( ExecuteTest(test.first, test.second) );
+        delete test.second;
     }
 
+
     return out;
+}
+
+void UnitTestManager::ResultsPtr(QList<QPair<QString,QString>> list)
+{
+    for( QPair<QString, QString> p : list)
+    {
+        qDebug() << p.first << p.second;
+    }
+}
+
+void UnitTestManager::ResultsToTextFile(QString fileName, QList<QPair<QString,QString>> list)
+{
+    QFile file(fileName);
+    if(!file.open(QIODevice::WriteOnly) )
+    {
+        qDebug() << QString("Can't open file '%1' to write.").arg(fileName);
+        return;
+    }
+
+    for( QPair<QString, QString> p : list)
+    {
+        file.write( QString("%1: %2\n").arg(p.first, p.second).toLatin1() );
+    }
+
+    file.close();
 }
 
 void UnitTestManager::RegTest(QString name, UnitTest * test)

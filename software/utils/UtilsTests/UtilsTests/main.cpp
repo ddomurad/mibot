@@ -7,17 +7,10 @@
 
 #include "TestHeader.h"
 
-void printList(QList<QPair<QString, QString> > list)
-{
-    for( QPair<QString, QString> p : list)
-    {
-        qDebug() << p.first << p.second;
-    }
-}
-
 int main()
 {   
-    mibot::UnitTestManager::RegTest("MyTest",new MyTest());
-    QList<QPair<QString, QString> > list = mibot::UnitTestManager::Flush();
-    printList(list);
+    TEST_ADD(MyTest);
+    mibot::TestResult res = TEST_FLUSH();
+    TEST_RES_FILE(res, "./test_res");
+    TEST_RES_PRINT(res);
 }

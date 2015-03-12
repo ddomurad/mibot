@@ -47,8 +47,6 @@ namespace mibot
         Warning = 3,
         Error = 4
     };
-
-
 }
 
 #endif // LOGGER_GLOBAL_H

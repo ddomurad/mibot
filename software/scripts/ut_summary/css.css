@@ -1,0 +1,40 @@
+
+body
+{
+  background-color: #dddddd;
+}
+
+.success
+{
+  background: linear-gradient(to right, #22aa22, #223322); 
+  height: 35px;
+  padding-left: 25px;
+  padding-top: 10;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+}
+
+.error
+{
+  background: linear-gradient(to right, #aa2222, #332222);
+  height: 35px;
+  padding-left: 25px;
+  padding-top: 10;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+}
+
+.res_table_g
+{
+  background: #88ff88;
+}
+
+.res_table_r
+{
+  background: #ff8888;
+}
+
+div
+{ 
+  background: #FFFFFF;
+}
