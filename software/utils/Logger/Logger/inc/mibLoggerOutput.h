@@ -16,7 +16,7 @@ public:
 
     virtual void Write(QString message) = 0;
 
-    void WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message);
+    virtual void WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message);
 
 private:
     LoggerFormater * _formater;

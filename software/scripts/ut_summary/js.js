@@ -1,3 +1,45 @@
+function getPercent()
+{
+	sitem = document.getElementsByClassName("success"); 
+        eitem = document.getElementsByClassName("error");
+	sl = sitem.length + eitem.length; 
+	if(sl == 0) return -1;
+	return sitem.length/sl;
+}
+
+function updateBar()
+{
+	items_ok = document.getElementById("items_ok");
+	items_err = document.getElementById("items_err");
+
+	percent = getPercent();
+	if(percent == -1)
+	{
+	 items_ok.setAttribute("width", "50%" );
+	 items_ok.textContent = "??";
+	 items_err.setAttribute("width", "50%" );
+	 items_err.textContent = "??";
+	}
+	else
+	{
+	 items_ok.setAttribute("width", (percent*100)+"%" );
+
+	if(percent == 0)
+ 	  items_ok.textContent = "";
+	else
+	 items_ok.textContent = (percent*100)+"%";
+
+
+
+	 items_err.setAttribute("width", (100-percent*100)+"%" );
+
+	 if(percent == 1)
+ 	  items_err.textContent = "";
+	 else
+	  items_err.textContent = (100-percent*100)+"%";
+	}
+}
+
 function getItemTestClass(item)
 {
 	el = item.getElementsByClassName("test_class")
@@ -27,7 +69,7 @@ function applyFilter(items, filters)
 
 		for(j=0; j<filters.length;j++)
 		{
-			if(filters[j] == "") continue;
+			if(filters[j] == "" || filters[j] == " ") continue;
 
 			if(test_class.indexOf(filters[j].toLowerCase()) != -1 
 		 		|| test_name.indexOf(filters[j].toLowerCase()) != -1 
@@ -49,30 +91,23 @@ function onFilter(val)
       eitem = document.getElementsByClassName("error");
       citems = [];
 
-      for( i=0; i<sitem.length; i++) 
-	{ 
-	 sitem[i].style.visibility = "hidden"; 
-	 sitem[i].style.height = 0; 
-	}
+       while( sitem.length > 0) 
+	 sitem[0].className = "unvisible_success";
       
-      	for( i=0; i<eitem.length; i++) 
-      	{
-         eitem[i].style.visibility = "hidden"; 
-	 eitem[i].style.height = 0; 
-      	}
+      	while( eitem.length > 0) 
+	 eitem[0].className = "unvisible_error";
       
 	vals = val.split(" ");
       	
+	sitem = document.getElementsByClassName("unvisible_success")
+	eitem = document.getElementsByClassName("unvisible_error")
+
 	if(vals.indexOf("[err]") != -1 )
-        {
 		sitem = [];
-	}
-        
+
         if(vals.indexOf("[ok]") != -1 )
-        {
 		eitem = [];
-	}
-	
+
 	for( i=0; i<sitem.length; i++) 
 	{ 
 	  citems.push(sitem[i]);
@@ -90,8 +125,13 @@ function onFilter(val)
       
 	for( i=0; i<items.length; i++) 
 	{ 
-	 items[i].style.visibility = "visible"; 
-	 items[i].style.height = 35; 
+	 if(items[i].className == "unvisible_success")
+		items[i].className = "success";
+	if(items[i].className == "unvisible_error")
+		items[i].className = "error";
 	}
      
+	updateBar();
     }
+
+

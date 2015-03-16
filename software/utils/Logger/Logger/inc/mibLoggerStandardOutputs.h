@@ -12,7 +12,7 @@ namespace mibot
 class LoggerConsoleOutput : public LoggerOutput
 {
 public:
-    LoggerConsoleOutput(LoggerFormater * formater = new LoggerSimpleStringFormater());
+    LoggerConsoleOutput(LoggerFormater * formater = new LoggerSimpleConsoleFormater());
     ~LoggerConsoleOutput();
 
     // LoggerOutput interface

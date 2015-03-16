@@ -46,7 +46,7 @@ public slots:
 
     void errorTest2()
     {
-        mibot::Assert.AreEqual<int>(2,3);
+
     }
 };
 

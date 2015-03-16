@@ -10,6 +10,7 @@ def RunTest(TEST):
 	print("Running test <%s>" % TEST[1]);
 	currentDir = os.getcwd()
 	os.chdir(TEST[0])
+	os.system( "make" )
 	os.system("./%s" % TEST[1])
 	os.chdir(currentDir);
 
@@ -51,21 +52,21 @@ def ParseTestEntry(testEntry):
 	
 	return [test_desc_split[0], test_desc_split[1], test_result, isSuccess];
 
-def FormatEntry(module, entry):
-	
-	#return "<div class=\"success\"><table class=\"res_table_g\"> <tr><td class=\"test_class\">testClass1</td><td class=\"test_name\">test1</td><td class=\"test_result\">result</td></tr> </table></div>"
-	return "<div class=\"%s\"><table class=\"%s\"> <tr><td class=\"test_class\">%s</td><td class=\"test_name\">%s</td><td class=\"test_result\">%s</td></tr> </table></div>" \
-	% ( "success" if entry[3] else "error" ,"res_table_g" if entry[3] else "res_table_r",entry[0],entry[1],entry[2])
+def FormatEntry(module, entry, I, J):
+	return "<div class=\"%s\"><table class=\"%s\"> <tr><td class=\"num_class\">[%d:%d]</td><td class=\"test_class\">%s</td><td class=\"test_name\">%s</td><td class=\"test_result\">%s</td></tr> </table></div>" \
+	% ("success" if entry[3] else "error" ,"res_table_g" if entry[3] else "res_table_r",I,J, entry[0],entry[1],entry[2])
 
-def ParseTestResult(testResultFile, fo):
+def ParseTestResult(testResultFile, fo, I):
 	f = open(cfg.OUT_DIR + testResultFile, "r")
+	J = 1
 	while True:
 		line = f.readline()
 		if(line == ""):
 			break
 
 		entry = ParseTestEntry(line)
-		fo.write(FormatEntry(testResultFile,entry));
+		fo.write(FormatEntry(testResultFile,entry, I,J));
+		J = J +1
 
 	f.close();
 
@@ -76,6 +77,7 @@ def ReadFiletoEnd(fname):
 	return s
 
 def GenerateHtmlDocument():
+	print("Opengng file to writing");
 	fo = open(cfg.OUT_DIR + "index.html", "w")
 	fo.write("<html><head><style>");
 	fo.write(ReadFiletoEnd("./css.css"))
@@ -84,13 +86,21 @@ def GenerateHtmlDocument():
 	fo.write("<script>")
 	fo.write(ReadFiletoEnd("./js.js"))
 	fo.write("</script>")
-	fo.write("</head><body><input type=\"text\" value=\"\" onchange=\"onFilter(this.value)\"/> ")
+	fo.write("</head><body onload=\"updateBar();\">&gt;&gt; [<input type=\"text\" value=\"\" onchange=\"onFilter(this.value)\"/>] ")
+	fo.write("<br><table class=\"bar\"><tr><td class=\"green_bar\" id=\"items_ok\"></td><td class=\"red_bar\" id=\"items_err\"></td></tr></table>")
 	
-
+	I = 1
 	for tr in GetTestsResults():
-		ParseTestResult (tr, fo)
+		if tr == "index.html":
+			continue
+		print("parsing result: '%s'" % tr);
+		ParseTestResult (tr, fo, I)
+		I = I + 1
 
 	fo.close()
+	
+	print("Coppy resource to output dir.")
+	os.system("cp ./res/* %s" % cfg.OUT_DIR);
 
 
 print("### .:: EXECUTING TESTS ::. ###\n")

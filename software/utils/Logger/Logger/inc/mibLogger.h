@@ -13,23 +13,22 @@ namespace mibot
 
 class LOGGERSHARED_EXPORT LoggerManager final
 {
-
 public:
+    LoggerManager();
+
     ~LoggerManager();
     static LoggerManager *instance();
 
-    static LoggerChannel *GetChannel(QString name);
-    static LoggerChannel *GetDefaultChannel();
+    LoggerChannel *GetChannel(QString name);
+    LoggerChannel *GetDefaultChannel();
 
-    static void AddChannel(QString name, LoggerChannel * channel);
-    static void SelectDefaultChannel(QString name);
+    void AddChannel(QString name, LoggerChannel * channel);
+    void SelectDefaultChannel(QString name);
 
 private:
-    LoggerManager();
-    QMap<QString, LoggerChannel*> _channels;
-    static LoggerChannel* _default_channel;
 
-    static QString _given_channel_dont_exists;
+    QMap<QString, LoggerChannel*> _channels;
+    LoggerChannel* _default_channel;
 };
 
 }

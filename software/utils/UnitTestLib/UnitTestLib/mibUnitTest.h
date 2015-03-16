@@ -46,19 +46,47 @@ public:
     void AreEqual(T expeced, T actual)
     {
         if(expeced != actual)
-            ThrowError(QString("Assert::AreEqual failure. Expected: <%1>, Actual: <%2>").arg(expeced).arg(actual));
+            ThrowError(QString("Assert::AreEqual failure. Expected: [%1], Actual: [%2]").arg(expeced).arg(actual));
     }
 
     template <typename T>
     void AreNotEqual(T notExpeced, T actual)
     {
         if(notExpeced == actual)
-            ThrowError(QString("Assert::AreNotEqual failure. NotExpeced: <%1>, Actual: <%2>").arg(notExpeced).arg(actual));
+            ThrowError(QString("Assert::AreNotEqual failure. NotExpeced: [%1], Actual: [%2]").arg(notExpeced).arg(actual));
+    }
+
+    template <typename T>
+    void AreEqualNP(T expeced, T actual)
+    {
+        if(expeced != actual)
+            ThrowError(QString("Assert::AreEqualNP failure."));
+    }
+
+    template <typename T>
+    void AreNotEqualNP(T notExpeced, T actual)
+    {
+        if(notExpeced == actual)
+            ThrowError(QString("Assert::AreNotEqualNP failure."));
+    }
+
+    template <typename T>
+    void ArePtrEqual(T *expeced, T *actual)
+    {
+        if(expeced != actual)
+            ThrowError(QString("Assert::ArePtrEqual failure."));
+    }
+
+    template <typename T>
+    void ArePtrNotEqual(T *notExpeced, T *actual)
+    {
+        if(notExpeced == actual)
+            ThrowError(QString("Assert::ArePtrNotEqual failure."));
     }
 
     void IsTrue(bool state)
     {
-        if(state)
+        if(!state)
             ThrowError(QString("Assert::IsTrue failure."));
     }
 

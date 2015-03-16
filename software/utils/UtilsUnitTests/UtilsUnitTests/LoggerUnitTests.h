@@ -11,15 +11,16 @@ namespace mibot
 namespace ut
 {
 
-class MockLoggerChannel : public LoggerOutput
+class MockLoggerOutput : public LoggerOutput
 {
 public:
-    MockLoggerChannel();
+    MockLoggerOutput();
 
     int WriteCallsCount;
     QList<QString> CallArguments;
 
     void Write(QString message);
+    void WriteLog(LogLevel, QString, QString, qint32, QString message);
 };
 
 
@@ -30,12 +31,36 @@ class LoggerUnitTests : public QObject, public UnitTest
 public:
     LoggerUnitTests();
     ~LoggerUnitTests();
+private:
+    LoggerManager * loggerManager;
+
+    const QString testChannelName = "testChannel";
 
 public slots:
-    void testTestosteron();
-    void testTestosteron2();
+    void CanCreateChannel();
+    void CanCreateMultipleChannels();
+    void FirstCreatedChannelIsSetAsDefault();
+    void DefaultChannelCanBeChanged();
+
+    void MessageIsWritenToOutput();
+    void MessageIsWritenToOutputWhenTheLevelIsHigher();
+    void MessageIsNOTWritenToOutputWhenTheLevelIsLower();
+
+
+    void FileOutputCorectlyWriteMessagesToFile();
+
+    void SimpleFormaterCorrectlyTranslateLogLevels();
+    void SimpleFormaterCorrectlyFormatsMessages();
+    void SimpleFormaterCorrectlyFormatsFilePath();
+    void SimpleConsoleFormaterCorrectlyFormatsMessages();
+
+    // UnitTest interface
+public:
+    void TestInit();
+    void TestClean();
 };
 
 }
 }
+
 #endif // LOGGERUNITTESTS_H
