@@ -1,0 +1,3 @@
+MyTest::successTest(): SUCCESS
+MyTest::errorTest(): test @ line 44
+MyTest::errorTest2(): SUCCESS

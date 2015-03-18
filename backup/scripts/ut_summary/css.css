@@ -1,0 +1,104 @@
+
+body
+{
+  background-color: #dddddd;
+}
+
+.success
+{
+  background: linear-gradient(to right, #22aa22, #223322); 
+  height: 35px;
+  padding-left: 25px;
+  padding-top: 10;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+}
+
+.error
+{
+  background: linear-gradient(to right, #aa2222, #332222);
+  height: 35px;
+  padding-left: 25px;
+  padding-top: 10;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+}
+
+.unvisible_error
+{
+  height: 0px;
+  visibility: hidden;
+  padding-left: 0px;
+  padding-top: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+.unvisible_success
+{
+  height: 0px;
+  visibility: hidden;
+  padding-left: 0px;
+  padding-top: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+.res_table_g
+{
+  background: #88ff88;
+}
+
+.res_table_r
+{
+  background: #ff8888;
+}
+
+
+.test_name
+{
+ background: url(arrow.png) no-repeat; 
+ background-size: 20px 20px;
+ padding-left: 20px;
+}
+
+.test_result
+{
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.bar
+{
+  background: #000000;
+  height: 50px;
+  width: 100%;
+}
+
+.green_bar
+{
+  background: #00ff00;
+  text-align: center;
+}
+
+.red_bar
+{
+  background: #ff0000;
+  text-align: center;
+}
+
+input
+{
+  background: #dddddd;
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+}
+
+input:hover
+{
+ background: #ededed;
+ text-decoration: underline;
+}
+
+
