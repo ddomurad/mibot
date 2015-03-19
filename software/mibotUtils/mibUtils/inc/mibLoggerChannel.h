@@ -4,13 +4,13 @@
 #include <QtCore>
 #include <initializer_list>
 
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerOutput.h"
 
 namespace mibot
 {
 
-class LOGGERSHARED_EXPORT LoggerChannel final
+class MIBUTILSSHARED_EXPORT LoggerChannel final
 {
 public:
     LoggerChannel(LogLevel level);

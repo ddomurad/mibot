@@ -2,13 +2,13 @@
 #define LOGGEROUTPUT_H
 
 #include <QtCore>
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerFormater.h"
 
 namespace mibot
 {
 
-class LOGGERSHARED_EXPORT LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerOutput
 {
 public:
     explicit LoggerOutput(LoggerFormater * formater);

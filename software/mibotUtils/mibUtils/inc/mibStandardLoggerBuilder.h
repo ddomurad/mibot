@@ -1,13 +1,13 @@
 #ifndef STANDARDLOGGERBUILDER_H
 #define STANDARDLOGGERBUILDER_H
 
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerBuilder.h"
 
 namespace mibot
 {
 
-class StandardLoggerBuilder final : public LoggerBuilder
+class MIBUTILSSHARED_EXPORT StandardLoggerBuilder final : public LoggerBuilder
 {
 public:
     ~StandardLoggerBuilder();

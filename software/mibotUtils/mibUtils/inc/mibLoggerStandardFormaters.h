@@ -1,13 +1,13 @@
 #ifndef LOGGERSIMPLESTRINGFORMATER_H
 #define LOGGERSIMPLESTRINGFORMATER_H
 
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerFormater.h"
 
 namespace mibot
 {
 
-class LoggerSimpleStringFormater : public LoggerFormater
+class MIBUTILSSHARED_EXPORT LoggerSimpleStringFormater : public LoggerFormater
 {
 public:
     LoggerSimpleStringFormater();
@@ -21,7 +21,7 @@ public:
     QString FormatMessage(LogLevel level, QString file, QString function, qint32 line, QString message);
 };
 
-class LoggerSimpleConsoleFormater : public LoggerFormater
+class MIBUTILSSHARED_EXPORT LoggerSimpleConsoleFormater : public LoggerFormater
 {
 public:
     LoggerSimpleConsoleFormater();
@@ -32,7 +32,7 @@ public:
     QString FormatMessage(LogLevel level, QString file, QString function, qint32 line, QString message);
 
 private:
-    uint _message_count;
+    static uint _message_count;
 };
 
 }

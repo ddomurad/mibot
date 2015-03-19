@@ -2,12 +2,12 @@
 #define LOGGERFORMATER_H
 
 #include <QString>
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 
 namespace mibot
 {
 
-class LOGGERSHARED_EXPORT LoggerFormater
+class MIBUTILSSHARED_EXPORT LoggerFormater
 {
 public:
     virtual ~LoggerFormater(){}

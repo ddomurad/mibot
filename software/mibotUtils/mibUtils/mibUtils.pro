@@ -1,36 +1,36 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-03-07T08:51:20
+# Project created by QtCreator 2015-03-19T21:55:41
 #
 #-------------------------------------------------
 
 QT       -= gui
 
-TARGET = mibLogger
+TARGET = mibUtils
 TEMPLATE = lib
 CONFIG += c++11
 
-DEFINES += LOGGER_LIBRARY
+DEFINES += MIBUTILS_LIBRARY
 
 SOURCES += \
     src/mibLogger.cpp \
-    src/mibLoggerOutput.cpp \
+    src/mibLoggerBuilder.cpp \
     src/mibLoggerChannel.cpp \
-    src/mibLoggerStandardOutputs.cpp \
+    src/mibLoggerOutput.cpp \
     src/mibLoggerStandardFormaters.cpp \
-    src/mibStandardLoggerBuilder.cpp \
-    src/mibLoggerBuilder.cpp
+    src/mibLoggerStandardOutputs.cpp \
+    src/mibStandardLoggerBuilder.cpp
 
-HEADERS += \
+HEADERS +=\
     inc/mibLogger.h \
-    inc/mibLogger_global.h \
+    inc/mibLoggerBuilder.h \
     inc/mibLoggerChannel.h \
     inc/mibLoggerFormater.h \
     inc/mibLoggerOutput.h \
-    inc/mibLoggerStandardOutputs.h \
     inc/mibLoggerStandardFormaters.h \
-    inc/mibLoggerBuilder.h \
-    inc/mibStandardLoggerBuilder.h
+    inc/mibLoggerStandardOutputs.h \
+    inc/mibStandardLoggerBuilder.h \
+    inc/mibUtilsGlobal.h
 
 unix {
     target.path = /usr/local/mi_bot

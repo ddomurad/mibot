@@ -2,7 +2,7 @@
 #define LOGGER_H
 
 #include <QObject>
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerChannel.h"
 
 #include "mibLoggerStandardFormaters.h"
@@ -11,7 +11,7 @@
 namespace mibot
 {
 
-class LOGGERSHARED_EXPORT LoggerManager final
+class MIBUTILSSHARED_EXPORT LoggerManager final
 {
 public:
     LoggerManager();

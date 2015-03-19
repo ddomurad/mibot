@@ -125,7 +125,7 @@ void StandardLoggerBuilder::AddOputput(QJsonObject &json, LoggerChannel *channel
         auto jsonObject = json.value("Formater").toObject();
         auto formater = CreateFormater( jsonObject );
         if(formater != nullptr)
-            *channel += new LoggerConsoleOutput();
+            *channel += new LoggerConsoleOutput(formater);
 
         LogProcess(LOG_TYPE::OK, QString("Console ChannelOutput added."));
     }
@@ -149,6 +149,12 @@ LoggerFormater *StandardLoggerBuilder::CreateFormater(QJsonObject &json)
     {
         LogProcess(LOG_TYPE::OK, QString("Creating SimpleStringFormater."));
         return new LoggerSimpleStringFormater();
+    }
+
+    if(formaterType == "SimpleConsoleFormater")
+    {
+        LogProcess(LOG_TYPE::OK, QString("Creating SimpleConsoleFormater."));
+        return new LoggerSimpleConsoleFormater();
     }
 
     LogProcess(LOG_TYPE::ERROR,

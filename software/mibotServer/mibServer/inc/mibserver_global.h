@@ -1,0 +1,12 @@
+#ifndef MIBSERVER_GLOBAL_H
+#define MIBSERVER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(MIBSERVER_LIBRARY)
+#  define MIBSERVERSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define MIBSERVERSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // MIBSERVER_GLOBAL_H

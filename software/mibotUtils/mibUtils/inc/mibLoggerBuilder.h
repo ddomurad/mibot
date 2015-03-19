@@ -1,7 +1,7 @@
 #ifndef LOGGERBUILDER_H
 #define LOGGERBUILDER_H
 
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerChannel.h"
 #include "mibLoggerOutput.h"
 
@@ -10,7 +10,7 @@
 namespace mibot
 {
 
-class LoggerBuilder
+class MIBUTILSSHARED_EXPORT LoggerBuilder
 {
 public:
     enum class LOG_TYPE { OK, ERROR };

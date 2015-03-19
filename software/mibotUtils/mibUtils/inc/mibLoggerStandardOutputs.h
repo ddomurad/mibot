@@ -1,7 +1,7 @@
 #ifndef LOGGERCONSOLEOUTPUT_H
 #define LOGGERCONSOLEOUTPUT_H
 
-#include "mibLogger_global.h"
+#include "mibUtilsGlobal.h"
 #include "mibLoggerOutput.h"
 
 #include "mibLoggerStandardFormaters.h"
@@ -9,7 +9,7 @@
 namespace mibot
 {
 
-class LoggerConsoleOutput : public LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerConsoleOutput : public LoggerOutput
 {
 public:
     LoggerConsoleOutput(LoggerFormater * formater = new LoggerSimpleConsoleFormater());
@@ -21,7 +21,7 @@ public:
 };
 
 
-class LoggerFileOutput : public LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerFileOutput : public LoggerOutput
 {
 public:
     LoggerFileOutput(QFile *file, LoggerFormater * formater = new LoggerSimpleStringFormater());

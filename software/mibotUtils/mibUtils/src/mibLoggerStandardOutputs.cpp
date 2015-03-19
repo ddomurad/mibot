@@ -1,6 +1,6 @@
 #include "inc/mibLoggerStandardOutputs.h"
 #include <cstdio>
-
+#include <QDebug>
 using namespace mibot;
 
 LoggerConsoleOutput::LoggerConsoleOutput(LoggerFormater * formater ):
@@ -12,7 +12,8 @@ LoggerConsoleOutput::~LoggerConsoleOutput()
 
 void mibot::LoggerConsoleOutput::Write(QString message)
 {
-    printf("%s", message.toStdString().c_str());
+    qDebug() << message;
+    //printf("%s", message.toStdString().c_str());
 }
 
 LoggerFileOutput::LoggerFileOutput(QFile *file, LoggerFormater * formater):
@@ -32,7 +33,7 @@ void LoggerFileOutput::Write(QString message)
 {
     if(_output_file->open(QIODevice::Append) == false)
     {
-        printf("%s\n",_cant_open_file_for_writing.toStdString().c_str());
+        qDebug() << _cant_open_file_for_writing;
     }
 
     _output_file->write(message.toUtf8());

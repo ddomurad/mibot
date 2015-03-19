@@ -47,8 +47,7 @@ QString LoggerSimpleStringFormater::FormatMessage(
 }
 
 
-LoggerSimpleConsoleFormater::LoggerSimpleConsoleFormater() :
-    _message_count(0)
+LoggerSimpleConsoleFormater::LoggerSimpleConsoleFormater()
 {}
 
 LoggerSimpleConsoleFormater::~LoggerSimpleConsoleFormater()
@@ -68,3 +67,5 @@ QString LoggerSimpleConsoleFormater::FormatMessage(
                   file, function, QString::number(line), message)
             .arg(_message_count);
 }
+
+uint LoggerSimpleConsoleFormater::_message_count = 0;

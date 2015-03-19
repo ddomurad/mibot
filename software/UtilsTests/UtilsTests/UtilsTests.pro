@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 QT       -= gui
 
 TARGET = UtilsTests
@@ -14,12 +14,15 @@ CONFIG   += c++11
 
 TEMPLATE = app
 
-INCLUDEPATH += ../../Logger/Logger/inc
-INCLUDEPATH += ../../UnitTestLib/UnitTestLib
-LIBS += /usr/local/mi_bot/libmibLogger.so
-LIBS += /usr/local/mi_bot/libmibUnitTest.so
+INCLUDEPATH += ../../mibotUtils/mibUtils/inc
+INCLUDEPATH += ../../mibotServer/mibServer/inc
+
+
+
+LIBS += /usr/local/mi_bot/libmibUtils.so
+LIBS += /usr/local/mi_bot/libmibServer.so
+
 
 SOURCES += main.cpp
 
-HEADERS += \
-    TestHeader.h
+HEADERS +=
