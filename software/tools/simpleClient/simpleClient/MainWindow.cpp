@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(nullptr)
 {
     ui->setupUi(this);
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
 }
 
 MainWindow::~MainWindow()
@@ -30,28 +32,39 @@ void MainWindow::on_btn_connect_clicked()
         return;
     }
 
-    socket = new QSslSocket(this);
+    QSslSocket * sslSocket = new QSslSocket(this);
 
+    socket = sslSocket;
     connect( socket, SIGNAL(error(QAbstractSocket::SocketError)), this,SLOT(onSocketError(QAbstractSocket::SocketError)));
-    connect( socket, SIGNAL(peerVerifyError(QSslError)), this, SLOT(onPeerVerifyError(QSslError)) );
-    connect( socket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(onSslErrors(QList<QSslError>)));
+    if(ui->check_enable_ssl->isChecked())
+    {
+        connect( sslSocket, SIGNAL(peerVerifyError(QSslError)), this, SLOT(onPeerVerifyError(QSslError)) );
+        connect( sslSocket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(onSslErrors(QList<QSslError>)));
+    }
     connect( socket, SIGNAL(connected()),this,SLOT(onConnected()));
     connect( socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect( socket, SIGNAL(bytesWritten(qint64)), this, SLOT(onBytesWritten(qint64)));
 
     QString cert = ui->line_cert->text();
 
-    socket->setLocalCertificate( "/home/work/Tmp/ssl_key/" + cert + ".crt" );
-    socket->setPrivateKey( "/home/work/Tmp/ssl_key/" + cert + ".key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
+    if(ui->check_enable_ssl->isChecked())
+    {
+        sslSocket->setLocalCertificate( "/home/work/Tmp/cert/" + cert + "/c.crt" );
+        sslSocket->setPrivateKey( "/home/work/Tmp/cert/" + cert + "/c.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
 
-    socket->setProtocol(QSsl::SslV3);
+        sslSocket->setProtocol(QSsl::SslV3);
 
-    socket->setCaCertificates(QSslCertificate::fromPath("/home/work/Tmp/ssl_key/s1.pem"));
+        sslSocket->setCaCertificates(QSslCertificate::fromPath("/home/work/Tmp/cert/s.pem"));
 
-    socket->connectToHostEncrypted(
-                ui->line_host->text(),
-                ui->line_port->text().toInt(),
-                 ui->line_peer->text());
+        sslSocket->connectToHostEncrypted(
+                    ui->line_host->text(),
+                    ui->line_port->text().toInt(),
+                    ui->line_peer->text());
+    }else
+    {
+        socket->connectToHost(ui->line_host->text(),
+                              ui->line_port->text().toInt());
+    }
 }
 
 void MainWindow::on_btn_send_clicked()
@@ -110,3 +123,16 @@ void MainWindow::Log(QString type, QString msg)
     qDebug() << logStr;
 }
 
+
+void MainWindow::on_checkBox_toggled(bool checked)
+{
+    if(checked)
+        timer->start(10);
+    else
+        timer->stop();
+}
+
+void MainWindow::onTimer()
+{
+    on_btn_send_clicked();
+}

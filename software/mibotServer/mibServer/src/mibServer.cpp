@@ -1,6 +1,7 @@
 #include <mibLogger.h>
-#include "../inc/mibServer.h"
-
+#include <mibGlobalAccess.h>
+#include "inc/mibConnection.h"
+#include "inc/mibServer.h"
 
 using namespace mibot;
 
@@ -12,12 +13,17 @@ Server::~Server()
 {
     for(int i=0; i<_listeners.count(); i++)
         delete _listeners[i];
+
+    if(_connectionHandler != nullptr)
+        delete _connectionHandler;
 }
 
 Server *Server::BuildServer(QJsonObject &config, QObject * parent)
 {
     Server * out_server = new Server(parent);
     out_server->_listenersThread = new QThread(out_server);
+    out_server->_connectionHandler = new ConnectionHandler();
+    out_server->_connectionHandler->moveToThread( out_server->_listenersThread );
 
     if(config["Listeners"].isNull())
     {
@@ -29,22 +35,34 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
     for(int i=0; i<listeners.count(); i++)
     {
         QJsonObject listener = listeners.at(i).toObject();
-        if( listener["Name"].isNull() ||
-            listener["Port"].isNull())
+        if( listener["Socket"].isNull())
         {
-            DEFLOG_ERROR("Name, port or access level is not defined for listener.");
+            DEFLOG_ERROR("Id is not defined for listener.");
             continue;
         }
 
-        QString name = listener["Name"].toString();
-        u_int16_t port = listener["Port"].toInt();
+        QString sockId = listener["Socket"].toString();
+        SocketRes * sockRes = GlobalAccess::Socket( sockId );
+
+        if(sockRes == nullptr)
+        {
+            DEFLOG_ERROR("Socket with given id does not exit: " + sockId );
+            continue;
+        }
+
+        if(sockRes->PrivilegesObj == nullptr)
+        {
+            DEFLOG_ERROR("Socket privilage resolving error");
+            delete sockRes;
+            continue;
+        }
 
         bool isSsl = !listener["Ssl"].isNull();
 
         DEFLOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
-                          arg(name, QString::number(port), isSsl ? "Yes" : "No") );
+                          arg(sockRes->Alias(), QString::number(sockRes->Port()), isSsl ? "Yes" : "No") );
 
-        Listener * list = new Listener( name, port, isSsl);
+        Listener * list = new Listener( sockRes , isSsl);
         if(isSsl)
         {
             QJsonObject sslObject = listener["Ssl"].toObject();
@@ -65,6 +83,8 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
                               .arg(locCrt, locKey, caCrt));
             }
         }
+
+        connect( list, SIGNAL(NewConnection(Connection*)), out_server->_connectionHandler, SLOT(NewConnection(Connection*)));
 
         out_server->AddListener( list );
     }

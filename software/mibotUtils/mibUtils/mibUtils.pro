@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT       -= gui sql
 
 TARGET = mibUtils
 TEMPLATE = lib
@@ -19,7 +19,11 @@ SOURCES += \
     src/mibLoggerOutput.cpp \
     src/mibLoggerStandardFormaters.cpp \
     src/mibLoggerStandardOutputs.cpp \
-    src/mibStandardLoggerBuilder.cpp
+    src/mibStandardLoggerBuilder.cpp \
+    src/mibAbstractResource.cpp \
+    src/mibRepository.cpp \
+    src/mibAbstractRepository.cpp \
+    src/mibSqlRepository.cpp
 
 HEADERS +=\
     inc/mibLogger.h \
@@ -30,7 +34,11 @@ HEADERS +=\
     inc/mibLoggerStandardFormaters.h \
     inc/mibLoggerStandardOutputs.h \
     inc/mibStandardLoggerBuilder.h \
-    inc/mibUtilsGlobal.h
+    inc/mibUtilsGlobal.h \
+    inc/mibAbstractResource.h \
+    inc/mibAbstractRepository.h \
+    inc/mibResourceWrapper.h \
+    inc/mibSqlRepository.h
 
 unix {
     target.path = /usr/local/mi_bot

@@ -28,10 +28,13 @@ private slots:
 
     void on_btn_send_clicked();
 
+    void on_checkBox_toggled(bool checked);
+
+    void onTimer();
 private:
     Ui::MainWindow *ui;
-    QSslSocket * socket;
-
+    QTcpSocket * socket;
+    QTimer *timer;
     void Log(QString type, QString msg);
 };
 

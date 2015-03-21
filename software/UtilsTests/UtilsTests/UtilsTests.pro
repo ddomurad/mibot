@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network
+QT       += core network sql
 QT       -= gui
 
 TARGET = UtilsTests
@@ -16,11 +16,12 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
-
+INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 
 
 LIBS += /usr/local/mi_bot/libmibUtils.so
 LIBS += /usr/local/mi_bot/libmibServer.so
+LIBS += /usr/local/mi_bot/libmibAccess.so
 
 
 SOURCES += main.cpp

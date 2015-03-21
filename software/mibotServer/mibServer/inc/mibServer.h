@@ -7,6 +7,7 @@
 #include <QJsonObject>
 
 #include "mibListener.h"
+#include "mibConnectionHandler.h"
 
 namespace mibot
 {
@@ -31,6 +32,8 @@ public slots:
 
 private:
     explicit Server(QObject * parent);
+
+    ConnectionHandler * _connectionHandler;
 
     QList<Listener*> _listeners;
     QThread * _listenersThread;

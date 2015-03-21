@@ -94,14 +94,14 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="6" column="0">
             <widget class="Line" name="line">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QPushButton" name="btn_connect">
              <property name="text">
               <string>Connect</string>
@@ -119,6 +119,13 @@
             <widget class="QLabel" name="label_3">
              <property name="text">
               <string>cert</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QCheckBox" name="check_enable_ssl">
+             <property name="text">
+              <string>Enable SSsl</string>
              </property>
             </widget>
            </item>
@@ -175,6 +182,13 @@
           <widget class="QPushButton" name="btn_send">
            <property name="text">
             <string>Send</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox">
+           <property name="text">
+            <string>SuperSend</string>
            </property>
           </widget>
          </item>

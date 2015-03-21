@@ -8,11 +8,20 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QVariant>
 
 #include <mibLogger.h>
 #include <mibStandardLoggerBuilder.h>
 
 #include <mibServer.h>
+#include <mibAbstractResource.h>
+#include <mibResourceWrapper.h>
+#include <mibSqlRepository.h>
+#include <mibGlobalAccess.h>
+#include <mibConnectionHandler.h>
+
+#define TRACE(...) qDebug() << #__VA_ARGS__ << __VA_ARGS__
+
 
 class TestApp : public QCoreApplication
 {
@@ -32,7 +41,7 @@ public:
 
         emit _server->StartServer();
 
-        //_timer->start(1000);
+        //_timer->start(10000);
     }
 
 
@@ -41,9 +50,22 @@ private:
     QTimer * _timer;
 };
 
+void testFnc()
+{
+    QVariant var = QVariant (QVariant::Uuid);
+    var.setValue( QUuid::createUuid() );
+    QString str = var.toString();
+    qDebug() << str;
+     str = str.mid(1,36);
+
+    qDebug() << str;
+}
+
 int main(int argc, char *argv[])
 {
     TestApp a(argc,argv);
+
+//    testFnc(); return 0;
 
     QFile file("./app.config");
     if(!file.open(QIODevice::ReadOnly))
@@ -69,15 +91,27 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    if(root_obj["Access"].isNull())
+    {
+        qDebug() << "No Access configs.";
+        exit(1);
+    }
+
 
     mibot::StandardLoggerBuilder buildier;
     QJsonObject loggerObject = root_obj["Logger"].toObject();
     buildier.BuildLogger( loggerObject  );
 
-    DEFLOG_INFO("Server start ...");
+    DEFLOG_INFO("Loading GlobalAccess");
 
-    QJsonObject serverObject = root_obj["Server"].toObject();
-    a.RunServer( mibot::Server::BuildServer( serverObject, &a ) );
+    QJsonObject access_obj = root_obj["Access"].toObject();
+    mibot::GlobalAccess::Init( access_obj );
+
+    DEFLOG_INFO("Loading Server");
+    QJsonObject server_obj = root_obj["Server"].toObject();
+    mibot::Server * server =  mibot::Server::BuildServer( server_obj,  &a);
+
+    a.RunServer(  server );
 
     a.exec();
 }

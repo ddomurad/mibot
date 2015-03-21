@@ -12,26 +12,21 @@ SslTcpServer::~SslTcpServer()
 
 void SslTcpServer::incomingConnection(qintptr descriptor)
 {
-    QSslSocket *in_socket = new QSslSocket(this);
+    QSslSocket *in_socket = new QSslSocket( this );
     in_socket->setSocketDescriptor( descriptor );
 
     this->addPendingConnection( in_socket );
 }
 
 
-Listener::Listener(QString name, u_int16_t port, bool ssl) :
-    QObject(nullptr),
-    _name(name), _use_ssl(ssl), _port(port)
+Listener::Listener(SocketRes *sock, bool ssl) :
+    QObject(nullptr), _sockRes(sock), _use_ssl(ssl)
 {
     if(_use_ssl)
-    {
         _server = new SslTcpServer(this);
-    }
     else
-    {
         _server = new QTcpServer(this);
 
-    }
 
     connect( _server, SIGNAL(acceptError(QAbstractSocket::SocketError)),
              this, SLOT(onAcceptError(QAbstractSocket::SocketError)));
@@ -42,7 +37,10 @@ Listener::Listener(QString name, u_int16_t port, bool ssl) :
 }
 
 Listener::~Listener()
-{}
+{
+    if(_sockRes != nullptr)
+        delete _sockRes;
+}
 
 void Listener::SetCertificates(QString localCrt, QString localKey, QString caCrt)
 {
@@ -63,28 +61,24 @@ bool Listener::UsingSsl()
     return _use_ssl;
 }
 
-QString Listener::Name()
-{
-    return _name;
-}
 
 void Listener::StartListen()
 {
-    if(!_server->listen( QHostAddress::Any, _port ))
+    if(!_server->listen( QHostAddress::Any, _sockRes->Port() ))
     {
-        DEFLOG_ERROR(QString("Listener '%1' starting error.").arg(_name));
+        DEFLOG_ERROR(QString("Listener '%1' starting error.").arg(_sockRes->Alias()));
         emit ListenError();
     }
     else
     {
-        DEFLOG_INFO(QString("Listener '%1' is started.").arg(_name));
+        DEFLOG_INFO(QString("Listener '%1' is started.").arg(_sockRes->Alias()));
         emit ListeningStarted();
     }
 }
 
 void Listener::StopListen()
 {
-    DEFLOG_INFO(QString("Stoping listener '%1'.").arg(_name));
+    DEFLOG_INFO(QString("Stoping listener '%1'.").arg(_sockRes->Alias()));
     if(_server->isListening())
     {
         _server->close();
@@ -101,6 +95,8 @@ void Listener::onIncommingConnection()
         LOG_INFO("audit", QString("Incomming connection from '%1'")
                  .arg(pendingSocket->peerAddress().toString()));
 
+
+        pendingSocket->setSocketOption(QAbstractSocket::KeepAliveOption, true );
         if(_use_ssl)
         {
             QSslSocket * sslPendingsocket = (QSslSocket *) pendingSocket;
@@ -114,16 +110,26 @@ void Listener::onIncommingConnection()
                     this, SLOT(onPeerVerifyError(QSslError)));
 
             sslPendingsocket->setCaCertificates( QSslCertificate::fromPath(_caCrt) );
-            sslPendingsocket->setSocketOption(QAbstractSocket::KeepAliveOption, true );
             sslPendingsocket->setProtocol(QSsl::SslV3);
             sslPendingsocket->setLocalCertificate(_localCrt);
             sslPendingsocket->setPrivateKey(_localKey);
+            sslPendingsocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
 
             sslPendingsocket->startServerEncryption();
+
+            if( !sslPendingsocket->waitForEncrypted( 1000 ))
+            {
+                sslPendingsocket->disconnectFromHost();
+                emitNewConnection( sslPendingsocket, true , "Encryption failure." );
+            }
+            else
+            {
+                emitNewConnection( sslPendingsocket, true , QString());
+            }
         }
         else
         {
-            emit NewConnection( pendingSocket );
+            emitNewConnection( pendingSocket, false, QString());
         }
 
     }
@@ -137,14 +143,12 @@ void Listener::onAcceptError(QAbstractSocket::SocketError e)
 
 void Listener::onSslError(QList<QSslError> e)
 {
-    QTcpSocket * socket = (QTcpSocket*)sender();
+    //QTcpSocket * socket = (QTcpSocket*)sender();
 
     for( QSslError error : e )
     {
         LOG_ERROR("audit", QString("Ssl error (%1).").arg(error.errorString()));
     }
-
-    socket->close();
 }
 
 void Listener::onConnectionEncrypted()
@@ -163,16 +167,43 @@ void Listener::onConnectionEncrypted()
         LOG_INFO("audit", QString("Connection encrypted ('%1')")
              .arg( socket->peerAddress().toString()));
     }
-
-    emit NewConnection( socket );
 }
 
 void Listener::onPeerVerifyError(QSslError e)
 {
-    QTcpSocket * socket = (QTcpSocket*)sender();
+    //QTcpSocket * socket = (QTcpSocket*)sender();
     LOG_ERROR("audit", QString("PeerVerifyError error ( %1 ).")
               .arg(e.errorString()) );
+}
 
-    socket->close();
+void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorString)
+{
+    Connection * connection = new Connection;
+
+    connection->UseSsl = ssl;
+
+    connection->Id       =   QUuid::createUuid();
+    connection->Socket   =   _sockRes->Id();
+    connection->TcpSocket   =   socket;
+    connection->User     =   QUuid();
+    connection->ErrorStrnig = errorString;
+    connection->Status   =   errorString.isEmpty() ?
+                            Connection::Success :
+                            Connection::Failure;
+
+    if(ssl && socket)
+    {
+        QSslSocket * sslSocket = (QSslSocket*) socket;
+        QList<QString> peerIDs = sslSocket->peerCertificate().subjectInfo(QSslCertificate::CommonName);
+        if(peerIDs.count() != 0) connection->User = QUuid( peerIDs[0] );
+    }
+
+    qDebug() << "New conenction ssl:" << ssl
+             << "did:" << _sockRes->Id()
+             << "user:" << connection->User
+             << "error:" << connection->ErrorStrnig
+             << "status:" << connection->Status;
+
+    emit NewConnection( connection );
 }
 
