@@ -41,6 +41,6 @@ HEADERS +=\
     inc/mibSqlRepository.h
 
 unix {
-    target.path = /usr/local/mi_bot
+    target.path = /usr/local/lib/mi_bot
     INSTALLS += target
 }

@@ -6,8 +6,6 @@
 #include <mibAbstractResource.h>
 #include <mibAbstractRepository.h>
 #include <mibResourceWrapper.h>
-
-#include <mibLogger.h>
 #include "mibAccessResources.h"
 
 namespace mibot
@@ -24,6 +22,12 @@ public:
     static SocketRes * Socket(QUuid id);
     static UserRes   * User(QUuid id);
 
+    static UsersCertificateRes   * UserCertificate(QUuid id);
+    static CertificateSocketBoundRes   * CertificateSocketBound(QUuid id);
+    static ResourcesSet<CertificateSocketBoundRes>   * CertificateSocketBoundsSesBySocket(QUuid socketId);
+
+    static ResourcesSet<GlobalConfigRes>   * AllGlobalConfigsForSubsystem(QString subsystem);
+
     static bool PushConnectionAudit(ConnectionAuditRes *res);
 
 private:
@@ -33,6 +37,10 @@ private:
     ResourceWrapper<PrivilegeRes> *_privilegesResWrapper;
     ResourceWrapper<UserRes> *_usersResWrapper;
     ResourceWrapper<ConnectionAuditRes> *_connectionAuditResWrapper;
+
+    ResourceWrapper<UsersCertificateRes> *_usersCertificateResWrapper;
+    ResourceWrapper<CertificateSocketBoundRes> *_certificateSocketBoundResWrapper;
+    ResourceWrapper<GlobalConfigRes> *_globalConfigResWrapper;
 
     AbstractRepository * _repository;
 };

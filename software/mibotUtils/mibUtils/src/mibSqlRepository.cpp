@@ -123,6 +123,50 @@ bool SqlRepository::AddNewResource(AbstractResource *res)
     return true;
 }
 
+bool SqlRepository::GetResourcesByParam(QString param, QVariant * var, AbstractResourcesSet *set)
+{
+    if(!IsOpen()) return false;
+    AbstractResource * temp_resource = set->Create();
+    QStringList fields = temp_resource->Fields();
+    QString class_name = temp_resource->ClassName();
+    delete temp_resource;
+
+    QStringList fields_string;
+    for( QString field : fields )
+        fields_string.append( QString("\"%1\"").arg( field) );
+
+    QString query_string = QString("SELECT %1 FROM \"%2\" WHERE \"%3\" = %4")
+            .arg(fields_string.join(','), class_name)
+            .arg(param)
+            .arg(asSQLAcceptableValue(var,param));
+
+    QSqlQuery query;
+
+    if( !query.exec( query_string ) )
+    {
+        DEFLOG_ERROR("SQL QUERY ERROR: " + query_string);
+        DEFLOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
+        return false;
+    }
+    else
+        DEFLOG_DEBUG("SQL QUERY: " + query_string);
+
+    if(query.size() == 0) return true;
+
+    set->InitializeSet( query.size() );
+    int res_iter = 0;
+    while(query.next())
+    {
+        AbstractResource * res = set->GetAbstract( res_iter );
+        for(int i=0; i<fields.length(); i++)
+            res->Get( fields[i] )->setValue<QString>(query.value(i).toString());
+
+        res_iter++;
+    }
+
+    return true;
+}
+
 QString SqlRepository::asSQLAcceptableValue(QVariant *v, QString field)
 {
     if(v->type() == QVariant::String)

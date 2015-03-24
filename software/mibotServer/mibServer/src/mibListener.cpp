@@ -19,10 +19,10 @@ void SslTcpServer::incomingConnection(qintptr descriptor)
 }
 
 
-Listener::Listener(SocketRes *sock, bool ssl) :
-    QObject(nullptr), _sockRes(sock), _use_ssl(ssl)
+Listener::Listener(SocketRes *sock) :
+    QObject(nullptr), _sockRes(sock)
 {
-    if(_use_ssl)
+    if(_sockRes->UseSsl())
         _server = new SslTcpServer(this);
     else
         _server = new QTcpServer(this);
@@ -42,23 +42,21 @@ Listener::~Listener()
         delete _sockRes;
 }
 
-void Listener::SetCertificates(QString localCrt, QString localKey, QString caCrt)
+bool Listener::InitCertificates(QString crtDir, QString crt)
 {
-    if(_use_ssl)
+    if( _sockRes->UseSsl() )
     {
-        _localCrt = localCrt;
-        _localKey = localKey;
-        _caCrt = caCrt;
+        _crtDir = crtDir;
+        _crtName = crt;
+        if( !initCaCertificates() )
+            return false;
     }
     else
     {
-        DEFLOG_ERROR("Can't set certificates to listener with disabled ssl support.");
+        DEFLOG_WARNING("Ssl support is disabled.");
     }
-}
 
-bool Listener::UsingSsl()
-{
-    return _use_ssl;
+    return true;
 }
 
 
@@ -97,34 +95,34 @@ void Listener::onIncommingConnection()
 
 
         pendingSocket->setSocketOption(QAbstractSocket::KeepAliveOption, true );
-        if(_use_ssl)
+        if(_sockRes->UseSsl())
         {
-            QSslSocket * sslPendingsocket = (QSslSocket *) pendingSocket;
-            connect( sslPendingsocket, SIGNAL(sslErrors(QList<QSslError>)),
+            QSslSocket * sslPendingSocket = (QSslSocket *) pendingSocket;
+            connect( sslPendingSocket, SIGNAL(sslErrors(QList<QSslError>)),
                      this, SLOT(onSslError(QList<QSslError>)) );
 
-            connect(sslPendingsocket,SIGNAL(encrypted()),
+            connect(sslPendingSocket,SIGNAL(encrypted()),
                     this, SLOT(onConnectionEncrypted()));
 
-            connect(sslPendingsocket, SIGNAL(peerVerifyError(QSslError)),
+            connect(sslPendingSocket, SIGNAL(peerVerifyError(QSslError)),
                     this, SLOT(onPeerVerifyError(QSslError)));
 
-            sslPendingsocket->setCaCertificates( QSslCertificate::fromPath(_caCrt) );
-            sslPendingsocket->setProtocol(QSsl::SslV3);
-            sslPendingsocket->setLocalCertificate(_localCrt);
-            sslPendingsocket->setPrivateKey(_localKey);
-            sslPendingsocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+            sslPendingSocket->setCaCertificates( _certs );
+            sslPendingSocket->setProtocol(QSsl::SslV3);
+            sslPendingSocket->setLocalCertificate( QString("%1/%2.crt").arg( _crtDir, _crtName) );
+            sslPendingSocket->setPrivateKey( QString("%1/%2.key").arg( _crtDir, _crtName) );
+            sslPendingSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
 
-            sslPendingsocket->startServerEncryption();
+            sslPendingSocket->startServerEncryption();
 
-            if( !sslPendingsocket->waitForEncrypted( 1000 ))
+            if( !sslPendingSocket->waitForEncrypted( 1000 ))
             {
-                sslPendingsocket->disconnectFromHost();
-                emitNewConnection( sslPendingsocket, true , "Encryption failure." );
+                sslPendingSocket->disconnectFromHost();
+                emitNewConnection( sslPendingSocket, true , "Encryption failure." );
             }
             else
             {
-                emitNewConnection( sslPendingsocket, true , QString());
+                emitNewConnection( sslPendingSocket, true , QString());
             }
         }
         else
@@ -174,6 +172,64 @@ void Listener::onPeerVerifyError(QSslError e)
     //QTcpSocket * socket = (QTcpSocket*)sender();
     LOG_ERROR("audit", QString("PeerVerifyError error ( %1 ).")
               .arg(e.errorString()) );
+}
+
+bool Listener::initCaCertificates()
+{
+    _certs.clear();
+    if(_sockRes == nullptr)
+        return false;
+
+    if(_certs.isEmpty())
+    {
+        ResourcesSet<CertificateSocketBoundRes> * set =
+            GlobalAccess::CertificateSocketBoundsSesBySocket( _sockRes->Id() );
+
+        if(set == nullptr)
+        {
+            DEFLOG_ERROR( "Certificates Set loading error." );
+            return false;
+        }
+
+        for( int i=0; i<set->Count(); i++)
+        {
+            UsersCertificateRes * ucr =  GlobalAccess::UserCertificate( set->At(i)->Certificate() );
+             if(ucr == nullptr)
+             {
+                 DEFLOG_ERROR(QString("Could not read UserCertificate from reposiroty: (Id:%1) ")
+                              .arg(set->At(i)->Certificate().toString()));
+                 continue;
+             }
+
+            QString caCrtName = ucr->FileName();
+            if(caCrtName.isEmpty() || caCrtName.contains('.'))
+            {
+                DEFLOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
+                             .arg(caCrtName));
+                continue;
+            }
+
+            QString caPath = QString("%1/%2.crt").arg( _crtDir, caCrtName );
+            QFile crtFile( caPath );
+
+            if( !crtFile.open( QIODevice::ReadOnly) )
+            {
+                DEFLOG_ERROR(QString("Can't open certificate file (%1)")
+                             .arg(caPath));
+                continue;
+            }
+
+            _certs.append( QSslCertificate( crtFile.readAll() ));
+            crtFile.close();
+
+            DEFLOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
+                         .arg( caPath, _sockRes->Alias() ) );
+        }
+
+        delete set;
+    }
+
+    return true;
 }
 
 void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorString)

@@ -40,6 +40,9 @@ public:
     // AbstractSocketStrategy interface
 protected:
     void processNewData(QByteArray);
+
+private:
+    static int _cnt;
 };
 
 }

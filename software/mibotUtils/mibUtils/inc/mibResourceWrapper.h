@@ -31,6 +31,19 @@ public:
         return out;
     }
 
+    ResourcesSet<T> * getAllByParam(QString param, QVariant * val)
+    {
+        ResourcesSet<T> * set = new ResourcesSet<T>;
+
+        if( !_repo->GetResourcesByParam( param, val , (AbstractResourcesSet*)(set) ) )
+        {
+            delete set;
+            return nullptr;
+        }
+
+        return set;
+    }
+
     bool addNew(T * obj)
     {
         return _repo->AddNewResource( obj );

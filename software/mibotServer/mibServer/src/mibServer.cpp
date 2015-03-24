@@ -25,13 +25,13 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
     out_server->_connectionHandler = new ConnectionHandler();
     out_server->_connectionHandler->moveToThread( out_server->_listenersThread );
 
-    if(config["Listeners"].isNull())
+    if(config["Sockets"].isNull())
     {
         DEFLOG_ERROR("No listeners defined.");
         return out_server;
     }
 
-    QJsonArray listeners = config["Listeners"].toArray();
+    QJsonArray listeners = config["Sockets"].toArray();
     for(int i=0; i<listeners.count(); i++)
     {
         QJsonObject listener = listeners.at(i).toObject();
@@ -57,31 +57,39 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
             continue;
         }
 
-        bool isSsl = !listener["Ssl"].isNull();
 
         DEFLOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
-                          arg(sockRes->Alias(), QString::number(sockRes->Port()), isSsl ? "Yes" : "No") );
+                          arg(sockRes->Alias(), QString::number(sockRes->Port()), sockRes->UseSsl() ? "Yes" : "No") );
 
-        Listener * list = new Listener( sockRes , isSsl);
-        if(isSsl)
+        Listener * list = new Listener( sockRes );
+
+        auto sslSettings = listener["Ssl"];
+        if(sslSettings.isNull())
         {
-            QJsonObject sslObject = listener["Ssl"].toObject();
-            if(sslObject["LocalCertificateFile"].isNull() ||
-               sslObject["LocalPrivateKeyFile"].isNull() ||
-               sslObject["CaCertificates"].isNull())
-            {
-                DEFLOG_ERROR("Listeners Ssl definition is invalid.");
-            }else
-            {
-                QString locCrt = sslObject["LocalCertificateFile"].toString();
-                QString locKey = sslObject["LocalPrivateKeyFile"].toString();
-                QString caCrt = sslObject["CaCertificates"].toString();
+            DEFLOG_WARNING(QString("No ssl certificates setings specified. (%1)")
+                           .arg( sockRes->Alias() ));
 
-                list->SetCertificates( locCrt, locKey, caCrt );
+            if(sockRes->UseSsl())
+            {
+                DEFLOG_ERROR(QString("This listener (%1) need to use ssl, but no setings are spesified.")
+                             .arg( sockRes->Alias() ));
 
-                DEFLOG_DEBUG( QString("Setup ssl (LocalCertificateFile='%1', LocalPrivateKeyFile='%2', CaCertificates='%3')")
-                              .arg(locCrt, locKey, caCrt));
+                delete list;
+                continue;
             }
+        }else
+        {
+            QString crtDir = sslSettings.toObject()["CrtDir"].toString();
+            QString crtName = sslSettings.toObject()["Crt"].toString();
+
+            DEFLOG_DEBUG( QString("Setup ssl ( CrtDir='%1', Crt='%2' )")
+                          .arg( crtDir, crtName ));
+
+            if(!list->InitCertificates( crtDir, crtName ))
+            {
+                DEFLOG_ERROR("Certificates initialization error.");
+            }
+
         }
 
         connect( list, SIGNAL(NewConnection(Connection*)), out_server->_connectionHandler, SLOT(NewConnection(Connection*)));

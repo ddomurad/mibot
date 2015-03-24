@@ -1,4 +1,5 @@
 #include "inc/mibAbstractSocketStrategy.h"
+#include <QDebug>
 
 using namespace mibot;
 
@@ -31,15 +32,20 @@ void AbstractSocketStrategy::ProcessData()
 EchoStrategy::EchoStrategy(Connection * connection)
     :AbstractSocketStrategy(connection)
 {
-
+    _cnt ++;
+    qDebug() << "EchoStrategy" << _cnt;
 }
 
 EchoStrategy::~EchoStrategy()
 {
-
+    _cnt --;
+    qDebug() << "~EchoStrategy" << _cnt;
 }
 
 void EchoStrategy::processNewData(QByteArray d)
 {
-    qDebug() << d;
+    _connection->TcpSocket->write(d);
 }
+
+
+int EchoStrategy::_cnt = 0;

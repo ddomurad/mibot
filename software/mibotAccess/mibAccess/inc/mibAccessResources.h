@@ -24,9 +24,10 @@ public:
     ~SocketRes();
 
     QString Alias();
-    QUuid Privileges();
-    int Port();
+    QUuid   Privileges();
+    int     Port();
     QString Strategy();
+    bool    UseSsl();
 
     PrivilegeRes * PrivilegesObj;
 };
@@ -66,5 +67,37 @@ public:
     void SetEntryDetails(QString v);
 };
 
+class MIBACCESSSHARED_EXPORT UsersCertificateRes : public AbstractResource
+{
+public:
+    UsersCertificateRes();
+    ~UsersCertificateRes();
+
+    QUuid User();
+    QString FileName();
+};
+
+class MIBACCESSSHARED_EXPORT CertificateSocketBoundRes : public AbstractResource
+{
+public:
+    CertificateSocketBoundRes();
+    ~CertificateSocketBoundRes();
+
+    QUuid Socket();
+    QUuid Certificate();
+};
+
+class MIBACCESSSHARED_EXPORT GlobalConfigRes : public AbstractResource
+{
+public:
+    GlobalConfigRes();
+    ~GlobalConfigRes();
+
+    QString Subsystem();
+    QString Key();
+    QString Value();
+};
+
 }
+
 #endif // ASSECCRESOURCES_H

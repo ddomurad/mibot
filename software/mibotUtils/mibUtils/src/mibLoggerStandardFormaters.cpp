@@ -62,7 +62,7 @@ QString LoggerSimpleConsoleFormater::FormatMessage(
     int index = file.lastIndexOf('\\');
     if(index == -1) index = file.lastIndexOf('/');
     if(index != -1) file = file.right(file.size() - index - 1);
-    return QString("[%6][%1] at (%2: %3: %4): %5\n")
+    return QString("[%6][%1] at (%2: %3: %4): %5")
             .arg( LoggerSimpleStringFormater::LogLevel2Str(level),
                   file, function, QString::number(line), message)
             .arg(_message_count);

@@ -52,22 +52,23 @@ private:
 
 void testFnc()
 {
-    QVariant var = QVariant (QVariant::Uuid);
-    var.setValue( QUuid::createUuid() );
-    QString str = var.toString();
-    qDebug() << str;
-     str = str.mid(1,36);
+    mibot::ResourcesSet<mibot::GlobalConfigRes> * set =
+    mibot::GlobalAccess::AllGlobalConfigsForSubsystem("ec");
 
-    qDebug() << str;
+    for( int i=0; i< set->Count(); i++)
+    {
+        mibot::GlobalConfigRes * res = set->At(i);
+        qDebug() << res->Dump();
+    }
+
+    delete set;
 }
 
 int main(int argc, char *argv[])
 {
     TestApp a(argc,argv);
 
-//    testFnc(); return 0;
-
-    QFile file("./app.config");
+    QFile file("/usr/local/etc/mi_bot/mibot_server.config");
     if(!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "Can't load configuration file.";
@@ -106,6 +107,9 @@ int main(int argc, char *argv[])
 
     QJsonObject access_obj = root_obj["Access"].toObject();
     mibot::GlobalAccess::Init( access_obj );
+
+   // testFnc(); return 0;
+
 
     DEFLOG_INFO("Loading Server");
     QJsonObject server_obj = root_obj["Server"].toObject();

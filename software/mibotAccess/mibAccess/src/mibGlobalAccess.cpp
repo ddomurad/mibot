@@ -1,3 +1,5 @@
+#include <mibLogger.h>
+
 #include "inc/mibGlobalAccess.h"
 #include "mibSqlRepository.h"
 
@@ -45,6 +47,12 @@ bool GlobalAccess::Init(QJsonObject &jobj)
             new ResourceWrapper<UserRes>(GlobalAccess::get()._repository);
     GlobalAccess::get()._connectionAuditResWrapper =
             new ResourceWrapper<ConnectionAuditRes>(GlobalAccess::get()._repository);
+    GlobalAccess::get()._usersCertificateResWrapper =
+            new ResourceWrapper<UsersCertificateRes>(GlobalAccess::get()._repository);
+    GlobalAccess::get()._certificateSocketBoundResWrapper =
+            new ResourceWrapper<CertificateSocketBoundRes>(GlobalAccess::get()._repository);
+    GlobalAccess::get()._globalConfigResWrapper =
+            new ResourceWrapper<GlobalConfigRes>(GlobalAccess::get()._repository);
 
     return GlobalAccess::get()._repository->IsOpen();
 }
@@ -70,6 +78,29 @@ UserRes *GlobalAccess::User(QUuid id)
 
     return res;
 }
+
+UsersCertificateRes *GlobalAccess::UserCertificate(QUuid id)
+{
+    return GlobalAccess::get()._usersCertificateResWrapper->getByID( id );
+}
+
+CertificateSocketBoundRes *GlobalAccess::CertificateSocketBound(QUuid id)
+{
+    return GlobalAccess::get()._certificateSocketBoundResWrapper->getByID( id );
+}
+
+ResourcesSet<CertificateSocketBoundRes> *GlobalAccess::CertificateSocketBoundsSesBySocket(QUuid socketId)
+{
+    QVariant var(socketId);
+    return GlobalAccess::get()._certificateSocketBoundResWrapper->getAllByParam( "socket",  &var );
+}
+
+ResourcesSet<GlobalConfigRes> *GlobalAccess::AllGlobalConfigsForSubsystem(QString subsystem)
+{
+    QVariant var(subsystem);
+    return GlobalAccess::get()._globalConfigResWrapper->getAllByParam( "subsystem",  &var );
+}
+
 
 bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
 {

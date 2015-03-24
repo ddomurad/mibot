@@ -21,8 +21,9 @@ public:
     virtual ~AbstractRepository();
 
     virtual bool IsOpen() = 0;
-    virtual GetResult GetResourceByID(QUuid id ,AbstractResource *) = 0;
+    virtual GetResult GetResourceByID( QUuid id ,AbstractResource *) = 0;
     virtual bool      AddNewResource( AbstractResource * ) = 0;
+    virtual bool      GetResourcesByParam( QString , QVariant* , AbstractResourcesSet* ) =0;
 };
 
 }

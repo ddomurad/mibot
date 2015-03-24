@@ -25,10 +25,10 @@ class Listener : public QObject
 {
     Q_OBJECT
 public:
-    explicit Listener(SocketRes *sock, bool ssl);
+    explicit Listener( SocketRes *sock );
     ~Listener();
 
-    void SetCertificates(QString localCrt, QString localKey, QString caCrt);
+    bool InitCertificates(QString crtDir, QString crt);
     bool UsingSsl();
     QString Name();
 
@@ -51,14 +51,15 @@ private slots:
 
 private:
 
+    bool initCaCertificates();
     QTcpServer * _server;
     SocketRes *_sockRes;
-    bool _use_ssl;
 
-    QString     _caCrt;
-    QString     _localCrt;
-    QString     _localKey;
+    QString     _crtDir;
+    QString     _crtName;
+    QStringList _caCrts;
 
+    QList<QSslCertificate> _certs;
     void emitNewConnection(QTcpSocket *, bool ssl, QString errorString);
 };
 
