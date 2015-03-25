@@ -28,6 +28,7 @@ public:
     int     Port();
     QString Strategy();
     bool    UseSsl();
+    bool    IsEnabled();
 
     PrivilegeRes * PrivilegesObj;
 };

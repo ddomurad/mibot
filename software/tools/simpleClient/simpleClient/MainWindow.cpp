@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include <QTextCursor>
-
+#include <QMessageBox>
 #include "ui_MainWindow.h"
 #include <QDebug>
 
@@ -10,8 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(nullptr)
 {
     ui->setupUi(this);
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    send_type = 0;
+    js_input_thread = new JsInput(this);
+
+    send_timer = new QTimer(this);
+    connect( send_timer, SIGNAL(timeout()), this, SLOT(onSendTimer()));
 }
 
 MainWindow::~MainWindow()
@@ -67,12 +70,6 @@ void MainWindow::on_btn_connect_clicked()
     }
 }
 
-void MainWindow::on_btn_send_clicked()
-{
-    ui->text_outcomming->textCursor().select(QTextCursor::Document);
-    socket->write( ui->text_outcomming->toPlainText().toLatin1() );
-}
-
 
 void MainWindow::onSocketError(QAbstractSocket::SocketError e)
 {
@@ -105,9 +102,23 @@ void MainWindow::onConnected()
 void MainWindow::onReadyRead()
 {
     QByteArray arr =  socket->readAll();
-    ui->text_incomming->clear();
-    QTextCursor cursor(ui->text_incomming->document());
-    cursor.insertText( QString(arr) );
+
+    if( ui->combo_disp_inp->currentText() == "Hex" )
+    {
+        QString str;
+        for( int i=0; i< arr.length(); i++ )
+        {
+            str +=  QString::number( (int) (arr.at(i)) & 0x000000ff, 16 ) ;
+            str += " ";
+        }
+
+        ui->incomming->append(str);
+
+    }else
+    {
+        ui->incomming->append( QString( arr ) );
+    }
+
 }
 
 void MainWindow::onBytesWritten(qint64 i)
@@ -123,16 +134,108 @@ void MainWindow::Log(QString type, QString msg)
     qDebug() << logStr;
 }
 
-
-void MainWindow::on_checkBox_toggled(bool checked)
+void MainWindow::stopSending()
 {
-    if(checked)
-        timer->start(10);
-    else
-        timer->stop();
+    ui->cb_js_run->setChecked( false );
 }
 
-void MainWindow::onTimer()
+void MainWindow::sendJsState()
 {
-    on_btn_send_clicked();
+    int ax_l = ui->left_ax->value();
+    int ax_r = ui->right_ax->value();
+
+    bool rl = ui->cb_js_reverse_left->isChecked();
+    bool rr = ui->cb_js_reverse_right->isChecked();
+
+    int left_ax_val = js_input_thread->axis[ax_l] * (rl ? -1 :1);
+    int right_ax_val = js_input_thread->axis[ax_r] * (rr ? -1 :1);
+
+    ui->js_left_read->setText( QString::number( left_ax_val ) );
+    ui->js_right_read->setText( QString::number( right_ax_val ) );
+
+    char left  =   100 * ( float(left_ax_val)/32767.0f );
+    char right =   100 * ( float(right_ax_val)/32767.0f );
+
+    uchar data[] =
+    {
+        0x03, // write cmd
+        0x00, // addr
+        0x80 | (ui->cb_is_simulation->isChecked() ? 0x01 : 0x00), // driver model ( 0000 100S )
+        left, right
+    };
+
+    if(socket == nullptr) return;
+    if(!socket->isOpen()) return;
+
+    socket->write( (char*)data, 0x05 );
+
+    QString hex_txt = "[";
+
+    for(int i=0;i<0x05;i++)
+    {
+        hex_txt += QString::number( (int)data[i],16);
+        if(i != 0x04) hex_txt += " ";
+    }
+
+    hex_txt += "]";
+
+    ui->out_plain_text->append( hex_txt );
+
+    if(ui->cb_Query_Stsatus->isChecked())
+    {
+        uchar qdata[] =
+        {
+            0x30, // write cmd
+            0x00 // addr
+        };
+
+        if(socket == nullptr) return;
+        if(!socket->isOpen()) return;
+
+        socket->write( (char*)qdata, 0x02 );
+    }
+}
+
+void MainWindow::on_btn_Check_js_clicked()
+{
+    QString js_file = ui->le_js_file->text();
+    QFile file(js_file);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::critical( this, "Joystick test.","Joystic input file opening error.");
+    }else
+    {
+        QMessageBox::information( this, "Joystick test.","Joystic input file opening sucess.");
+        file.close();
+    }
+}
+
+void MainWindow::on_cb_js_run_toggled(bool checked)
+{
+    if(checked)
+    {
+        if(send_timer->isActive()) stopSending();
+        js_input_thread->Start( ui->le_js_file->text() );
+
+        send_type = 2;
+        send_timer->start( ui->sb_js_send_Ratio->value() );
+    }
+    else
+    {
+        js_input_thread->Stop();
+        send_timer->stop();
+    }
+}
+
+void MainWindow::onSendTimer()
+{
+    if(send_type == 2)
+    { sendJsState(); return; }
+
+    stopSending();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ui->out_plain_text->clear();
 }

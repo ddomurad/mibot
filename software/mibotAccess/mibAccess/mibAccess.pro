@@ -14,7 +14,7 @@ DEFINES += MIBACCESS_LIBRARY
 CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
-LIBS += /usr/local/mi_bot/libmibUtils.so
+LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 
 SOURCES += \
     src/mibGlobalAccess.cpp \

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include <JsInput.h>
 
 namespace Ui {
 class MainWindow;
@@ -26,16 +27,25 @@ private slots:
     void onReadyRead();
     void onBytesWritten(qint64);
 
-    void on_btn_send_clicked();
+    void on_btn_Check_js_clicked();
 
-    void on_checkBox_toggled(bool checked);
+    void on_cb_js_run_toggled(bool checked);
 
-    void onTimer();
+    void onSendTimer();
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket * socket;
-    QTimer *timer;
     void Log(QString type, QString msg);
+    QTimer *send_timer;
+    JsInput * js_input_thread;
+
+    void stopSending();
+    int send_type;
+
+    void sendJsState();
 };
 
 #endif // MAINWINDOW_H

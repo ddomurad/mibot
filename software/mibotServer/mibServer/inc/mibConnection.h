@@ -27,9 +27,6 @@ public:
     QString             ErrorStrnig;
 
     bool                UseSsl;
-//    QString             LocalCertificatePath;
-//    QString             LocalKeyPath;
-//    QString             CaCertificatesPath;
 
     UserRes             *UserObj();
     SocketRes           *SocketObj();

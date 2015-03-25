@@ -13,8 +13,10 @@ TEMPLATE = app
 
 CONFIG += c++11
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    JsInput.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    JsInput.h
 
 FORMS    += MainWindow.ui

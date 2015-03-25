@@ -33,6 +33,7 @@ SocketRes::SocketRes() :
     AddField("port",QVariant::Int);
     AddField("strategy",QVariant::String);
     AddField("use_ssl",QVariant::Bool);
+    AddField("enabled",QVariant::Bool);
 }
 
 SocketRes::~SocketRes()
@@ -65,6 +66,11 @@ QString SocketRes::Strategy()
 bool SocketRes::UseSsl()
 {
     return Get("use_ssl")->toBool();
+}
+
+bool SocketRes::IsEnabled()
+{
+    return Get("enabled")->toBool();
 }
 
 UserRes::UserRes() :

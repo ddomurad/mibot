@@ -50,6 +50,12 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
             continue;
         }
 
+        if(!sockRes->IsEnabled())
+        {
+            DEFLOG_WARNING("Socket with given id is disabled: " + sockId );
+            continue;
+        }
+
         if(sockRes->PrivilegesObj == nullptr)
         {
             DEFLOG_ERROR("Socket privilage resolving error");

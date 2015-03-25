@@ -18,8 +18,8 @@ CONFIG += c++11
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 
-LIBS += /usr/local/mi_bot/libmibUtils.so
-LIBS += /usr/local/mi_bot/libmibAccess.so
+LIBS += /usr/local/lib/mi_bot/libmibUtils.so
+LIBS += /usr/local/lib/mi_bot/libmibAccess.so
 
 SOURCES += \
     src/mibServer.cpp \

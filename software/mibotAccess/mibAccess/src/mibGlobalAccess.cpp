@@ -101,6 +101,12 @@ ResourcesSet<GlobalConfigRes> *GlobalAccess::AllGlobalConfigsForSubsystem(QStrin
     return GlobalAccess::get()._globalConfigResWrapper->getAllByParam( "subsystem",  &var );
 }
 
+ResourcesSet<GlobalConfigRes> *GlobalAccess::GlobalConfigsByKey(QString key)
+{
+    QVariant var(key);
+    return GlobalAccess::get()._globalConfigResWrapper->getAllByParam("key",&var);
+}
+
 
 bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
 {

@@ -2,6 +2,7 @@
 #define ABSTRACTSOCKETSTRATEGY_H
 
 #include <QObject>
+#include <QLocalSocket>
 
 #include "mibConnection.h"
 
@@ -13,7 +14,6 @@ class AbstractSocketStrategy : public QObject
 {
     Q_OBJECT
 public:
-
     ~AbstractSocketStrategy();
 
     static bool ApplyStrategy(Connection*connection);
@@ -26,7 +26,7 @@ protected:
     explicit AbstractSocketStrategy(Connection * connection );
     Connection * _connection;
     virtual void processNewData(QByteArray ) = 0;
-
+    virtual bool init() = 0;
 };
 
 class EchoStrategy : public AbstractSocketStrategy
@@ -40,9 +40,30 @@ public:
     // AbstractSocketStrategy interface
 protected:
     void processNewData(QByteArray);
+    bool init();
 
 private:
     static int _cnt;
+};
+
+class EnginesDriverStartegy : public AbstractSocketStrategy
+{
+    Q_OBJECT
+public:
+    explicit EnginesDriverStartegy( Connection * connection );
+    ~EnginesDriverStartegy();
+
+public slots:
+    void onLocalSocketRead();
+
+    // AbstractSocketStrategy interface
+protected:
+    void processNewData(QByteArray);
+    bool init();
+
+private:
+    static int _cnt;
+    QLocalSocket * socket;
 };
 
 }
