@@ -1,6 +1,7 @@
 #ifndef LOGGERCONSOLEOUTPUT_H
 #define LOGGERCONSOLEOUTPUT_H
 
+#include <QtSql/QSqlDatabase>
 #include "mibUtilsGlobal.h"
 #include "mibLoggerOutput.h"
 
@@ -36,6 +37,26 @@ private:
     QFile *_output_file;
     static QString _cant_open_file_for_writing;
 };
+
+
+class MIBUTILSSHARED_EXPORT LoggerPSQLOutput : public LoggerOutput
+{
+public:
+    LoggerPSQLOutput();
+    ~LoggerPSQLOutput();
+
+    bool Open(QJsonObject &config, QString sender);
+
+    // LoggerOutput interface
+public:
+    void Write(QString);
+    void WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message);
+
+private:
+    QSqlDatabase _db;
+    QString _sender;
+};
+
 
 }
 #endif // LOGGERCONSOLEOUTPUT_H

@@ -143,6 +143,7 @@ void MainWindow::sendJsState()
 {
     int ax_l = ui->left_ax->value();
     int ax_r = ui->right_ax->value();
+    int brake_btn = ui->sb_brake_button->value();
 
     bool rl = ui->cb_js_reverse_left->isChecked();
     bool rr = ui->cb_js_reverse_right->isChecked();
@@ -150,17 +151,28 @@ void MainWindow::sendJsState()
     int left_ax_val = js_input_thread->axis[ax_l] * (rl ? -1 :1);
     int right_ax_val = js_input_thread->axis[ax_r] * (rr ? -1 :1);
 
+
+    bool brake_state = js_input_thread->btn[brake_btn];
+
     ui->js_left_read->setText( QString::number( left_ax_val ) );
     ui->js_right_read->setText( QString::number( right_ax_val ) );
 
+    ui->lax->setValue( left_ax_val );
+    ui->rax->setValue( right_ax_val );
+
+    ui->rb_brake->setChecked( brake_state );
+
     char left  =   100 * ( float(left_ax_val)/32767.0f );
     char right =   100 * ( float(right_ax_val)/32767.0f );
-
+    bool is_sim = ui->cb_is_simulation->isChecked();
     uchar data[] =
     {
         0x03, // write cmd
         0x00, // addr
-        0x80 | (ui->cb_is_simulation->isChecked() ? 0x01 : 0x00), // driver model ( 0000 100S )
+         // driver model ( 0000 100S )
+        0x08
+            | ( is_sim ? 0x01 : 0x00)
+            | ( brake_state ? 0x04 : 0x00 ),
         left, right
     };
 
@@ -238,4 +250,9 @@ void MainWindow::onSendTimer()
 void MainWindow::on_pushButton_2_clicked()
 {
     ui->out_plain_text->clear();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->incomming->clear();
 }

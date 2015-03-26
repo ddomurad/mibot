@@ -31,9 +31,9 @@ public:
 
     MotorController * controllers[2];
 
-    GPIO * fakeGPIO;
+    MappedGPIO * fakeGPIO;
 
-    static GPIO * realGPIO;
+    static MappedGPIO * realGPIO;
 private:
     MotorController * last_controllers;
     QElapsedTimer emergency_break_timer;

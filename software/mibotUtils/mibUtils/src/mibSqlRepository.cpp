@@ -32,9 +32,9 @@ bool SqlRepository::Open(QJsonObject &config)
 
     DEFLOG_INFO(logStr);
         if(!_db.open())
-        DEFLOG_ERROR("MySql database connection failure.");
+        DEFLOG_ERROR("PSql database connection failure.");
     else
-        DEFLOG_INFO("MySql database connection success.");
+        DEFLOG_INFO("PSql database connection success.");
 
     return _db.isOpen();
 }

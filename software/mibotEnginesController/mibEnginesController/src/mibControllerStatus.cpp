@@ -27,7 +27,10 @@ ControllerStatus::ControllerStatus() :
 
 ControllerStatus::~ControllerStatus()
 {
-
+    if(IsMaster())
+    {
+        _master_controller = nullptr;
+    }
 }
 
 bool ControllerStatus::PushByte(uchar byte)

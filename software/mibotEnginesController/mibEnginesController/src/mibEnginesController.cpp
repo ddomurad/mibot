@@ -36,9 +36,9 @@ bool EnginesController::Init()
         return false;
     }
 
-    ControllerObject::realGPIO = new FakeRealPrintGPIO();
+    ControllerObject::realGPIO = new MappedGPIO( new RealGPIO() );
 
-    if(!ControllerObject::realGPIO->Init() )
+    if(!ControllerObject::realGPIO->gpio->Init() )
     {
         DEFLOG_ERROR(QString("Can't initialize gpio."));
         return false;
@@ -67,12 +67,27 @@ bool EnginesController::Init()
     int rb =    right_b.toInt(&ok);     if(!ok) { DEFLOG_ERROR("Invalid right_b_gpio number.");      return false; }
     int rpwm =  right_pwm.toInt(&ok);   if(!ok) { DEFLOG_ERROR("Invalid right_pwm_gpio number.");    return false; }
 
-    ControllerObject::realGPIO->SetPinOuputMode( la );
-    ControllerObject::realGPIO->SetPinOuputMode( lb );
-    ControllerObject::realGPIO->SetPinOuputMode( ra );
-    ControllerObject::realGPIO->SetPinOuputMode( rb );
-    ControllerObject::realGPIO->EnablePwm( lpwm );
-    ControllerObject::realGPIO->EnablePwm( rpwm );
+    ControllerObject::realGPIO->gpio->SetPinOuputMode( la );
+    ControllerObject::realGPIO->gpio->SetPinOuputMode( lb );
+    ControllerObject::realGPIO->gpio->SetPinOuputMode( ra );
+    ControllerObject::realGPIO->gpio->SetPinOuputMode( rb );
+    ControllerObject::realGPIO->gpio->EnablePwm( lpwm );
+    ControllerObject::realGPIO->gpio->EnablePwm( rpwm );
+
+    ControllerObject::realGPIO->gpio->SetPin( la, false);
+    ControllerObject::realGPIO->gpio->SetPin( lb, false);
+    ControllerObject::realGPIO->gpio->SetPin( ra, false);
+    ControllerObject::realGPIO->gpio->SetPin( rb, false);
+    ControllerObject::realGPIO->gpio->SetPwm( lpwm, 0);
+    ControllerObject::realGPIO->gpio->SetPwm( rpwm, 0);
+
+    MappedGPIO::MapLeftA(la);
+    MappedGPIO::MapLeftB(lb);
+    MappedGPIO::MapLeftPWM(lpwm);
+
+    MappedGPIO::MapRightA(ra);
+    MappedGPIO::MapRightB(rb);
+    MappedGPIO::MapRightPWM(rpwm);
 
     emergency_break_timeout = getConfig("emergency_break_timeout").toInt(&ok);
     if(!ok) { DEFLOG_ERROR("Invalid emergency_break_timeout value .");    return false; }
@@ -129,7 +144,7 @@ void EnginesController::onConnection()
         ControllerObject *connection = new ControllerObject(this, emergency_break_timeout);
         connection->socket = socket;
         connection->status = new ControllerStatusWrapper( new ControllerStatus );
-        connection->fakeGPIO = new FakePrintGPIO();
+        connection->fakeGPIO = new MappedGPIO( new FakePrintGPIO() );
         (connection->controllers)[0] = new CarMotorController();
         (connection->controllers)[1] = new TankMotorController();
 
@@ -248,7 +263,7 @@ ControllerObject::~ControllerObject()
 
 void ControllerObject::onUpdate(float dt)
 {
-    GPIO * gpio;
+    MappedGPIO * gpio;
     if(status->IsThisMaster() && !status->IsSimulationMode())
         gpio = realGPIO;
     else
@@ -297,5 +312,5 @@ void ControllerObject::onRead()
     }
 }
 
-GPIO * ControllerObject::realGPIO = nullptr;
+MappedGPIO * ControllerObject::realGPIO = nullptr;
 

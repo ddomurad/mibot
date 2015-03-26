@@ -36,11 +36,11 @@ public:
     bool Init();
 };
 
-class FakeRealPrintGPIO : public GPIO
+class RealGPIO : public GPIO
 {
 public:
-    FakeRealPrintGPIO();
-    ~FakeRealPrintGPIO();
+    RealGPIO();
+    ~RealGPIO();
 
     void EnablePwm(uchar n);
     void SetPinOuputMode(uchar n);
@@ -51,5 +51,31 @@ public:
 };
 
 
+class MappedGPIO
+{
+public :
+    MappedGPIO(GPIO * gpio);
+    ~MappedGPIO();
+
+    static void MapLeftA(int p);
+    static void MapLeftB(int p);
+    static void MapRightA(int p);
+    static void MapRightB(int p);
+    static void MapLeftPWM(int p);
+    static void MapRightPWM(int p);
+
+    void SetLeft(bool a, bool b, int pwm);
+    void SetRight(bool a, bool b, int pwm);
+
+    GPIO * gpio;
+
+private:
+    static int la;
+    static int lb;
+    static int ra;
+    static int rb;
+    static int lpwm;
+    static int rpwm;
+};
 }
 #endif // GPIO_H

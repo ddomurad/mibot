@@ -14,7 +14,7 @@ public:
     MotorController();
     virtual ~MotorController();
 
-    virtual void Update(GPIO * gpio, ControllerStatusWrapper * status, float dt) = 0;
+    virtual void Update(MappedGPIO * gpio, ControllerStatusWrapper * status, float dt) = 0;
 };
 
 class CarMotorController : public MotorController
@@ -23,7 +23,7 @@ public:
     CarMotorController();
     ~CarMotorController();
 
-    void Update(GPIO * gpio, ControllerStatusWrapper * status, float dt);
+    void Update(MappedGPIO * gpio, ControllerStatusWrapper * status, float dt);
 };
 
 class TankMotorController : public MotorController
@@ -32,7 +32,7 @@ public:
     TankMotorController();
     ~TankMotorController();
 
-    void Update(GPIO * gpio, ControllerStatusWrapper * status, float dt);
+    void Update(MappedGPIO * gpio, ControllerStatusWrapper * status, float);
 };
 
 }

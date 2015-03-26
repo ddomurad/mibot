@@ -20,6 +20,7 @@ LIBS += /usr/local/lib/mi_bot/libmibAccess.so
 
 
 DEFINES += MIBENGINESCONTROLLER_LIBRARY
+DEFINES += ENABLE_GPIO
 
 SOURCES +=  src/mibEnginesController.cpp \
     src/mibMotorController.cpp \

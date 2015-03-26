@@ -112,22 +112,37 @@ void StandardLoggerBuilder::AddOputput(QJsonObject &json, LoggerChannel *channel
     if(!json.value("Type").isString())
         { LogProcess(LOG_TYPE::ERROR,"LoggerOutput Type param is not a string."); return; }
 
-    if(json.value("Formater").isUndefined())
-        { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerOutput Formater object."); return; }
-
-    if(!json.value("Formater").isObject())
-        { LogProcess(LOG_TYPE::ERROR,"LoggerOutput Formater is not an object."); return; }
-
     QString outputType = json.value("Type").toString();
 
     if(outputType.toLower() == "console")
     {
+        if(json.value("Formater").isUndefined())
+            { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerOutput Formater object."); return; }
+
+        if(!json.value("Formater").isObject())
+            { LogProcess(LOG_TYPE::ERROR,"LoggerOutput Formater is not an object."); return; }
+
         auto jsonObject = json.value("Formater").toObject();
         auto formater = CreateFormater( jsonObject );
         if(formater != nullptr)
             *channel += new LoggerConsoleOutput(formater);
 
         LogProcess(LOG_TYPE::OK, QString("Console ChannelOutput added."));
+    }
+    else if(outputType.toLower() == "db")
+    {
+        auto jsonObject = json.value("Database").toObject();
+        LoggerPSQLOutput * output = new LoggerPSQLOutput();
+        if(!output->Open(jsonObject, json["Sender"].toString()))
+        {
+            delete output;
+            LogProcess(LOG_TYPE::ERROR, QString("Database ChannelOutput NOT added."));
+        }
+        else
+        {
+            *channel += output;
+            LogProcess(LOG_TYPE::OK, QString("Database ChannelOutput added."));
+        }
     }
     else
     {
