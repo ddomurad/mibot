@@ -112,8 +112,11 @@ bool DriveStartegy::init()
     gpio()->SetPinMode( _config.gpio_right_a, PinMode::Output );
     gpio()->SetPinMode( _config.gpio_right_b, PinMode::Output );
 
-    gpio()->EnablePwm( _config.gpio_left_pwm, true);
-    gpio()->EnablePwm( _config.gpio_right_pwm, true);
+    if(!gpio()->EnablePwm( _config.gpio_left_pwm, true) ||
+    !gpio()->EnablePwm( _config.gpio_right_pwm, true))
+    {
+            LOG_ERROR("Initializing PWM error.");
+    }
 
     gpio()->SetPwmValue( _config.gpio_left_pwm, 0 );
     gpio()->SetPwmValue( _config.gpio_right_pwm, 0 );

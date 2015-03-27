@@ -174,7 +174,7 @@ void MainWindow::sendJsState()
         0x00, // addr
          // driver model ( 0000 100S )
         ( brake_state ? 0x01 : 0x00 ),
-        0x00,
+        ( turbo_state ? 0x01 : 0x00 ),
         (uchar)left,
         (uchar)right
     };
@@ -189,7 +189,7 @@ void MainWindow::sendJsState()
     for(int i=0;i<0x06;i++)
     {
         hex_txt += QString::number( (int)data[i],16);
-        if(i != 0x04) hex_txt += " ";
+        if(i != 0x05) hex_txt += " ";
     }
 
     hex_txt += "]";
