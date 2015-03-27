@@ -2,8 +2,7 @@
 #define LOGGERBUILDER_H
 
 #include "mibUtilsGlobal.h"
-#include "mibLoggerChannel.h"
-#include "mibLoggerOutput.h"
+#include "mibLoggerSink.h"
 
 #include <QJsonObject>
 

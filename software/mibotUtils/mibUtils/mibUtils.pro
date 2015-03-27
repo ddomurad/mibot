@@ -15,30 +15,30 @@ DEFINES += MIBUTILS_LIBRARY
 SOURCES += \
     src/mibLogger.cpp \
     src/mibLoggerBuilder.cpp \
-    src/mibLoggerChannel.cpp \
-    src/mibLoggerOutput.cpp \
     src/mibLoggerStandardFormaters.cpp \
-    src/mibLoggerStandardOutputs.cpp \
     src/mibStandardLoggerBuilder.cpp \
     src/mibAbstractResource.cpp \
     src/mibRepository.cpp \
     src/mibAbstractRepository.cpp \
-    src/mibSqlRepository.cpp
+    src/mibSqlRepository.cpp \
+    src/mibGPIO.cpp \
+    src/mibLoggerSink.cpp \
+    src/mibLoggerStandardSinks.cpp
 
 HEADERS +=\
     inc/mibLogger.h \
     inc/mibLoggerBuilder.h \
-    inc/mibLoggerChannel.h \
     inc/mibLoggerFormater.h \
-    inc/mibLoggerOutput.h \
     inc/mibLoggerStandardFormaters.h \
-    inc/mibLoggerStandardOutputs.h \
     inc/mibStandardLoggerBuilder.h \
     inc/mibUtilsGlobal.h \
     inc/mibAbstractResource.h \
     inc/mibAbstractRepository.h \
     inc/mibResourceWrapper.h \
-    inc/mibSqlRepository.h
+    inc/mibSqlRepository.h \
+    inc/mibGPIO.h \
+    inc/mibLoggerSink.h \
+    inc/mibLoggerStandardSinks.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

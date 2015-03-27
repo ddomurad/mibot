@@ -12,7 +12,7 @@ ConnectionHandler::~ConnectionHandler()
 
 void ConnectionHandler::NewConnection(Connection * connection)
 {
-    LOG_IMPORTANT("audit",connection->Dump(true));
+    LOG_IMPORTANT(connection->Dump(true));
 
     if(connection->Status == Connection::Success)
     {
@@ -53,7 +53,7 @@ void ConnectionHandler::NewConnection(Connection * connection)
 void ConnectionHandler::onDisconnected()
 {
     Connection * connection = connectionFromSocket( (QTcpSocket *)sender());
-    LOG_IMPORTANT("audit",connection->Dump(true));
+    LOG_IMPORTANT(connection->Dump(true));
 
     pushAndReleaseAudit( connection, "Disconnected", QString() );
 

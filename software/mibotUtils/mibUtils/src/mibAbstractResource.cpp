@@ -51,7 +51,7 @@ void AbstractResource::AddField(QString name, QVariant::Type type)
 {
     if(_fields.contains(name))
     {
-        DEFLOG_ERROR( QString("Can't add a field twice! (%1)").arg(name) );
+        LOG_ERROR( QString("Can't add a field twice! (%1)").arg(name) );
         return;
     }
 

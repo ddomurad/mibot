@@ -15,11 +15,11 @@ void mibot::StandardLoggerBuilder::BuildLogger(QJsonObject &json)
     {
         QString key = iter.key();
 
-        if(key == "Channels")
+        if(key == "Sinks")
         {
             if(!iter.value().isArray())
             {
-                LogProcess(LOG_TYPE::ERROR,"LoggerChannel property is a non-array element.");
+                LogProcess(LOG_TYPE::ERROR,"LoggerSink property is a non-array element.");
                 continue;
             }
 
@@ -28,22 +28,13 @@ void mibot::StandardLoggerBuilder::BuildLogger(QJsonObject &json)
             {
                 if(!array[i].isObject())
                 {
-                    LogProcess(LOG_TYPE::ERROR,"LoggerChannels array element is a non-object type.");
+                    LogProcess(LOG_TYPE::ERROR,"LoggerSink array element is a non-object type.");
                     continue;
                 }
 
                 QJsonObject obj = array[i].toObject();
-                BuildChannel(obj);
+                BuildSink(obj);
             }
-        }
-        else if(key == "DefaultChannel")
-        {
-            if(!iter.value().isString())
-            {
-                LogProcess(LOG_TYPE::ERROR,"DefaultLoggerChannel name property is not a strign.");
-                continue;
-            }
-            defaultChannelName = iter.value().toString();
         }
         else
             LogProcess(LOG_TYPE::ERROR, QString("Unsuported param '%1'.").arg(key));
@@ -53,101 +44,63 @@ void mibot::StandardLoggerBuilder::BuildLogger(QJsonObject &json)
     while(iter != json.end());
 
     LogProcess(LOG_TYPE::OK, "Json reading done.");
-
-    if(!defaultChannelName.isEmpty())
-    {
-        SET_DEF_LOGGER(defaultChannelName);
-        LogProcess(LOG_TYPE::OK,
-                   QString("Default channel name set to: '%1'.")
-                   .arg(defaultChannelName));
-    }
 }
 
-void StandardLoggerBuilder::BuildChannel(QJsonObject &json)
+void StandardLoggerBuilder::BuildSink(QJsonObject &json)
 {
-    if(json.value("Name").isUndefined())
-        { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerChannel Name param."); return; }
-
-    if(!json.value("Name").isString())
-        { LogProcess(LOG_TYPE::ERROR,"LoggerChannel Name param is not a string."); return; }
-
     if(json.value("LogLevel").isUndefined())
-        { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerChannel LogLevel param."); return; }
+        { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerSink LogLevel param."); return; }
 
     if(!json.value("LogLevel").isString())
-        { LogProcess(LOG_TYPE::ERROR,"LoggerChannel LogLevel param is not a string."); return; }
+        { LogProcess(LOG_TYPE::ERROR,"LoggerSink LogLevel param is not a string."); return; }
 
-    if(json.value("Outputs").isUndefined())
-        { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerChannel Outputs array."); return; }
-
-    if(!json.value("Outputs").isArray())
-        { LogProcess(LOG_TYPE::ERROR,"LoggerChannel Outputs param is not an array."); return; }
-
-    QString channelName = json.value("Name").toString();
-    QJsonArray outputs = json.value("Outputs").toArray();
-    LogLevel level = LoggerSimpleStringFormater::Str2LogLevel(json.value("LogLevel").toString());
-
-    LoggerChannel * channel = new LoggerChannel(level);
-
-    for(int i=0;i <outputs.count(); i++)
-    {
-        if(!outputs[i].isObject())
-        {
-            LogProcess(LOG_TYPE::ERROR, "One of LoggerChannel Outputs array elemens is an non-object element.");
-            continue;
-        }
-        auto jsonObject = outputs[i].toObject();
-        AddOputput(jsonObject, channel);
-    }
-
-    ADD_LOGGER(channelName, channel);
-    LogProcess(LOG_TYPE::OK, QString("Channel added '%1'.").arg(channelName));
-}
-
-void StandardLoggerBuilder::AddOputput(QJsonObject &json, LoggerChannel *channel)
-{
     if(json.value("Type").isUndefined())
         { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerOutput Type param."); return; }
 
     if(!json.value("Type").isString())
-        { LogProcess(LOG_TYPE::ERROR,"LoggerOutput Type param is not a string."); return; }
+        { LogProcess(LOG_TYPE::ERROR,"LoggerSink Type param is not a string."); return; }
 
-    QString outputType = json.value("Type").toString();
+    QString sinkType = json.value("Type").toString();
 
-    if(outputType.toLower() == "console")
+    LogLevel level = LoggerSimpleStringFormater::Str2LogLevel(json.value("LogLevel").toString());
+
+
+    if(sinkType.toLower() == "console")
     {
         if(json.value("Formater").isUndefined())
             { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerOutput Formater object."); return; }
 
         if(!json.value("Formater").isObject())
-            { LogProcess(LOG_TYPE::ERROR,"LoggerOutput Formater is not an object."); return; }
+            { LogProcess(LOG_TYPE::ERROR,"LoggerSink Formater is not an object."); return; }
 
         auto jsonObject = json.value("Formater").toObject();
         auto formater = CreateFormater( jsonObject );
         if(formater != nullptr)
-            *channel += new LoggerConsoleOutput(formater);
+        {
+            LoggerManager::instance()->AddSink( new LoggerConsoleSink(level, formater) );
+        }
 
-        LogProcess(LOG_TYPE::OK, QString("Console ChannelOutput added."));
+        LogProcess(LOG_TYPE::OK, QString("Console LoggerSink added."));
     }
-    else if(outputType.toLower() == "db")
+    else if(sinkType.toLower() == "db")
     {
         auto jsonObject = json.value("Database").toObject();
-        LoggerPSQLOutput * output = new LoggerPSQLOutput();
+        LoggerPSQLSink * output = new LoggerPSQLSink(level);
         if(!output->Open(jsonObject, json["Sender"].toString()))
         {
             delete output;
-            LogProcess(LOG_TYPE::ERROR, QString("Database ChannelOutput NOT added."));
+            LogProcess(LOG_TYPE::ERROR, QString("Database LoggerSink NOT added."));
         }
         else
         {
-            *channel += output;
-            LogProcess(LOG_TYPE::OK, QString("Database ChannelOutput added."));
+            LoggerManager::instance()->AddSink( output );
+            LogProcess(LOG_TYPE::OK, QString("Database LoggerSink added."));
         }
     }
     else
     {
         LogProcess(LOG_TYPE::ERROR,
-                   QString("Unknown LoggerOutput type '%1'.").arg(outputType));
+                   QString("Unknown LoggerSink type '%1'.").arg(sinkType));
     }
 }
 

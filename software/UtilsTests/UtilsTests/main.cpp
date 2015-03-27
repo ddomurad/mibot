@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     QJsonObject loggerObject = root_obj["Logger"].toObject();
     buildier.BuildLogger( loggerObject  );
 
-    DEFLOG_INFO("Loading GlobalAccess");
+    LOG_INFO("Loading GlobalAccess");
 
     QJsonObject access_obj = root_obj["Access"].toObject();
     mibot::GlobalAccess::Init( access_obj );
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
    // testFnc(); return 0;
 
 
-    DEFLOG_INFO("Loading Server");
+    LOG_INFO("Loading Server");
     QJsonObject server_obj = root_obj["Server"].toObject();
     mibot::Server * server =  mibot::Server::BuildServer( server_obj,  &a);
 

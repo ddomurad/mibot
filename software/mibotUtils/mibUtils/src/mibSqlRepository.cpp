@@ -30,11 +30,11 @@ bool SqlRepository::Open(QJsonObject &config)
                     .arg(_db.hostName(), _db.userName(), _db.databaseName())
                     .arg(_db.port());
 
-    DEFLOG_INFO(logStr);
+    LOG_INFO(logStr);
         if(!_db.open())
-        DEFLOG_ERROR("PSql database connection failure.");
+        LOG_ERROR("PSql database connection failure.");
     else
-        DEFLOG_INFO("PSql database connection success.");
+        LOG_INFO("PSql database connection success.");
 
     return _db.isOpen();
 }
@@ -67,20 +67,20 @@ GetResult SqlRepository::GetResourceByID(QUuid id, AbstractResource *res)
 
     if( !query.exec( query_string ) )
     {
-        DEFLOG_ERROR("SQL QUERY ERROR: " + query_string);
+        LOG_ERROR("SQL QUERY ERROR: " + query_string);
         return GetResult::Error;
     }
     else
-        DEFLOG_DEBUG("SQL QUERY: " + query_string);
+        LOG_DEBUG("SQL QUERY: " + query_string);
 
     if(query.size() == 0)
     {
-        DEFLOG_DEBUG("No resource found with id: " + id_str);
+        LOG_DEBUG("No resource found with id: " + id_str);
         return GetResult::NoResource;
     }
 
     if(query.size() != 1)
-        DEFLOG_WARNING("Multiple resources found under id: " + id_str);
+        LOG_WARNING("Multiple resources found under id: " + id_str);
 
     query.next();
 
@@ -112,12 +112,12 @@ bool SqlRepository::AddNewResource(AbstractResource *res)
 
     if( !query.exec( query_string ) )
     {
-        DEFLOG_ERROR("SQL QUERY ERROR: " + query_string);
-        DEFLOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
+        LOG_ERROR("SQL QUERY ERROR: " + query_string);
+        LOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
         return false;
     }
     else
-        DEFLOG_DEBUG("SQL QUERY: " + query_string);
+        LOG_DEBUG("SQL QUERY: " + query_string);
 
 
     return true;
@@ -144,12 +144,12 @@ bool SqlRepository::GetResourcesByParam(QString param, QVariant * var, AbstractR
 
     if( !query.exec( query_string ) )
     {
-        DEFLOG_ERROR("SQL QUERY ERROR: " + query_string);
-        DEFLOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
+        LOG_ERROR("SQL QUERY ERROR: " + query_string);
+        LOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
         return false;
     }
     else
-        DEFLOG_DEBUG("SQL QUERY: " + query_string);
+        LOG_DEBUG("SQL QUERY: " + query_string);
 
     if(query.size() == 0) return true;
 
@@ -186,7 +186,7 @@ QString SqlRepository::asSQLAcceptableValue(QVariant *v, QString field)
     if(v->type() == QVariant::DateTime)
         return QString("'%1'").arg(v->toString());
 
-    DEFLOG_WARNING( QString("Unsuported type for sql writig. (%1: %2)")
+    LOG_WARNING( QString("Unsuported type for sql writig. (%1: %2)")
                     .arg(field, v->type()));
 
     return v->toString();

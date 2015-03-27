@@ -27,7 +27,7 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
 
     if(config["Sockets"].isNull())
     {
-        DEFLOG_ERROR("No listeners defined.");
+        LOG_ERROR("No listeners defined.");
         return out_server;
     }
 
@@ -37,7 +37,7 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
         QJsonObject listener = listeners.at(i).toObject();
         if( listener["Socket"].isNull())
         {
-            DEFLOG_ERROR("Id is not defined for listener.");
+            LOG_ERROR("Id is not defined for listener.");
             continue;
         }
 
@@ -46,25 +46,25 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
 
         if(sockRes == nullptr)
         {
-            DEFLOG_ERROR("Socket with given id does not exit: " + sockId );
+            LOG_ERROR("Socket with given id does not exit: " + sockId );
             continue;
         }
 
         if(!sockRes->IsEnabled())
         {
-            DEFLOG_WARNING("Socket with given id is disabled: " + sockId );
+            LOG_WARNING("Socket with given id is disabled: " + sockId );
             continue;
         }
 
         if(sockRes->PrivilegesObj == nullptr)
         {
-            DEFLOG_ERROR("Socket privilage resolving error");
+            LOG_ERROR("Socket privilage resolving error");
             delete sockRes;
             continue;
         }
 
 
-        DEFLOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
+        LOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
                           arg(sockRes->Alias(), QString::number(sockRes->Port()), sockRes->UseSsl() ? "Yes" : "No") );
 
         Listener * list = new Listener( sockRes );
@@ -72,12 +72,12 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
         auto sslSettings = listener["Ssl"];
         if(sslSettings.isNull())
         {
-            DEFLOG_WARNING(QString("No ssl certificates setings specified. (%1)")
+            LOG_WARNING(QString("No ssl certificates setings specified. (%1)")
                            .arg( sockRes->Alias() ));
 
             if(sockRes->UseSsl())
             {
-                DEFLOG_ERROR(QString("This listener (%1) need to use ssl, but no setings are spesified.")
+                LOG_ERROR(QString("This listener (%1) need to use ssl, but no setings are spesified.")
                              .arg( sockRes->Alias() ));
 
                 delete list;
@@ -88,12 +88,12 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
             QString crtDir = sslSettings.toObject()["CrtDir"].toString();
             QString crtName = sslSettings.toObject()["Crt"].toString();
 
-            DEFLOG_DEBUG( QString("Setup ssl ( CrtDir='%1', Crt='%2' )")
+            LOG_DEBUG( QString("Setup ssl ( CrtDir='%1', Crt='%2' )")
                           .arg( crtDir, crtName ));
 
             if(!list->InitCertificates( crtDir, crtName ))
             {
-                DEFLOG_ERROR("Certificates initialization error.");
+                LOG_ERROR("Certificates initialization error.");
             }
 
         }

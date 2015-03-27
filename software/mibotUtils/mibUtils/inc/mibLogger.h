@@ -3,10 +3,10 @@
 
 #include <QObject>
 #include "mibUtilsGlobal.h"
-#include "mibLoggerChannel.h"
+#include "mibLoggerSink.h"
 
 #include "mibLoggerStandardFormaters.h"
-#include "mibLoggerStandardOutputs.h"
+#include "mibLoggerStandardSinks.h"
 
 namespace mibot
 {
@@ -19,16 +19,14 @@ public:
     ~LoggerManager();
     static LoggerManager *instance();
 
-    LoggerChannel *GetChannel(QString name);
-    LoggerChannel *GetDefaultChannel();
+    void WriteLog(LogLevel level, QString file, QString function, uint line, QString message);
+    void WriteMessage(QString msg);
 
-    void AddChannel(QString name, LoggerChannel * channel);
-    void SelectDefaultChannel(QString name);
+    void AddSink(LoggerSink * sink);
 
 private:
 
-    QMap<QString, LoggerChannel*> _channels;
-    LoggerChannel* _default_channel;
+    QList<LoggerSink*> _sinks;
 };
 
 }

@@ -53,7 +53,7 @@ bool Listener::InitCertificates(QString crtDir, QString crt)
     }
     else
     {
-        DEFLOG_WARNING("Ssl support is disabled.");
+        LOG_WARNING("Ssl support is disabled.");
     }
 
     return true;
@@ -64,19 +64,19 @@ void Listener::StartListen()
 {
     if(!_server->listen( QHostAddress::Any, _sockRes->Port() ))
     {
-        DEFLOG_ERROR(QString("Listener '%1' starting error.").arg(_sockRes->Alias()));
+        LOG_ERROR(QString("Listener '%1' starting error.").arg(_sockRes->Alias()));
         emit ListenError();
     }
     else
     {
-        DEFLOG_INFO(QString("Listener '%1' is started.").arg(_sockRes->Alias()));
+        LOG_INFO(QString("Listener '%1' is started.").arg(_sockRes->Alias()));
         emit ListeningStarted();
     }
 }
 
 void Listener::StopListen()
 {
-    DEFLOG_INFO(QString("Stoping listener '%1'.").arg(_sockRes->Alias()));
+    LOG_INFO(QString("Stoping listener '%1'.").arg(_sockRes->Alias()));
     if(_server->isListening())
     {
         _server->close();
@@ -90,7 +90,7 @@ void Listener::onIncommingConnection()
     {
         QTcpSocket * pendingSocket = _server->nextPendingConnection();
 
-        LOG_INFO("audit", QString("Incomming connection from '%1'")
+        LOG_INFO(QString("Incomming connection from '%1'")
                  .arg(pendingSocket->peerAddress().toString()));
 
 
@@ -135,7 +135,7 @@ void Listener::onIncommingConnection()
 
 void Listener::onAcceptError(QAbstractSocket::SocketError e)
 {
-    LOG_ERROR("audit", QString("Accept error (%1: %2)")
+    LOG_ERROR(QString("Accept error (%1: %2)")
               .arg(int(e)).arg( ((QTcpServer*)sender())->errorString() ));
 }
 
@@ -145,7 +145,7 @@ void Listener::onSslError(QList<QSslError> e)
 
     for( QSslError error : e )
     {
-        LOG_ERROR("audit", QString("Ssl error (%1).").arg(error.errorString()));
+        LOG_ERROR(QString("Ssl error (%1).").arg(error.errorString()));
     }
 }
 
@@ -158,11 +158,11 @@ void Listener::onConnectionEncrypted()
 
     if(peerCommonNames.count() != 0)
     {
-        LOG_INFO("audit", QString("Connection encrypted ('%1': '%2')")
+        LOG_INFO(QString("Connection encrypted ('%1': '%2')")
              .arg( socket->peerAddress().toString(),peerCommonNames[0] ));
     }else
     {
-        LOG_INFO("audit", QString("Connection encrypted ('%1')")
+        LOG_INFO(QString("Connection encrypted ('%1')")
              .arg( socket->peerAddress().toString()));
     }
 }
@@ -170,7 +170,7 @@ void Listener::onConnectionEncrypted()
 void Listener::onPeerVerifyError(QSslError e)
 {
     //QTcpSocket * socket = (QTcpSocket*)sender();
-    LOG_ERROR("audit", QString("PeerVerifyError error ( %1 ).")
+    LOG_ERROR(QString("PeerVerifyError error ( %1 ).")
               .arg(e.errorString()) );
 }
 
@@ -187,7 +187,7 @@ bool Listener::initCaCertificates()
 
         if(set == nullptr)
         {
-            DEFLOG_ERROR( "Certificates Set loading error." );
+            LOG_ERROR( "Certificates Set loading error." );
             return false;
         }
 
@@ -196,7 +196,7 @@ bool Listener::initCaCertificates()
             UsersCertificateRes * ucr =  GlobalAccess::UserCertificate( set->At(i)->Certificate() );
              if(ucr == nullptr)
              {
-                 DEFLOG_ERROR(QString("Could not read UserCertificate from reposiroty: (Id:%1) ")
+                 LOG_ERROR(QString("Could not read UserCertificate from reposiroty: (Id:%1) ")
                               .arg(set->At(i)->Certificate().toString()));
                  continue;
              }
@@ -204,7 +204,7 @@ bool Listener::initCaCertificates()
             QString caCrtName = ucr->FileName();
             if(caCrtName.isEmpty() || caCrtName.contains('.'))
             {
-                DEFLOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
+                LOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
                              .arg(caCrtName));
                 continue;
             }
@@ -214,7 +214,7 @@ bool Listener::initCaCertificates()
 
             if( !crtFile.open( QIODevice::ReadOnly) )
             {
-                DEFLOG_ERROR(QString("Can't open certificate file (%1)")
+                LOG_ERROR(QString("Can't open certificate file (%1)")
                              .arg(caPath));
                 continue;
             }
@@ -222,7 +222,7 @@ bool Listener::initCaCertificates()
             _certs.append( QSslCertificate( crtFile.readAll() ));
             crtFile.close();
 
-            DEFLOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
+            LOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
                          .arg( caPath, _sockRes->Alias() ) );
         }
 

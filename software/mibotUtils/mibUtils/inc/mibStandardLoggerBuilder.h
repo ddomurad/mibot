@@ -17,8 +17,7 @@ public:
     void BuildLogger(QJsonObject &json);
 
 private:
-    void BuildChannel(QJsonObject &json);
-    void AddOputput(QJsonObject &json, LoggerChannel *channel);
+    void BuildSink(QJsonObject &json);
     LoggerFormater *CreateFormater(QJsonObject &json);
 };
 

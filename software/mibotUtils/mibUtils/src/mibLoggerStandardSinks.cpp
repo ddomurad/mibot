@@ -1,4 +1,4 @@
-#include "inc/mibLoggerStandardOutputs.h"
+#include "inc/mibLoggerStandardSinks.h"
 #include <cstdio>
 #include <QDebug>
 #include <QtSql/QSqlQuery>
@@ -6,33 +6,33 @@
 
 using namespace mibot;
 
-LoggerConsoleOutput::LoggerConsoleOutput(LoggerFormater * formater ):
-    LoggerOutput(formater)
+LoggerConsoleSink::LoggerConsoleSink(LogLevel level, LoggerFormater * formater ):
+    LoggerSink(level,formater)
 {}
 
-LoggerConsoleOutput::~LoggerConsoleOutput()
+LoggerConsoleSink::~LoggerConsoleSink()
 {}
 
-void mibot::LoggerConsoleOutput::Write(QString message)
+void mibot::LoggerConsoleSink::Write(QString message)
 {
     qDebug() << message;
     //printf("%s", message.toStdString().c_str());
 }
 
-LoggerFileOutput::LoggerFileOutput(QFile *file, LoggerFormater * formater):
-    LoggerOutput(formater), _output_file(file)
+LoggerFileSink::LoggerFileSink(QFile *file, LogLevel level, LoggerFormater * formater):
+    LoggerSink(level,formater), _output_file(file)
 {}
 
-LoggerFileOutput::LoggerFileOutput(QString fileName, LoggerFormater * formater):
-    LoggerOutput(formater), _output_file(new QFile(fileName))
+LoggerFileSink::LoggerFileSink(QString fileName, LogLevel level, LoggerFormater * formater):
+    LoggerSink(level,formater), _output_file(new QFile(fileName))
 {}
 
-LoggerFileOutput::~LoggerFileOutput()
+LoggerFileSink::~LoggerFileSink()
 {
     delete _output_file;
 }
 
-void LoggerFileOutput::Write(QString message)
+void LoggerFileSink::Write(QString message)
 {
     if(_output_file->open(QIODevice::Append) == false)
     {
@@ -43,19 +43,19 @@ void LoggerFileOutput::Write(QString message)
     _output_file->close();
 }
 
-QString LoggerFileOutput::_cant_open_file_for_writing = "!!! FATAL_FILE_OUTPUT: Can't open file for writing.";
+QString LoggerFileSink::_cant_open_file_for_writing = "!!! FATAL_FILE_OUTPUT: Can't open file for writing.";
 
 
-LoggerPSQLOutput::LoggerPSQLOutput() :
-     LoggerOutput(nullptr)
+LoggerPSQLSink::LoggerPSQLSink(LogLevel level) :
+     LoggerSink(level,nullptr)
 {}
 
-LoggerPSQLOutput::~LoggerPSQLOutput()
+LoggerPSQLSink::~LoggerPSQLSink()
 {
 
 }
 
-bool LoggerPSQLOutput::Open(QJsonObject &config, QString sender)
+bool LoggerPSQLSink::Open(QJsonObject &config, QString sender)
 {
     _db = QSqlDatabase::addDatabase("QPSQL");
 
@@ -80,10 +80,10 @@ bool LoggerPSQLOutput::Open(QJsonObject &config, QString sender)
     return _db.isOpen();
 }
 
-void LoggerPSQLOutput::Write(QString)
+void LoggerPSQLSink::Write(QString)
 {}
 
-void LoggerPSQLOutput::WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message)
+void LoggerPSQLSink::WriteLog(LogLevel level, QString file, QString function, qint32 line, QString message)
 {
 
     message = message.replace('\'',"''");

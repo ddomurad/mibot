@@ -46,25 +46,6 @@ private:
     static int _cnt;
 };
 
-class EnginesDriverStartegy : public AbstractSocketStrategy
-{
-    Q_OBJECT
-public:
-    explicit EnginesDriverStartegy( Connection * connection );
-    ~EnginesDriverStartegy();
-
-public slots:
-    void onLocalSocketRead();
-
-    // AbstractSocketStrategy interface
-protected:
-    void processNewData(QByteArray);
-    bool init();
-
-private:
-    static int _cnt;
-    QLocalSocket * socket;
-};
 
 }
 #endif // ABSTRACTSOCKETSTRATEGY_H

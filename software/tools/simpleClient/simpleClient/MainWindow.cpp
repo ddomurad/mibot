@@ -167,13 +167,12 @@ void MainWindow::sendJsState()
     bool is_sim = ui->cb_is_simulation->isChecked();
     uchar data[] =
     {
-        0x03, // write cmd
-        0x00, // addr
+        0x20, // write cmd
+        0x01, // addr
          // driver model ( 0000 100S )
-        0x08
-            | ( is_sim ? 0x01 : 0x00)
-            | ( brake_state ? 0x04 : 0x00 ),
-        left, right
+        ( brake_state ? 0x01 : 0x00 ),
+        (uchar)left,
+        (uchar)right
     };
 
     if(socket == nullptr) return;
@@ -197,7 +196,7 @@ void MainWindow::sendJsState()
     {
         uchar qdata[] =
         {
-            0x30, // write cmd
+            0x01, // read cmd
             0x00 // addr
         };
 

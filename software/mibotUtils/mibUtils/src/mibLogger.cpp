@@ -3,17 +3,13 @@
 
 using namespace mibot;
 
-LoggerManager::LoggerManager():
-    _default_channel(nullptr)
-{
-    _channels = QMap<QString, LoggerChannel*>();
-}
+LoggerManager::LoggerManager()
+{}
 
 LoggerManager::~LoggerManager()
 {
-    QStringList keys = _channels.keys();
-    for( auto key : keys)
-        delete _channels.value(key);
+    for( auto sink : _sinks)
+        delete sink;
 }
 
 LoggerManager *LoggerManager::instance()
@@ -22,27 +18,22 @@ LoggerManager *LoggerManager::instance()
  return &manager;
 }
 
-LoggerChannel *LoggerManager::GetChannel(QString name)
+void LoggerManager::WriteLog(LogLevel level, QString file, QString function, uint line, QString message)
 {
-    return _channels.value(name, nullptr);
+    for( LoggerSink *sink : _sinks)
+    {
+        if( level >= sink->GetLevel() )
+            sink->WriteLog(level,file,function,line,message);
+    }
 }
 
-LoggerChannel *LoggerManager::GetDefaultChannel()
+void LoggerManager::WriteMessage(QString msg)
 {
-    return _default_channel;
+    for( LoggerSink *sink : _sinks)
+        sink->Write( msg );
 }
 
-void LoggerManager::AddChannel(QString name, LoggerChannel *channel)
+void LoggerManager::AddSink(LoggerSink *sink)
 {
-    _channels.insert(name, channel);
-    if(_default_channel == nullptr)
-       _default_channel = channel;
+    _sinks.append( sink );
 }
-
-void LoggerManager::SelectDefaultChannel(QString name)
-{
-    auto channel = GetChannel(name);
-    if(channel == nullptr) return;
-    _default_channel = channel;
-}
-

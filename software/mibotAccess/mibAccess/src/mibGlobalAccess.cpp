@@ -24,7 +24,7 @@ bool GlobalAccess::Init(QJsonObject &jobj)
 {
     if(jobj["Database"].isNull())
     {
-        DEFLOG_ERROR("Can't read database configuration.");
+        LOG_ERROR("Can't read database configuration.");
         return false;
     }
 
@@ -112,7 +112,7 @@ bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
 {
     if(!GlobalAccess::get()._connectionAuditResWrapper->addNew(res) )
     {
-        DEFLOG_ERROR("Can't add new object into connection audit repository.");
+        LOG_ERROR("Can't add new object into connection audit repository.");
         return false;
     }
 

@@ -3,18 +3,18 @@
 
 #include <QtSql/QSqlDatabase>
 #include "mibUtilsGlobal.h"
-#include "mibLoggerOutput.h"
+#include "mibLoggerSink.h"
 
 #include "mibLoggerStandardFormaters.h"
 
 namespace mibot
 {
 
-class MIBUTILSSHARED_EXPORT LoggerConsoleOutput : public LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerConsoleSink : public LoggerSink
 {
 public:
-    LoggerConsoleOutput(LoggerFormater * formater = new LoggerSimpleConsoleFormater());
-    ~LoggerConsoleOutput();
+    LoggerConsoleSink(LogLevel level,LoggerFormater * formater = new LoggerSimpleConsoleFormater());
+    ~LoggerConsoleSink();
 
     // LoggerOutput interface
 public:
@@ -22,12 +22,12 @@ public:
 };
 
 
-class MIBUTILSSHARED_EXPORT LoggerFileOutput : public LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerFileSink : public LoggerSink
 {
 public:
-    LoggerFileOutput(QFile *file, LoggerFormater * formater = new LoggerSimpleStringFormater());
-    LoggerFileOutput(QString fileName, LoggerFormater * formater = new LoggerSimpleStringFormater());
-    ~LoggerFileOutput();
+    LoggerFileSink(QFile *file,LogLevel level, LoggerFormater * formater = new LoggerSimpleStringFormater());
+    LoggerFileSink(QString fileName, LogLevel level, LoggerFormater * formater = new LoggerSimpleStringFormater());
+    ~LoggerFileSink();
 
     // LoggerOutput interface
 public:
@@ -39,11 +39,11 @@ private:
 };
 
 
-class MIBUTILSSHARED_EXPORT LoggerPSQLOutput : public LoggerOutput
+class MIBUTILSSHARED_EXPORT LoggerPSQLSink : public LoggerSink
 {
 public:
-    LoggerPSQLOutput();
-    ~LoggerPSQLOutput();
+    LoggerPSQLSink(LogLevel level);
+    ~LoggerPSQLSink();
 
     bool Open(QJsonObject &config, QString sender);
 
