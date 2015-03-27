@@ -1,8 +1,6 @@
 #include <QDebug>
 #include "inc/mibGPIO.h"
 
-#ifndef ENABLE_RPI_GPIO
-
 extern "C"
 {
 int     wiringPiSetup   (void );
@@ -13,6 +11,7 @@ void    softPwmWrite    ( int pin, int value    );
 void    softPwmStop     ( int pin );
 }
 
+#ifndef ENABLE_RPI_GPIO
 int wiringPiSetup(void )
 {
     qDebug() << "wiringPiSetup";
