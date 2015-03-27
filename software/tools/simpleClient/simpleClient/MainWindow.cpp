@@ -144,6 +144,7 @@ void MainWindow::sendJsState()
     int ax_l = ui->left_ax->value();
     int ax_r = ui->right_ax->value();
     int brake_btn = ui->sb_brake_button->value();
+    int turbo_btn = ui->sb_turbo->value();
 
     bool rl = ui->cb_js_reverse_left->isChecked();
     bool rr = ui->cb_js_reverse_right->isChecked();
@@ -153,6 +154,7 @@ void MainWindow::sendJsState()
 
 
     bool brake_state = js_input_thread->btn[brake_btn];
+    bool turbo_state = js_input_thread->btn[turbo_btn];
 
     ui->js_left_read->setText( QString::number( left_ax_val ) );
     ui->js_right_read->setText( QString::number( right_ax_val ) );
@@ -160,17 +162,19 @@ void MainWindow::sendJsState()
     ui->lax->setValue( left_ax_val );
     ui->rax->setValue( right_ax_val );
 
-    ui->rb_brake->setChecked( brake_state );
+    ui->cb_brake->setChecked( brake_state );
+    ui->cb_turbo->setChecked( turbo_state );
 
-    char left  =   100 * ( float(left_ax_val)/32767.0f );
-    char right =   100 * ( float(right_ax_val)/32767.0f );
+    qint8 left  =   100 * ( float(left_ax_val)/32767.0f );
+    qint8 right =   100 * ( float(right_ax_val)/32767.0f );
     bool is_sim = ui->cb_is_simulation->isChecked();
     uchar data[] =
     {
-        0x20, // write cmd
-        0x01, // addr
+        0x30, // write cmd
+        0x00, // addr
          // driver model ( 0000 100S )
         ( brake_state ? 0x01 : 0x00 ),
+        0x00,
         (uchar)left,
         (uchar)right
     };
@@ -178,11 +182,11 @@ void MainWindow::sendJsState()
     if(socket == nullptr) return;
     if(!socket->isOpen()) return;
 
-    socket->write( (char*)data, 0x05 );
+    socket->write( (char*)data, 0x06 );
 
     QString hex_txt = "[";
 
-    for(int i=0;i<0x05;i++)
+    for(int i=0;i<0x06;i++)
     {
         hex_txt += QString::number( (int)data[i],16);
         if(i != 0x04) hex_txt += " ";

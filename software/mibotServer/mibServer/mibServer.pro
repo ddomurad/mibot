@@ -28,7 +28,8 @@ SOURCES += \
     src/mibConnection.cpp \
     src/mibAbstractSocketStrategy.cpp \
     src/mibReadWriteProtocol.cpp \
-    src/mibDriveStrategy.cpp
+    src/mibDriveStrategy.cpp \
+    src/mibDriveModel.cpp
 
 
 HEADERS +=\
@@ -39,7 +40,8 @@ HEADERS +=\
     inc/mibConnectionHandler.h \
     inc/mibAbstractSocketStrategy.h \
     inc/mibDriveStrategy.h \
-    inc/mibReadWriteProtocol.h
+    inc/mibReadWriteProtocol.h \
+    inc/mibDriveModel.h
 
 unix {
     target.path = /usr/local/lib/mi_bot/

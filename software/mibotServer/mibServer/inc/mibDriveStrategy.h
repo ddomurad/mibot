@@ -6,6 +6,7 @@
 
 #include "mibAbstractSocketStrategy.h"
 #include "mibReadWriteProtocol.h"
+#include "mibDriveModel.h"
 
 namespace mibot
 {
@@ -29,19 +30,6 @@ public:
     qint8 fake_gpio;
 };
 
-class DriverStartegyState
-{
-public:
-    DriverStartegyState();
-
-    qint8 brake;
-    qint8 emergency_brake;
-    qint8 drive_model;
-
-    qint8 left_motors_speed;
-    qint8 right_motors_speed;
-};
-
 class DriveStartegy : public AbstractSocketStrategy
 {
     Q_OBJECT
@@ -62,7 +50,7 @@ private:
     QElapsedTimer _emergency_brake_timer;
 
     DriveStartegyConfig _config;
-    DriverStartegyState _state;
+    DrivingState * _state;
 
     bool getValue(qint8 *val, GlobalConfigRes * res);
     bool checkConfigs();
@@ -70,17 +58,17 @@ private:
 
     ReadWriteBytesProtocol _protocol_handler;
 
-    mibot::GPIO *gpio();
-private:
+    GPIO *gpio();
+    AbstractDriveModel * _model;
 
 public:
-    const uchar ADDRW_DRIVE_MODEL       = 0x00;
-    const uchar ADDRW_BRAKE             = 0x01;
-    const uchar ADDRW_LEFT_MOTORS_SPEED   = 0x02;
-    const uchar ADDRW_RIGHT_MOTORS_SPEED  = 0x03;
+    const uchar ADDRW_BRAKE   = 0x00;
+    const uchar ADDRW_TURBO   = 0x01;
+    const uchar ADDRW_DRIVE   = 0x02;
+    const uchar ADDRW_TURN    = 0x03;
 
     const uchar ADDRR_IS_SIMULATION_MODE = 0x00;
-    const uchar ADDRR_EMERGENCY_BRAKE = 0x01;
+    const uchar ADDRR_BRAKE = 0x01;
 };
 
 }

@@ -14,7 +14,8 @@ inline T _clamp_value(T v, T min, T max)
 using namespace mibot;
 
 DriveStartegy::DriveStartegy(Connection *connection) :
-    AbstractSocketStrategy(connection)
+    AbstractSocketStrategy(connection),
+    _model(nullptr)
 {
     _update_timer = new QTimer( this );
     connect(_update_timer, SIGNAL(timeout()), this, SLOT(onUpdate()));
@@ -23,6 +24,9 @@ DriveStartegy::DriveStartegy(Connection *connection) :
 DriveStartegy::~DriveStartegy()
 {
     _update_timer->stop();
+    if(_model != nullptr)
+        delete _model;
+
     gpio()->DisableAllPwms();
     _cnt--;
 }
@@ -103,10 +107,10 @@ bool DriveStartegy::init()
 
     gpio()->DisableAllPwms();
 
-    gpio()->SetPinMode( _config.gpio_left_a, 1 );
-    gpio()->SetPinMode( _config.gpio_left_b, 1 );
-    gpio()->SetPinMode( _config.gpio_right_a, 1 );
-    gpio()->SetPinMode( _config.gpio_right_b, 1 );
+    gpio()->SetPinMode( _config.gpio_left_a, PinMode::Output );
+    gpio()->SetPinMode( _config.gpio_left_b, PinMode::Output );
+    gpio()->SetPinMode( _config.gpio_right_a, PinMode::Output );
+    gpio()->SetPinMode( _config.gpio_right_b, PinMode::Output );
 
     gpio()->EnablePwm( _config.gpio_left_pwm, true);
     gpio()->EnablePwm( _config.gpio_right_pwm, true);
@@ -114,14 +118,23 @@ bool DriveStartegy::init()
     gpio()->SetPwmValue( _config.gpio_left_pwm, 0 );
     gpio()->SetPwmValue( _config.gpio_right_pwm, 0 );
 
-    _protocol_handler.InitRegisters( 0x04, 0x02);
-    _protocol_handler.SetReadableAddr(ADDRR_IS_SIMULATION_MODE,   & _config.fake_gpio);
-    _protocol_handler.SetReadableAddr(ADDRR_EMERGENCY_BRAKE, & _state.emergency_brake);
+    _state = new DrivingState();
+    _model = new VehicleDriveModel();
 
-    _protocol_handler.SetWritableAddr(ADDRW_DRIVE_MODEL,          &_state.drive_model);
-    _protocol_handler.SetWritableAddr(ADDRW_BRAKE,                &_state.brake);
-    _protocol_handler.SetWritableAddr(ADDRW_LEFT_MOTORS_SPEED,    &_state.left_motors_speed);
-    _protocol_handler.SetWritableAddr(ADDRW_RIGHT_MOTORS_SPEED,   &_state.right_motors_speed);
+    _model->Init(
+                new WheelDriver( _config.gpio_left_a, _config.gpio_left_b, _config.gpio_left_pwm, gpio() ),
+                new WheelDriver( _config.gpio_right_a, _config.gpio_right_b, _config.gpio_right_pwm, gpio() ),
+                _state );
+
+    _protocol_handler.InitRegisters( 0x04, 0x02);
+    _protocol_handler.SetReadableAddr(ADDRR_IS_SIMULATION_MODE,   & (_config.fake_gpio) );
+    _protocol_handler.SetReadableAddr(ADDRR_BRAKE,                & (_state->brake) );
+
+    _protocol_handler.SetWritableAddr(ADDRW_BRAKE,  &(_state->brake) );
+    _protocol_handler.SetWritableAddr(ADDRW_TURBO,  &(_state->turbo) );
+    _protocol_handler.SetWritableAddr(ADDRW_DRIVE,  &(_state->drive_axis) );
+    _protocol_handler.SetWritableAddr(ADDRW_TURN,   &(_state->turn_axis) );
+
 
      _emergency_brake_timer.start();
     _update_timer->start( _config.gpio_update_ratio );
@@ -133,42 +146,14 @@ void DriveStartegy::onUpdate()
 {
     if(_emergency_brake_timer.elapsed() >= _config.emergency_break_timeout)
     {
-        if(_state.emergency_brake != 0x01)
+        if(_state->brake != 0x01)
         {
             qDebug() << "emergency brakte: " << _emergency_brake_timer.elapsed();
         }
-
-            _state.emergency_brake = 0x01;
+            _state->brake = 0x01;
     }
-    else
-        _state.emergency_brake = 0x00;
 
-    qint8 left_pwm = qAbs<qint8>(_state.left_motors_speed);
-    qint8 rigth_pwm = qAbs<qint8>(_state.right_motors_speed);
-
-    left_pwm = _clamp_value<qint8>( left_pwm, 0, 100);
-    rigth_pwm = _clamp_value<qint8>( rigth_pwm, 0, 100);
-
-    bool left_dir = _state.left_motors_speed >= 0;
-    bool right_dir = _state.right_motors_speed >= 0;
-
-    if(_state.brake || _state.emergency_brake)
-    {
-        gpio()->SetPin( _config.gpio_left_a, 0 );
-        gpio()->SetPin( _config.gpio_left_b, 0 );
-        gpio()->SetPin( _config.gpio_right_a, 0 );
-        gpio()->SetPin( _config.gpio_right_b, 0 );
-        gpio()->SetPwmValue( _config.gpio_left_pwm, 0 );
-        gpio()->SetPwmValue( _config.gpio_right_pwm, 0 );
-    }else
-    {
-        gpio()->SetPin( _config.gpio_left_a, left_dir );
-        gpio()->SetPin( _config.gpio_left_b, !left_dir );
-        gpio()->SetPin( _config.gpio_right_a, right_dir );
-        gpio()->SetPin( _config.gpio_right_b, !right_dir );
-        gpio()->SetPwmValue( _config.gpio_left_pwm, left_pwm );
-        gpio()->SetPwmValue( _config.gpio_right_pwm, rigth_pwm );
-    }
+    _model->Update( float(_config.gpio_update_ratio)/1000.0f );
 }
 
 bool DriveStartegy::getValue(qint8 *val, GlobalConfigRes *res)
@@ -223,15 +208,4 @@ DriveStartegyConfig::DriveStartegyConfig()
     gpio_update_ratio       = -1;
     emergency_break_timeout = -1;
     fake_gpio               = -1;
-}
-
-
-DriverStartegyState::DriverStartegyState()
-{
-    brake               = -1;
-    emergency_brake     = -1;
-    drive_model         = -1;
-
-    left_motors_speed     = -1;
-    right_motors_speed    = -1;
 }

@@ -86,9 +86,9 @@ bool RpiGPIO::Init()
     return false;
 }
 
-void RpiGPIO::SetPinMode(int pin, int mode)
+void RpiGPIO::SetPinMode(int pin, PinMode mode)
 {
-    pinMode( pin, mode );
+    pinMode( pin, int(mode) );
 }
 
 void RpiGPIO::SetPin(int pin, bool val)
@@ -135,18 +135,15 @@ void RpiGPIO::DisableAllPwms()
     _enabled_pwms.clear();
 }
 
-
-
-
 bool SimulatedGPIO::Init()
 {
     qDebug() << "SimulatedGPIO::Init()";
     return true;
 }
 
-void SimulatedGPIO::SetPinMode(int pin, int mode)
+void SimulatedGPIO::SetPinMode(int pin, PinMode mode)
 {
-    qDebug() << QString("SimulatedGPIO::SetPinMode(%1, %2).").arg(pin).arg(mode);
+    qDebug() << QString("SimulatedGPIO::SetPinMode(%1, %2).").arg(pin).arg(int(mode));
 }
 
 void SimulatedGPIO::SetPin(int pin, bool val)

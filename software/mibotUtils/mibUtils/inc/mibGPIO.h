@@ -6,12 +6,13 @@
 namespace mibot
 {
 
+enum class PinMode { Input = 0 , Output = 1};
 class GPIO
 {
 public:
     virtual ~GPIO();
     virtual bool Init() = 0;
-    virtual void SetPinMode( int pin, int mode) = 0;
+    virtual void SetPinMode( int pin, PinMode mode) = 0;
     virtual void SetPin( int pin, bool val ) = 0;
     virtual bool EnablePwm( int pin, bool enable) = 0;
     virtual void SetPwmValue( int pin, int val) = 0;
@@ -28,10 +29,10 @@ public:
     ~RpiGPIO();
 
     bool Init();
-    void SetPinMode( int pin, int mode);
+    void SetPinMode( int pin, PinMode mode);
     void SetPin( int pin, bool val );
     bool EnablePwm( int pin, bool enable);
-    void SetPwmValue( int pin, int val);
+    void SetPwmValue(int pin, int val);
 
     void DisableAllPwms();
 
@@ -46,7 +47,7 @@ class SimulatedGPIO: public GPIO
 {
 public:
     bool Init();
-    void SetPinMode( int pin, int mode);
+    void SetPinMode( int pin, PinMode mode);
     void SetPin( int pin, bool val );
     bool EnablePwm( int pin, bool enable);
     void SetPwmValue( int pin, int val);
