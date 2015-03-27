@@ -52,7 +52,7 @@ LoggerPSQLSink::LoggerPSQLSink(LogLevel level) :
 
 LoggerPSQLSink::~LoggerPSQLSink()
 {
-
+    _db.close();
 }
 
 bool LoggerPSQLSink::Open(QJsonObject &config, QString sender)

@@ -41,7 +41,7 @@ public:
 
         emit _server->StartServer();
 
-        //_timer->start(10000);
+        _timer->start(10000);
     }
 
 

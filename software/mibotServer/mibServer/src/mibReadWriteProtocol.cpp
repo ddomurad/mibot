@@ -77,7 +77,7 @@ void ReadWriteBytesProtocol::PushByte(qint8 c)
 
     case ProtocolState::WriteData: // write byte
         if(_chaced_write_addr < _writable_size)
-            (*_writable[_chaced_write_addr]) = c;
+            *(_writable[_chaced_write_addr]) = c;
 
         _chaced_write_addr++;
         _bytes_to_write_left--;

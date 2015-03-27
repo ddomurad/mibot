@@ -8,7 +8,10 @@ ConnectionHandler::ConnectionHandler(QObject *parent) : QObject(parent)
 {}
 
 ConnectionHandler::~ConnectionHandler()
-{}
+{
+    for( Connection * c : _connections)
+        delete c;
+}
 
 void ConnectionHandler::NewConnection(Connection * connection)
 {

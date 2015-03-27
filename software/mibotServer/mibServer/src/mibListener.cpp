@@ -202,10 +202,13 @@ bool Listener::initCaCertificates()
              }
 
             QString caCrtName = ucr->FileName();
+            delete ucr;
+
             if(caCrtName.isEmpty() || caCrtName.contains('.'))
             {
                 LOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
                              .arg(caCrtName));
+
                 continue;
             }
 

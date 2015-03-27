@@ -47,12 +47,14 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
         if(sockRes == nullptr)
         {
             LOG_ERROR("Socket with given id does not exit: " + sockId );
+            delete sockRes;
             continue;
         }
 
         if(!sockRes->IsEnabled())
         {
             LOG_WARNING("Socket with given id is disabled: " + sockId );
+            delete sockRes;
             continue;
         }
 
