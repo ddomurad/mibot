@@ -15,6 +15,7 @@ float AbstarctWheelDriver::Speed()
 
 void AbstarctWheelDriver::SetSpeed(float value)
 {
+    brake = false;
     speed = value;
     Update();
 }
