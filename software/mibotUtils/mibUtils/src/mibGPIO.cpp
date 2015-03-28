@@ -5,7 +5,7 @@ extern "C"
 {
 int     wiringPiSetup   (void );
 void    pinMode         ( int pin, int mode     );
-void    digitalWrite    ( int pin, int value    );
+//void    digitalWrite    ( int pin, int value    );
 int     softPwmCreate   ( int pin, int initialValue, int pwmRange   );
 void    softPwmWrite    ( int pin, int value    );
 void    softPwmStop     ( int pin );
@@ -40,10 +40,10 @@ void softPwmWrite( int pin, int value )
     qDebug() << "softPwmWrite" << pin << value;
 }
 
-void softPwmStop(int pin)
-{
-    qDebug() << "softPwmStop" << pin;
-}
+//void softPwmStop(int pin)
+//{
+//    qDebug() << "softPwmStop" << pin;
+//}
 
 #endif
 
@@ -119,7 +119,7 @@ bool RpiGPIO::EnablePwm(int pin, bool enable)
     {
         if( !_enabled_pwms.contains(pin) ) return true;
         _enabled_pwms.removeAll( pin );
-        softPwmStop( pin );
+     //   softPwmStop( pin );
 
         qDebug() << "pwm" << pin << "disable";
     }
