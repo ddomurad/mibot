@@ -123,11 +123,6 @@ void Server::AddListener(Listener *listener)
 
 void Server::StartServer()
 {
-    GPIO::GetGPIO(true)->Init();
-    GPIO::GetGPIO(true)->EnablePwm(28, true);
-    GPIO::GetGPIO(true)->SetPwmValue(28, 30);
-
-
     _listenersThread->start();
     emit ServerStarted();
 }

@@ -47,7 +47,7 @@ WheelDriver::WheelDriver(qint8 a, qint8 b, qint8 pwm, GPIO * gpio)
     _pin_b = b;
     _pin_pwm = pwm;
     _gpio = gpio;
-    _lsat_dir = 0;
+    _last_dir = 0;
 }
 
 WheelDriver::~WheelDriver()
@@ -76,20 +76,24 @@ void WheelDriver::Update()
     if (!brake)
     {
         float p = fabs(speed * max_speed);
-        int dir = (speed >= 0 ? 1 : -1);
+
+        int dir = _last_dir;
+        if(speed != 0)
+            dir = (speed >= 0 ? 1 : -1);
+
         int pwmVal = (int)(100.0 * p);
 
         if (dir == 1)
         {
             _gpio->SetPin(_pin_a, true);
             _gpio->SetPin(_pin_b, false);
-            _lsat_dir = 1;
+            _last_dir = 1;
         }
         else if (dir == -1)
         {
             _gpio->SetPin(_pin_a, false);
             _gpio->SetPin(_pin_b, true);
-            _lsat_dir = -1;
+            _last_dir = -1;
         }
 
         _gpio->SetPwmValue( _pin_pwm, pwmVal );
@@ -98,12 +102,12 @@ void WheelDriver::Update()
     {
         _gpio->SetPwmValue( _pin_pwm, 0);
 
-        if (_lsat_dir == 1)
+        if (_last_dir == 1)
         {
             _gpio->SetPin( _pin_a, false);
             _gpio->SetPin( _pin_b, true);
         }
-        else if (_lsat_dir == -1)
+        else if (_last_dir == -1)
         {
             _gpio->SetPin( _pin_a, true);
             _gpio->SetPin( _pin_b, false);

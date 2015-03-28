@@ -49,7 +49,7 @@ private:
     qint8 _pin_pwm;
     GPIO *_gpio;
 
-    qint8 _lsat_dir;
+    qint8 _last_dir;
 };
 
 class DrivingState
