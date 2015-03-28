@@ -159,10 +159,11 @@ void DriveStartegy::onUpdate()
     _model->Update( float(_config.gpio_update_ratio)/1000.0f );
 }
 
-bool DriveStartegy::getValue(qint8 *val, GlobalConfigRes *res)
+template <typename T>
+bool DriveStartegy::getValue(T *val, GlobalConfigRes *res)
 {
     bool ok;
-    *val = (char)res->Value().toInt(&ok);
+    *val = (T)res->Value().toInt(&ok);
     if(!ok)
     {
         LOG_ERROR( QString("Can't translate config '%1' to int.").arg( res->Key()));

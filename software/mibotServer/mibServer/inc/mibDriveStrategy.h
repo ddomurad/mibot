@@ -25,8 +25,8 @@ public:
     qint8 gpio_right_pwm;
 
     // system
-    qint8 gpio_update_ratio;
-    qint8 emergency_break_timeout;
+    qint16 gpio_update_ratio;
+    qint16 emergency_break_timeout;
     qint8 fake_gpio;
 };
 
@@ -52,7 +52,8 @@ private:
     DriveStartegyConfig _config;
     DrivingState * _state;
 
-    bool getValue(qint8 *val, GlobalConfigRes * res);
+    template <typename T>
+    bool getValue(T *val, GlobalConfigRes * res);
     bool checkConfigs();
     static int _cnt;
 

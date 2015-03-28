@@ -167,7 +167,6 @@ void MainWindow::sendJsState()
 
     qint8 left  =   100 * ( float(left_ax_val)/32767.0f );
     qint8 right =   100 * ( float(right_ax_val)/32767.0f );
-    bool is_sim = ui->cb_is_simulation->isChecked();
     uchar data[] =
     {
         0x30, // write cmd

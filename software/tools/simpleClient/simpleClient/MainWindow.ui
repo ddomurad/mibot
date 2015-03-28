@@ -242,31 +242,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>send_ratio</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QCheckBox" name="cb_Query_Stsatus">
-                 <property name="text">
-                  <string>Query status</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QCheckBox" name="cb_js_run">
-                 <property name="text">
-                  <string>Run</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="1">
                 <widget class="QPushButton" name="btn_Check_js">
                  <property name="text">
                   <string>Check device</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>send_ratio</string>
                  </property>
                 </widget>
                </item>
@@ -283,13 +269,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
-                <widget class="QCheckBox" name="cb_is_simulation">
+               <item row="3" column="1">
+                <widget class="QCheckBox" name="cb_Query_Stsatus">
                  <property name="text">
-                  <string>is simulation</string>
+                  <string>Query status</string>
                  </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QCheckBox" name="cb_js_run">
+                 <property name="text">
+                  <string>Run</string>
                  </property>
                 </widget>
                </item>

@@ -79,6 +79,7 @@ bool RpiGPIO::Init()
 
     if(wiringPiSetup() == 0 )
     {
+        qDebug() << "wiring pi is initied";
         _is_inited = true;
         return true;
     }
@@ -88,11 +89,13 @@ bool RpiGPIO::Init()
 
 void RpiGPIO::SetPinMode(int pin, PinMode mode)
 {
+    qDebug() << "set pin mode " << pin << (int)mode;
     pinMode( pin, int(mode) );
 }
 
 void RpiGPIO::SetPin(int pin, bool val)
 {
+    qDebug() << "set pin" << pin << val;
     digitalWrite( pin, int(val) );
 }
 
@@ -105,6 +108,7 @@ bool RpiGPIO::EnablePwm(int pin, bool enable)
 
         if(softPwmCreate( pin, 0, 100) == 0)
         {
+            qDebug() << "pwm" << pin << "enabled";
             _enabled_pwms.append( pin );
             return true;
         }
@@ -116,6 +120,8 @@ bool RpiGPIO::EnablePwm(int pin, bool enable)
         if( !_enabled_pwms.contains(pin) ) return true;
         _enabled_pwms.removeAll( pin );
         softPwmStop( pin );
+
+        qDebug() << "pwm" << pin << "disable";
     }
 
     return true;
@@ -125,11 +131,13 @@ void RpiGPIO::SetPwmValue(int pin, int val)
 {
     if(val < 0) val = 0;
     if(val > 100) val = 100;
+    qDebug() << "pwm value" << pin << val;
     softPwmWrite( pin, val );
 }
 
 void RpiGPIO::DisableAllPwms()
 {
+    qDebug() << "disable all pwms" ;
     for( int pin : _enabled_pwms )
         softPwmStop( pin );
     _enabled_pwms.clear();
