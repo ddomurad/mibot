@@ -12,6 +12,11 @@ CONFIG += c++11
 
 DEFINES += MIBUTILS_LIBRARY
 
+ENV_SETTINGS = $$system(echo $MIBOT_CFG)
+
+contains(ENV_SETTINGS, ENABLE_GPIO): DEFINES += ENABLE_RPI_GPIO
+contains(ENV_SETTINGS, ENABLE_GPIO): LIBS += /usr/lib/libwiringPi.so
+
 SOURCES += \
     src/mibLogger.cpp \
     src/mibLoggerBuilder.cpp \
