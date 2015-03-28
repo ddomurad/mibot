@@ -59,7 +59,6 @@ void WheelDriver::Init()
 {
     _gpio->SetPinMode( _pin_a, PinMode::Output );
     _gpio->SetPinMode( _pin_b, PinMode::Output );
-    _gpio->SetPinMode( _pin_pwm, PinMode::Output );
 
     _gpio->EnablePwm( _pin_pwm, true );
     _gpio->SetPwmValue( _pin_pwm, 0 );
