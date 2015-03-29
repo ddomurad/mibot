@@ -52,12 +52,12 @@ void MainWindow::on_btn_connect_clicked()
 
     if(ui->check_enable_ssl->isChecked())
     {
-        sslSocket->setLocalCertificate( "/home/work/Tmp/cert/" + cert + "/c.crt" );
-        sslSocket->setPrivateKey( "/home/work/Tmp/cert/" + cert + "/c.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
+        sslSocket->setLocalCertificate( "./certs/" + cert + "/c.crt" );
+        sslSocket->setPrivateKey( "./certs/" + cert + "/c.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
 
         sslSocket->setProtocol(QSsl::SslV3);
 
-        sslSocket->setCaCertificates(QSslCertificate::fromPath("/home/work/Tmp/cert/s.pem"));
+        sslSocket->setCaCertificates(QSslCertificate::fromPath("./certs/s.pem"));
 
         sslSocket->connectToHostEncrypted(
                     ui->line_host->text(),
