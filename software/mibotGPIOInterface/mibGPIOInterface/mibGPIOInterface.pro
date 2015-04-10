@@ -19,11 +19,13 @@ contains(ENV_SETTINGS, ENABLE_GPIO): LIBS += /usr/lib/libwiringPi.so
 
 
 SOURCES += \
-    src/mibGPIO.cpp
+    src/mibGPIO.cpp \
+    src/mibMCP3008.cpp
 
 HEADERS += \
     inc/mibGPIO.h \
-    inc/mibGPIOInterfaceGlobal.h
+    inc/mibGPIOInterfaceGlobal.h \
+    inc/mibMCP3008.h
 
 unix {
     target.path = /usr/local/lib/mi_bot/
