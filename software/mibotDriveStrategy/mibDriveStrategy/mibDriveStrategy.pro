@@ -16,10 +16,12 @@ CONFIG += c++11
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
+INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibAccess.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
+LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 SOURCES += \
     src/mibDriveModel.cpp \

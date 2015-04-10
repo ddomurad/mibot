@@ -8,15 +8,24 @@ QT       -= gui
 
 TARGET = mibGPIOInterface
 TEMPLATE = lib
+CONFIG += c++11
 
 DEFINES += MIBGPIOINTERFACE_LIBRARY
 
-SOURCES += MibGPIOInterface.cpp
+ENV_SETTINGS = $$system(echo $MIBOT_CFG)
 
-HEADERS += MibGPIOInterface.h\
-        mibgpiointerface_global.h
+contains(ENV_SETTINGS, ENABLE_GPIO): DEFINES += ENABLE_RPI_GPIO
+contains(ENV_SETTINGS, ENABLE_GPIO): LIBS += /usr/lib/libwiringPi.so
+
+
+SOURCES += \
+    src/mibGPIO.cpp
+
+HEADERS += \
+    inc/mibGPIO.h \
+    inc/mibGPIOInterfaceGlobal.h
 
 unix {
-    target.path = /usr/lib
+    target.path = /usr/local/lib/mi_bot/
     INSTALLS += target
 }

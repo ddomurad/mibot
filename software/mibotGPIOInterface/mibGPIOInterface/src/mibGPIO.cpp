@@ -18,29 +18,29 @@ int wiringPiSetup(void )
     return 0;
 }
 
-void pinMode( int pin, int mode)
+void pinMode( int , int )
 {
     //qDebug() << "pinMode" << pin << mode;
 }
 
-void digitalWrite( int pin, int value )
+void digitalWrite( int , int )
 {
     //qDebug() << "digitalWrite" << pin << value;
 }
 
-int softPwmCreate( int pin, int initialValue, int pwmRange)
+int softPwmCreate( int , int , int )
 {
     //qDebug() << "softPwmCreate" << pin << initialValue << pwmRange;
 
     return 0;
 }
 
-void softPwmWrite( int pin, int value )
+void softPwmWrite( int , int )
 {
     //qDebug() << "softPwmWrite" << pin << value;
 }
 
-void softPwmStop(int pin)
+void softPwmStop(int )
 {
     //qDebug() << "softPwmStop" << pin;
 }

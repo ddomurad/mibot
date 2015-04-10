@@ -2,12 +2,13 @@
 #define MIBGPIO_H
 
 #include <QList>
+#include "mibGPIOInterfaceGlobal.h"
 
 namespace mibot
 {
 
 enum class PinMode { Input = 0 , Output = 1};
-class GPIO
+class MIBGPIOINTERFACESHARED_EXPORT GPIO
 {
 public:
     virtual ~GPIO();
@@ -22,7 +23,7 @@ public:
     static GPIO * GetGPIO(bool real_rpi);
 };
 
-class RpiGPIO : public GPIO
+class MIBGPIOINTERFACESHARED_EXPORT RpiGPIO : public GPIO
 {
 public:
     RpiGPIO();
@@ -43,7 +44,7 @@ private:
 
 
 
-class SimulatedGPIO: public GPIO
+class MIBGPIOINTERFACESHARED_EXPORT SimulatedGPIO: public GPIO
 {
 public:
     bool Init();

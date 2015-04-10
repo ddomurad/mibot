@@ -12,11 +12,6 @@ CONFIG += c++11
 
 DEFINES += MIBUTILS_LIBRARY
 
-ENV_SETTINGS = $$system(echo $MIBOT_CFG)
-
-contains(ENV_SETTINGS, ENABLE_GPIO): DEFINES += ENABLE_RPI_GPIO
-contains(ENV_SETTINGS, ENABLE_GPIO): LIBS += /usr/lib/libwiringPi.so
-
 SOURCES += \
     src/mibLogger.cpp \
     src/mibLoggerBuilder.cpp \
@@ -26,7 +21,6 @@ SOURCES += \
     src/mibRepository.cpp \
     src/mibAbstractRepository.cpp \
     src/mibSqlRepository.cpp \
-    src/mibGPIO.cpp \
     src/mibLoggerSink.cpp \
     src/mibLoggerStandardSinks.cpp
 
@@ -41,7 +35,6 @@ HEADERS +=\
     inc/mibAbstractRepository.h \
     inc/mibResourceWrapper.h \
     inc/mibSqlRepository.h \
-    inc/mibGPIO.h \
     inc/mibLoggerSink.h \
     inc/mibLoggerStandardSinks.h
 
