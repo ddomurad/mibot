@@ -2,12 +2,14 @@
 #define DRIVEMODEL_H
 
 #include <QtCore>
+#include "mibDriveStrategyGlobal.h"
+
 #include <mibGPIO.h>
 
 namespace mibot
 {
 
-class AbstarctWheelDriver
+class MIBDRIVESTRATEGYSHARED_EXPORT AbstarctWheelDriver
 {
 public:
     AbstarctWheelDriver();
@@ -33,7 +35,7 @@ protected:
 
 };
 
-class WheelDriver : public AbstarctWheelDriver
+class MIBDRIVESTRATEGYSHARED_EXPORT WheelDriver : public AbstarctWheelDriver
 {
 public:
     WheelDriver(qint8 pin_a, qint8 pin_b, qint8 pin_pwm, GPIO *gpio);
@@ -63,7 +65,7 @@ public:
     qint8 turn_axis;
 };
 
-class AbstractDriveModel
+class MIBDRIVESTRATEGYSHARED_EXPORT AbstractDriveModel
 {
 public:
     AbstractDriveModel();
@@ -79,7 +81,7 @@ protected:
     DrivingState        * _state;
 };
 
-class VehicleDriveModel : public AbstractDriveModel
+class MIBDRIVESTRATEGYSHARED_EXPORT VehicleDriveModel : public AbstractDriveModel
 {
 public:
     VehicleDriveModel();

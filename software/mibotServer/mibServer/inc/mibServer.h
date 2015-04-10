@@ -1,7 +1,7 @@
 #ifndef MIBSERVER_H
 #define MIBSERVER_H
 
-#include "mibserver_global.h"
+#include "mibServerGlobal.h"
 
 #include <QObject>
 #include <QJsonObject>

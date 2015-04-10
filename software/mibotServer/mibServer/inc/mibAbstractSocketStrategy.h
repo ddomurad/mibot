@@ -2,8 +2,6 @@
 #define ABSTRACTSOCKETSTRATEGY_H
 
 #include <QObject>
-#include <QLocalSocket>
-
 #include "mibConnection.h"
 
 namespace mibot
@@ -28,24 +26,6 @@ protected:
     virtual void processNewData(QByteArray ) = 0;
     virtual bool init() = 0;
 };
-
-class EchoStrategy : public AbstractSocketStrategy
-{
-    Q_OBJECT
-public:
-    explicit EchoStrategy(Connection * connection);
-    ~EchoStrategy();
-
-
-    // AbstractSocketStrategy interface
-protected:
-    void processNewData(QByteArray);
-    bool init();
-
-private:
-    static int _cnt;
-};
-
 
 }
 #endif // ABSTRACTSOCKETSTRATEGY_H

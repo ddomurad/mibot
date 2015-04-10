@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-
     mibot::StandardLoggerBuilder buildier;
     QJsonObject loggerObject = root_obj["Logger"].toObject();
     buildier.BuildLogger( loggerObject  );

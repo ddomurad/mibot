@@ -15,13 +15,12 @@
   <graph edgedefault="directed" id="G">
     <data key="d0"/>
     <node id="n0">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="64.63800048828125" width="56.554100036621094" x="81.72294998168945" y="448.29543464969316"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="96.625" x="-20.035449981689453" y="68.63800048828125">Rover Operator<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="96.625" x="-20.035449981689453" y="68.6380004882812">Rover Operator<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -36,7 +35,6 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="69.9489974975586" width="56.55509948730469" x="767.0165500761359" y="425.3445014953613"/>
@@ -57,7 +55,6 @@
       </data>
     </node>
     <node id="n2">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="53.24563217163086" width="65.0260009765625" x="268.48699951171875" y="453.99161880801836"/>
@@ -78,13 +75,12 @@
       </data>
     </node>
     <node id="n3">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="38.0" width="23.0" x="628.7940998197882" y="441.3190002441406"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="119.060546875" x="-48.0302734375" y="42.00000000000006">Mobile Control Unit<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="119.060546875" x="-48.0302734375" y="42.0">Mobile Control Unit<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -99,7 +95,6 @@
       </data>
     </node>
     <node id="n4">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="66.80199432373047" width="65.39840698242188" x="268.30079650878906" y="220.4478815475639"/>
@@ -120,7 +115,6 @@
       </data>
     </node>
     <node id="n5">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="41.72100067138672" width="41.71900177001953" x="529.2144250809506" y="85.52887519990765"/>
@@ -141,10 +135,9 @@
       </data>
     </node>
     <node id="n6">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="41.72100067138672" width="41.71900177001953" x="280.14049911499023" y="673.9789939163732"/>
+          <y:Geometry height="41.72100067138672" width="41.71900177001953" x="105.14049911499023" y="232.98837837373577"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="51.859375" x="-5.070186614990234" y="45.72100067138672">Internet<y:LabelModel>
@@ -163,7 +156,6 @@
     </node>
     <node id="n7">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="100.0" width="60.0" x="520.0739259659604" y="203.84887870942913"/>
@@ -184,10 +176,9 @@
       </data>
     </node>
     <node id="n8">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="46.887996673583984" width="39.527000427246094" x="730.3104257523373" y="230.40488037263714"/>
+          <y:Geometry height="46.887996673583984" width="39.527000427246094" x="767.0165500761359" y="230.40488037263714"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="143.365234375" x="-51.91911697387695" y="50.887996673583984">Data Base On The Web<y:LabelModel>
@@ -205,7 +196,6 @@
       </data>
     </node>
     <node id="n9">
-      <data key="d5"/>
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="41.72100067138672" width="41.71900177001953" x="460.294049269025" y="439.45849990844727"/>
@@ -225,29 +215,7 @@
         </y:SVGNode>
       </data>
     </node>
-    <node id="n10">
-      <data key="d5"/>
-      <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="41.72100067138672" width="41.71900177001953" x="729.2144250809506" y="99.5298803726372"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="51.859375" x="-5.070186614990234" y="45.72100067138672">Internet<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="6"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
     <edge id="e0" source="n0" target="n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="18.35354644432664" sy="0.0" tx="0.0" ty="0.0"/>
@@ -265,28 +233,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n2" target="n6">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="36.774940641767216" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-32.0" y="76.29478042911205">
-            <y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e2" source="n2" target="n4">
-      <data key="d9"/>
+    <edge id="e1" source="n2" target="n4">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -304,8 +251,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n4" target="n7">
-      <data key="d9"/>
+    <edge id="e2" source="n4" target="n7">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -323,8 +269,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n7" target="n5">
-      <data key="d9"/>
+    <edge id="e3" source="n7" target="n5">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -334,8 +279,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e5" source="n1" target="n3">
-      <data key="d9"/>
+    <edge id="e4" source="n1" target="n3">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -353,8 +297,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e6" source="n3" target="n9">
-      <data key="d9"/>
+    <edge id="e5" source="n3" target="n9">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -364,7 +307,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e7" source="n8" target="n10">
+    <edge id="e6" source="n4" target="n6">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>

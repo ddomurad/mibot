@@ -1,7 +1,6 @@
 #include <QDebug>
 #include <mibLogger.h>
 #include "inc/mibAbstractSocketStrategy.h"
-#include "inc/mibDriveStrategy.h"
 
 using namespace mibot;
 
@@ -17,7 +16,7 @@ bool AbstractSocketStrategy::ApplyStrategy(Connection * connection)
     if(connection->SocketObj() == nullptr) return false;
     QString strategy = connection->SocketObj()->Strategy();
 
-    if(strategy == "echo")
+    /*if(strategy == "echo")
     {
         connection->Strategy = new EchoStrategy(connection);
         return true;
@@ -32,6 +31,28 @@ bool AbstractSocketStrategy::ApplyStrategy(Connection * connection)
         }
 
         return true;
+    }*/
+
+    QLibrary plugin( QString("/usr/local/lib/mi_bot/libmib%1.so").arg(strategy));
+    typedef AbstractSocketStrategy * (*StrategyLoader)(Connection *);
+    StrategyLoader loader = (StrategyLoader)plugin.resolve("createStrategy");
+    if(!loader)
+    {
+        LOG_ERROR(QString("Can't load strategy '%1'").arg(strategy));
+        return false;
+    }else
+    {
+        connection->Strategy = loader(connection);
+        if(!connection->Strategy->init())
+        {
+            LOG_ERROR( QString("Can't initialize socket stategy '%1'").arg(strategy));
+            delete connection->Strategy;
+            connection->Strategy = nullptr;
+            return false;
+        }
+
+        LOG_IMPORTANT( QString("Strategy loaded: '%1'").arg(strategy));
+        return true;
     }
 
     return false;
@@ -41,27 +62,3 @@ void AbstractSocketStrategy::ProcessData()
 {
     processNewData( ((QTcpSocket*)sender())->readAll() );
 }
-
-
-EchoStrategy::EchoStrategy(Connection * connection)
-    :AbstractSocketStrategy(connection)
-{
-    _cnt ++;
-    qDebug() << "EchoStrategy" << _cnt;
-}
-
-EchoStrategy::~EchoStrategy()
-{
-    _cnt --;
-    qDebug() << "~EchoStrategy" << _cnt;
-}
-
-void EchoStrategy::processNewData(QByteArray d)
-{
-    _connection->TcpSocket->write(d);
-}
-
-bool EchoStrategy::init() { return true; }
-
-
-int EchoStrategy::_cnt = 0;

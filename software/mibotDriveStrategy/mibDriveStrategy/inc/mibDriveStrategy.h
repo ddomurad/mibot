@@ -4,14 +4,16 @@
 #include <QtCore>
 #include <mibGPIO.h>
 
-#include "mibAbstractSocketStrategy.h"
-#include "mibReadWriteProtocol.h"
+#include "mibDriveStrategyGlobal.h"
+
+#include <mibAbstractSocketStrategy.h>
+#include <mibReadWriteProtocol.h>
 #include "mibDriveModel.h"
 
 namespace mibot
 {
 
-class DriveStartegyConfig
+class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegyConfig
 {
 public:
     DriveStartegyConfig();
@@ -30,7 +32,7 @@ public:
     qint8 fake_gpio;
 };
 
-class DriveStartegy : public AbstractSocketStrategy
+class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegy : public AbstractSocketStrategy
 {
     Q_OBJECT
 public:
@@ -74,4 +76,5 @@ public:
 
 }
 
+extern "C" mibot::AbstractSocketStrategy * createStrategy(mibot::Connection *connection);
 #endif // DRIVESTRATEGY_H

@@ -213,3 +213,9 @@ DriveStartegyConfig::DriveStartegyConfig()
     emergency_break_timeout = -1;
     fake_gpio               = -1;
 }
+
+
+AbstractSocketStrategy *createStrategy(Connection *connection)
+{
+    return new DriveStartegy(connection);
+}
