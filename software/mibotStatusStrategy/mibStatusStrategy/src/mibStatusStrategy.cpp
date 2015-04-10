@@ -15,9 +15,8 @@ void StatusStrategy::processNewData(QByteArray)
 
 bool StatusStrategy::init()
 {
-    return false;
+    return true;
 }
-
 
 
 mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)
