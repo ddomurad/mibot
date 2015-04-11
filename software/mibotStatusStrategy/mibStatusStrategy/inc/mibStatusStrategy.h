@@ -2,7 +2,12 @@
 #define STATUSSTRATEGY_H
 
 #include <QObject>
+#include <mibJSONProtocol.h>
 #include <mibAbstractSocketStrategy.h>
+#include <mibMCP3008.h>
+
+#include "mibStatusConfigRes.h"
+#include "mibStatusReader.h"
 
 namespace mibot
 {
@@ -16,12 +21,22 @@ public:
 
 signals:
 
-public slots:
+private slots:
+    void onStrategyUpdate();
 
-    // AbstractSocketStrategy interface
 protected:
     void processNewData(QByteArray);
     bool init();
+private:
+    JSONProtocol    _json_protocol;
+
+    void fixIfJsonIsCorrupted();
+    QJsonObject processRequest(QJsonObject & obj);
+    void readValuesToJsonObjec(QJsonObject & obj);
+    StatusReader * _status_reader;
+    QTimer * _update_timer;
+    bool    _auto_send;
+    QList<QString> _read_values_filter;
 };
 
 }

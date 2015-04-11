@@ -32,6 +32,7 @@ SocketRes::SocketRes() :
     AddField("privileges",QVariant::Uuid);
     AddField("port",QVariant::Int);
     AddField("strategy",QVariant::String);
+    AddField("strategy_config",QVariant::String);
     AddField("use_ssl",QVariant::Bool);
     AddField("enabled",QVariant::Bool);
 }
@@ -61,6 +62,11 @@ int SocketRes::Port()
 QString SocketRes::Strategy()
 {
     return Get("strategy")->toString();
+}
+
+QString SocketRes::StrategyConfig()
+{
+    return Get("strategy_config")->toString();
 }
 
 bool SocketRes::UseSsl()
@@ -228,7 +234,7 @@ QUuid CertificateSocketBoundRes::Certificate()
     return Get("certificate")->toUuid();
 }
 
-
+/*
 GlobalConfigRes::GlobalConfigRes():
     AbstractResource("cfg_strings")
 {
@@ -254,3 +260,4 @@ QString GlobalConfigRes::Value()
 {
     return Get("value")->toString();
 }
+*/

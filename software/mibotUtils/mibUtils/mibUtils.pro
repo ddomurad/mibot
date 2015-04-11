@@ -22,7 +22,8 @@ SOURCES += \
     src/mibAbstractRepository.cpp \
     src/mibSqlRepository.cpp \
     src/mibLoggerSink.cpp \
-    src/mibLoggerStandardSinks.cpp
+    src/mibLoggerStandardSinks.cpp \
+    src/mibJSONProtocol.cpp
 
 HEADERS +=\
     inc/mibLogger.h \
@@ -36,7 +37,8 @@ HEADERS +=\
     inc/mibResourceWrapper.h \
     inc/mibSqlRepository.h \
     inc/mibLoggerSink.h \
-    inc/mibLoggerStandardSinks.h
+    inc/mibLoggerStandardSinks.h \
+    inc/mibJSONProtocol.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

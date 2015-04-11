@@ -15,6 +15,7 @@ using namespace mibot;
 
 DriveStartegy::DriveStartegy(Connection *connection) :
     AbstractSocketStrategy(connection),
+    _config(nullptr),
     _model(nullptr)
 {
     _update_timer = new QTimer( this );
@@ -29,6 +30,9 @@ DriveStartegy::~DriveStartegy()
 
     gpio()->DisableAllPwms();
     _cnt--;
+
+    if(_config != nullptr)
+        delete _config;
 }
 
 void DriveStartegy::processNewData(QByteArray data)
@@ -56,47 +60,17 @@ bool DriveStartegy::init()
 
     _cnt++;
 
-    _config = DriveStartegyConfig();
+    ResourceWrapper<DriveConfigRes> *repo = new ResourceWrapper<DriveConfigRes> (GlobalAccess::get().Repository());
+    _config = repo->getByID( _connection->SocketObj()->StrategyConfig() );
+    delete repo;
 
-    ResourcesSet<GlobalConfigRes> * config_set =
-            GlobalAccess::AllGlobalConfigsForSubsystem("drive");
-
-    if(config_set == nullptr)
+    if(_config == nullptr)
     {
-        LOG_ERROR("Can't read global configs.");
+        LOG_ERROR( QString("Can;t load strategy configuration (id: %1)").arg(_connection->SocketObj()->StrategyConfig()));
         return false;
-    }
-
-    bool ok = true;
-    for( int i=0; i< config_set->Count(); i++)
+    }else
     {
-        GlobalConfigRes * cfg = config_set->At(i);
-        if(cfg->Key() == "gpio_left_a")
-            ok &= getValue(&_config.gpio_left_a, cfg);
-        else if(cfg->Key() == "gpio_left_b")
-            ok &= getValue(&_config.gpio_left_b, cfg);
-        else if(cfg->Key() == "gpio_left_pwm")
-            ok &= getValue(&_config.gpio_left_pwm, cfg);
-        else if(cfg->Key() == "gpio_right_a")
-            ok &= getValue(&_config.gpio_right_a, cfg);
-        else if(cfg->Key() == "gpio_right_b")
-            ok &= getValue(&_config.gpio_right_b, cfg);
-        else if(cfg->Key() == "gpio_right_pwm")
-            ok &= getValue(&_config.gpio_right_pwm, cfg);
-        else if(cfg->Key() == "emergency_break_timeout")
-            ok &= getValue(&_config.emergency_break_timeout, cfg);
-        else if(cfg->Key() == "gpio_update_ratio")
-            ok &= getValue(&_config.gpio_update_ratio, cfg);
-        else if(cfg->Key() == "fake_gpio")
-            ok &= getValue(&_config.fake_gpio, cfg);
-    }
-
-    delete config_set;
-
-    if(!checkConfigs())
-    {
-        LOG_ERROR("Not all config are defined.");
-        return false;
+        LOG_IMPORTANT( QString("Driver strategy configuration laoded: '%1'").arg(_config->Alias()) );
     }
 
     if(!gpio()->Init())
@@ -107,30 +81,32 @@ bool DriveStartegy::init()
 
     gpio()->DisableAllPwms();
 
-    gpio()->SetPinMode( _config.gpio_left_a, PinMode::Output );
-    gpio()->SetPinMode( _config.gpio_left_b, PinMode::Output );
-    gpio()->SetPinMode( _config.gpio_right_a, PinMode::Output );
-    gpio()->SetPinMode( _config.gpio_right_b, PinMode::Output );
+    gpio()->SetPinMode( _config->LeftAPin(), PinMode::Output );
+    gpio()->SetPinMode( _config->LeftBPin(), PinMode::Output );
+    gpio()->SetPinMode( _config->RightAPin(), PinMode::Output );
+    gpio()->SetPinMode( _config->RightBPin(), PinMode::Output );
 
-    if(!gpio()->EnablePwm( _config.gpio_left_pwm, true) ||
-    !gpio()->EnablePwm( _config.gpio_right_pwm, true))
+    if(!gpio()->EnablePwm( _config->LeftPwmPin(), true) ||
+    !gpio()->EnablePwm( _config->RightPwmPin(), true))
     {
             LOG_ERROR("Initializing PWM error.");
     }
 
-    gpio()->SetPwmValue( _config.gpio_left_pwm, 0 );
-    gpio()->SetPwmValue( _config.gpio_right_pwm, 0 );
+    gpio()->SetPwmValue( _config->LeftPwmPin(), 0 );
+    gpio()->SetPwmValue( _config->RightPwmPin(), 0 );
 
     _state = new DrivingState();
     _model = new VehicleDriveModel();
 
     _model->Init(
-                new WheelDriver( _config.gpio_left_a, _config.gpio_left_b, _config.gpio_left_pwm, gpio() ),
-                new WheelDriver( _config.gpio_right_a, _config.gpio_right_b, _config.gpio_right_pwm, gpio() ),
+                new WheelDriver( _config->LeftAPin(), _config->LeftBPin(), _config->LeftPwmPin(), gpio() ),
+                new WheelDriver( _config->RightAPin(), _config->RightBPin(), _config->RightPwmPin(), gpio() ),
                 _state );
 
+    _state->fake_gpio = _config->UseFakeGPIO() ? 0x01 : 0x00;
+
     _protocol_handler.InitRegisters( 0x04, 0x02);
-    _protocol_handler.SetReadableAddr(ADDRR_IS_SIMULATION_MODE,   & (_config.fake_gpio) );
+    _protocol_handler.SetReadableAddr(ADDRR_IS_SIMULATION_MODE,   & (_state->fake_gpio) );
     _protocol_handler.SetReadableAddr(ADDRR_BRAKE,                & (_state->brake) );
 
     _protocol_handler.SetWritableAddr(ADDRW_BRAKE,  &(_state->brake) );
@@ -140,14 +116,14 @@ bool DriveStartegy::init()
 
 
      _emergency_brake_timer.start();
-    _update_timer->start( _config.gpio_update_ratio );
+    _update_timer->start( _config->UpdateRatio());
 
     return true;
 }
 
 void DriveStartegy::onUpdate()
 {
-    if(_emergency_brake_timer.elapsed() >= _config.emergency_break_timeout)
+    if(_emergency_brake_timer.elapsed() >= _config->EmergencyBreakTimeout())
     {
         if(_state->brake != 0x01)
         {
@@ -156,64 +132,29 @@ void DriveStartegy::onUpdate()
             _state->brake = 0x01;
     }
 
-    _model->Update( float(_config.gpio_update_ratio)/1000.0f );
+    _model->Update( float(_config->UpdateRatio())/1000.0f );
 }
 
-template <typename T>
-bool DriveStartegy::getValue(T *val, GlobalConfigRes *res)
-{
-    bool ok;
-    *val = (T)res->Value().toInt(&ok);
-    if(!ok)
-    {
-        LOG_ERROR( QString("Can't translate config '%1' to int.").arg( res->Key()));
-        return false;
-    }
+//template <typename T>
+//bool DriveStartegy::getValue(T *val, GlobalConfigRes *res)
+//{
+//    bool ok;
+//    *val = (T)res->Value().toInt(&ok);
+//    if(!ok)
+//    {
+//        LOG_ERROR( QString("Can't translate config '%1' to int.").arg( res->Key()));
+//        return false;
+//    }
 
-    return true;
-}
-
-bool DriveStartegy::checkConfigs()
-{
-    if(_config.emergency_break_timeout == -1
-            || _config.gpio_left_a == -1
-            || _config.gpio_left_b == -1
-            || _config.gpio_left_pwm == -1
-            || _config.gpio_right_a == -1
-            || _config.gpio_right_b == -1
-            || _config.gpio_right_pwm == -1
-            || _config.gpio_update_ratio == -1
-            || _config.fake_gpio == -1)
-        return false;
-
-    return true;
-}
+//    return true;
+//}
 
 GPIO *DriveStartegy::gpio()
 {
-    if(_config.fake_gpio == 0)
-        return GPIO::GetGPIO(true);
-    else return GPIO::GetGPIO(false);
+    return GPIO::GetGPIO( !_config->UseFakeGPIO() );
 }
 
 int DriveStartegy::_cnt = 0;
-
-DriveStartegyConfig::DriveStartegyConfig()
-{
-    gpio_left_a     = -1;
-    gpio_left_b     = -1;
-    gpio_left_pwm   = -1;
-
-    gpio_right_a    = -1;
-    gpio_right_b    = -1;
-    gpio_right_pwm  = -1;
-
-    // system
-    gpio_update_ratio       = -1;
-    emergency_break_timeout = -1;
-    fake_gpio               = -1;
-}
-
 
 AbstractSocketStrategy *createStrategy(Connection *connection)
 {

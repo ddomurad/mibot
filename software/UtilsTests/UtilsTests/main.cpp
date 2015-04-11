@@ -52,16 +52,6 @@ private:
 
 void testFnc()
 {
-    mibot::ResourcesSet<mibot::GlobalConfigRes> * set =
-    mibot::GlobalAccess::AllGlobalConfigsForSubsystem("ec");
-
-    for( int i=0; i< set->Count(); i++)
-    {
-        mibot::GlobalConfigRes * res = set->At(i);
-        qDebug() << res->Dump();
-    }
-
-    delete set;
 }
 
 int main(int argc, char *argv[])

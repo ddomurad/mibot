@@ -58,7 +58,7 @@ class DrivingState
 {
 public:
     DrivingState();
-
+    qint8 fake_gpio;
     qint8 brake;
     qint8 turbo;
     qint8 drive_axis;

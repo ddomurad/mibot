@@ -26,11 +26,11 @@ public:
     static CertificateSocketBoundRes                 *CertificateSocketBound(QUuid id);
     static ResourcesSet<CertificateSocketBoundRes>   *CertificateSocketBoundsSesBySocket(QUuid socketId);
 
-    static ResourcesSet<GlobalConfigRes>             *AllGlobalConfigsForSubsystem(QString subsystem);
-    static ResourcesSet<GlobalConfigRes>             *GlobalConfigsByKey(QString key);
+    //static ResourcesSet<GlobalConfigRes>             *AllGlobalConfigsForSubsystem(QString subsystem);
+    //static ResourcesSet<GlobalConfigRes>             *GlobalConfigsByKey(QString key);
 
     static bool PushConnectionAudit(ConnectionAuditRes *res);
-
+    AbstractRepository                              *Repository();
 private:
     GlobalAccess();
 
@@ -41,7 +41,7 @@ private:
 
     ResourceWrapper<UsersCertificateRes>        *_usersCertificateResWrapper;
     ResourceWrapper<CertificateSocketBoundRes>  *_certificateSocketBoundResWrapper;
-    ResourceWrapper<GlobalConfigRes>            *_globalConfigResWrapper;
+    //ResourceWrapper<GlobalConfigRes>            *_globalConfigResWrapper;
 
     AbstractRepository                          *_repository;
 };

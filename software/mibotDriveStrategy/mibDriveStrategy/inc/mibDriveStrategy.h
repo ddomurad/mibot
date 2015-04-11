@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <mibGPIO.h>
 
+#include "mibDriveConfigRes.h"
 #include "mibDriveStrategyGlobal.h"
 
 #include <mibAbstractSocketStrategy.h>
@@ -13,7 +14,7 @@
 namespace mibot
 {
 
-class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegyConfig
+/*class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegyConfig
 {
 public:
     DriveStartegyConfig();
@@ -30,7 +31,7 @@ public:
     qint16 gpio_update_ratio;
     qint16 emergency_break_timeout;
     qint8 fake_gpio;
-};
+};*/
 
 class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegy : public AbstractSocketStrategy
 {
@@ -51,11 +52,11 @@ private:
     QTimer * _update_timer;
     QElapsedTimer _emergency_brake_timer;
 
-    DriveStartegyConfig _config;
-    DrivingState * _state;
+    //DriveStartegyConfig _config;
+    DriveConfigRes *_config;
+    DrivingState *_state;
 
     template <typename T>
-    bool getValue(T *val, GlobalConfigRes * res);
     bool checkConfigs();
     static int _cnt;
 

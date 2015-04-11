@@ -16,7 +16,8 @@ extern "C"
 
     int analogRead (int)
     {
-        return 0;
+        float ce = float(QDateTime::currentDateTime().time().msec() + QDateTime::currentDateTime().time().second()*1000);
+        return int ( 1000 * sin( 2.0f*3.1415f* ce / 5000.0f )) + 1000;
     }
 
 #endif

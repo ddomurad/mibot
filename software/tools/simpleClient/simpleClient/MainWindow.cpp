@@ -258,3 +258,11 @@ void MainWindow::on_pushButton_clicked()
 {
     ui->incomming->clear();
 }
+
+void MainWindow::on_btn_send_plain_text_clicked()
+{
+    if(socket == nullptr) return;
+    if(!socket->isOpen()) return;
+
+    socket->write( ui->out_plain_text->toPlainText().toLatin1() );
+}

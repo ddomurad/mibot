@@ -27,6 +27,7 @@ public:
     QUuid   Privileges();
     int     Port();
     QString Strategy();
+    QString StrategyConfig();
     bool    UseSsl();
     bool    IsEnabled();
 
@@ -88,7 +89,7 @@ public:
     QUuid Certificate();
 };
 
-class MIBACCESSSHARED_EXPORT GlobalConfigRes : public AbstractResource
+/*class MIBACCESSSHARED_EXPORT GlobalConfigRes : public AbstractResource
 {
 public:
     GlobalConfigRes();
@@ -97,7 +98,7 @@ public:
     QString Subsystem();
     QString Key();
     QString Value();
-};
+};*/
 
 }
 

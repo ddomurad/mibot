@@ -27,11 +27,15 @@ LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 
 SOURCES += \
-    src/mibStatusStrategy.cpp
+    src/mibStatusStrategy.cpp \
+    src/mibStatusConfigRes.cpp \
+    src/mibStatusReader.cpp
 
 HEADERS += \
     inc/mibStatusStrategyGlobal.h \
-    inc/mibStatusStrategy.h
+    inc/mibStatusStrategy.h \
+    inc/mibStatusConfigRes.h \
+    inc/mibStatusReader.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

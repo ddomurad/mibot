@@ -51,8 +51,8 @@ bool GlobalAccess::Init(QJsonObject &jobj)
             new ResourceWrapper<UsersCertificateRes>(GlobalAccess::get()._repository);
     GlobalAccess::get()._certificateSocketBoundResWrapper =
             new ResourceWrapper<CertificateSocketBoundRes>(GlobalAccess::get()._repository);
-    GlobalAccess::get()._globalConfigResWrapper =
-            new ResourceWrapper<GlobalConfigRes>(GlobalAccess::get()._repository);
+    //GlobalAccess::get()._globalConfigResWrapper =
+      //      new ResourceWrapper<GlobalConfigRes>(GlobalAccess::get()._repository);
 
     return GlobalAccess::get()._repository->IsOpen();
 }
@@ -95,6 +95,7 @@ ResourcesSet<CertificateSocketBoundRes> *GlobalAccess::CertificateSocketBoundsSe
     return GlobalAccess::get()._certificateSocketBoundResWrapper->getAllByParam( "socket",  &var );
 }
 
+/*
 ResourcesSet<GlobalConfigRes> *GlobalAccess::AllGlobalConfigsForSubsystem(QString subsystem)
 {
     QVariant var(subsystem);
@@ -106,7 +107,7 @@ ResourcesSet<GlobalConfigRes> *GlobalAccess::GlobalConfigsByKey(QString key)
     QVariant var(key);
     return GlobalAccess::get()._globalConfigResWrapper->getAllByParam("key",&var);
 }
-
+*/
 
 bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
 {
@@ -117,6 +118,11 @@ bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
     }
 
     return true;
+}
+
+AbstractRepository *GlobalAccess::Repository()
+{
+    return _repository;
 }
 
 GlobalAccess::GlobalAccess():

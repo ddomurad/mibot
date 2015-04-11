@@ -62,7 +62,7 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
 
         if(sockRes->PrivilegesObj == nullptr)
         {
-            LOG_ERROR("Socket privilage resolving error");
+            LOG_ERROR("Socket privilage resolving error: " + sockId);
             delete sockRes;
             continue;
         }

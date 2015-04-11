@@ -25,12 +25,14 @@ LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 SOURCES += \
     src/mibDriveModel.cpp \
-    src/mibDriveStrategy.cpp
+    src/mibDriveStrategy.cpp \
+    src/mibDriveConfigRes.cpp
 
 HEADERS +=\
     inc/mibDriveModel.h \
     inc/mibDriveStrategy.h \
-    inc/mibDriveStrategyGlobal.h
+    inc/mibDriveStrategyGlobal.h \
+    inc/mibDriveConfigRes.h
 
 unix {
     target.path = /usr/local/lib/mi_bot/
