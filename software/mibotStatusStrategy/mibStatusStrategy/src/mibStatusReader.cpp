@@ -135,7 +135,8 @@ void StatusReader::onRefreshReadings()
     }
     if(_cfg->ReadCpuTemp())
     {
-        double val = readSystemStateValue("/sys/class/thermal/thermal_zone0/temp").toDouble();
+        //double val = readSystemStateValue("/sys/class/thermal/thermal_zone0/temp").toDouble();
+        double val = readSystemStateValue( _cfg->CpuTempPath() ).toDouble() * _cfg->CpuTempScale();
         _readings.insert( CpuTemperature , QVariant(val) );
     }
 }

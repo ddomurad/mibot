@@ -53,7 +53,7 @@ bool Listener::InitCertificates(QString crtDir, QString crt)
     }
     else
     {
-        LOG_WARNING("Ssl support is disabled.");
+        LOG_WARNING( QString("Ssl support in socket '%1'' is disabled.").arg(_sockRes->Alias()));
     }
 
     return true;
@@ -258,7 +258,7 @@ void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorStr
     }
 
     qDebug() << "New conenction ssl:" << ssl
-             << "did:" << _sockRes->Id()
+             << "id:" << _sockRes->Id()
              << "user:" << connection->User
              << "error:" << connection->ErrorStrnig
              << "status:" << connection->Status;

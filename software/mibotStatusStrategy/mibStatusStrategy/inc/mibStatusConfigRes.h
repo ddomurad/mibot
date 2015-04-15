@@ -19,6 +19,8 @@ public:
     int     EnginesAccuMcp3008Channel();
     double  EnginesAccuVScale();
     bool    ReadCpuTemp();
+    QString CpuTempPath();
+    double  CpuTempScale();
 
     int     UpdateRatio();
     int     InternalDelay();

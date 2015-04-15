@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <mibLogger.h>
 
 #include "inc/mibGlobalAccess.h"
@@ -24,7 +25,7 @@ bool GlobalAccess::Init(QJsonObject &jobj)
 {
     if(jobj["Database"].isNull())
     {
-        LOG_ERROR("Can't read database configuration.");
+        qDebug() << "Can't read database configuration.";
         return false;
     }
 

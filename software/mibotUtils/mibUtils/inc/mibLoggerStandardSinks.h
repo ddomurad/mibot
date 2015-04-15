@@ -42,10 +42,10 @@ private:
 class MIBUTILSSHARED_EXPORT LoggerPSQLSink : public LoggerSink
 {
 public:
-    LoggerPSQLSink(LogLevel level);
+    LoggerPSQLSink(LogLevel level, QString sender);
     ~LoggerPSQLSink();
 
-    bool Open(QJsonObject &config, QString sender);
+    //bool Open(QJsonObject &config, QString sender);
 
     // LoggerOutput interface
 public:

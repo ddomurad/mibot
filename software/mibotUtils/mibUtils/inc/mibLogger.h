@@ -24,6 +24,8 @@ public:
 
     void AddSink(LoggerSink * sink);
 
+    void Drop();
+
 private:
 
     QList<LoggerSink*> _sinks;

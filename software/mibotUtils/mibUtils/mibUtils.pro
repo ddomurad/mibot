@@ -18,7 +18,6 @@ SOURCES += \
     src/mibLoggerStandardFormaters.cpp \
     src/mibStandardLoggerBuilder.cpp \
     src/mibAbstractResource.cpp \
-    src/mibRepository.cpp \
     src/mibAbstractRepository.cpp \
     src/mibSqlRepository.cpp \
     src/mibLoggerSink.cpp \

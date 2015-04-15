@@ -37,3 +37,11 @@ void LoggerManager::AddSink(LoggerSink *sink)
 {
     _sinks.append( sink );
 }
+
+void LoggerManager::Drop()
+{
+    for( auto sink : _sinks)
+        delete sink;
+
+    _sinks.clear();
+}

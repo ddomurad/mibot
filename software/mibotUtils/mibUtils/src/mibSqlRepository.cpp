@@ -18,7 +18,7 @@ SqlRepository::~SqlRepository()
 
 bool SqlRepository::Open(QJsonObject &config)
 {
-    _db = QSqlDatabase::addDatabase("QPSQL");
+    _db = QSqlDatabase::addDatabase( config["Driver"].toString());
 
     _db.setHostName( config["Host"].toString() );
     _db.setPort( config["Port"].toInt() );
@@ -30,11 +30,11 @@ bool SqlRepository::Open(QJsonObject &config)
                     .arg(_db.hostName(), _db.userName(), _db.databaseName())
                     .arg(_db.port());
 
-    LOG_INFO(logStr);
+    qDebug() << logStr;
         if(!_db.open())
-        LOG_ERROR("PSql database connection failure.");
+        qDebug() << "PSql database connection failure.";
     else
-        LOG_INFO("PSql database connection success.");
+        qDebug() << "PSql database connection success.";
 
     return _db.isOpen();
 }

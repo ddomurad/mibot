@@ -84,9 +84,11 @@ void StandardLoggerBuilder::BuildSink(QJsonObject &json)
     }
     else if(sinkType.toLower() == "db")
     {
-        auto jsonObject = json.value("Database").toObject();
-        LoggerPSQLSink * output = new LoggerPSQLSink(level);
-        if(!output->Open(jsonObject, json["Sender"].toString()))
+        //auto jsonObject = json.value("Database").toObject();
+        LoggerPSQLSink * output = new LoggerPSQLSink(level,json["Sender"].toString());
+        LoggerManager::instance()->AddSink( output );
+
+        /*if(!output->Open(jsonObject,json["Sender"].toString() ))
         {
             delete output;
             LogProcess(LOG_TYPE::ERROR, QString("Database LoggerSink NOT added."));
@@ -95,7 +97,7 @@ void StandardLoggerBuilder::BuildSink(QJsonObject &json)
         {
             LoggerManager::instance()->AddSink( output );
             LogProcess(LOG_TYPE::OK, QString("Database LoggerSink added."));
-        }
+        }*/
     }
     else
     {
