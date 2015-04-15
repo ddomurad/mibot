@@ -18,6 +18,27 @@ make
 make install
 cd ../..
 
+echo "Build GPIO Interface ... "
+cd ./mibotGPIOInterface/build/
+qmake ../mibGPIOInterface/
+make
+make install
+cd ../..
+
+echo "Build DriveStrategy ..."
+cd ./mibotDriveStrategy/build/
+qmake ../mibDriveStrategy/
+make
+make install
+cd ../..
+
+echo "Build StatusStrategy ..."
+cd ./mibotStatusStrategy/build/
+qmake ../mibStatusStrategy/
+make
+make install
+cd ../..
+
 echo "Build Server ... "
 cd ./mibotServer/build/
 qmake ../mibServer/
