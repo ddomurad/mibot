@@ -40,6 +40,7 @@ void LoggerFileSink::Write(QString message)
     }
 
     _output_file->write(message.toUtf8());
+    _output_file->write("\n");
     _output_file->close();
 }
 
