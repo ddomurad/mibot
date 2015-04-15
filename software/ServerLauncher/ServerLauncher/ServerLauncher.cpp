@@ -93,6 +93,14 @@ bool ServerLauncher::Init(QStringList args)
     mibot::StandardLoggerBuilder buildier;
     QJsonObject loggerObject = root_obj["Logger"].toObject();
     buildier.BuildLogger( loggerObject  );
+    if(buildier.AreErrors())
+    {
+        qDebug() << "FATAL ERROR: Can't build logger.";
+        for(auto log : buildier.GetBuildLog(true))
+        {
+            qDebug() << "ERROR: " << log.message;
+        }
+    }
 
     LOG_IMPORTANT("Mibot Server Starting.");
 

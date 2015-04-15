@@ -78,12 +78,42 @@ void StandardLoggerBuilder::BuildSink(QJsonObject &json)
         if(formater != nullptr)
         {
             LoggerManager::instance()->AddSink( new LoggerConsoleSink(level, formater) );
+            LogProcess(LOG_TYPE::OK, QString("Console LoggerSink added."));
+        }
+        else
+        {
+            LogProcess(LOG_TYPE::ERROR, QString("Cant create formater."));
         }
 
-        LogProcess(LOG_TYPE::OK, QString("Console LoggerSink added."));
+    }
+    else if(sinkType.toLower() == "file")
+    {
+        if(json["File"].isUndefined())
+        { LogProcess(LOG_TYPE::ERROR, "Undefined File parameter in LoggerFileSink."); return; }
+
+        if(json.value("Formater").isUndefined())
+            { LogProcess(LOG_TYPE::ERROR,"Undefined LoggerOutput Formater object."); return; }
+
+        if(!json.value("Formater").isObject())
+            { LogProcess(LOG_TYPE::ERROR,"LoggerSink Formater is not an object."); return; }
+
+        auto jsonObject = json.value("Formater").toObject();
+        auto formater = CreateFormater( jsonObject );
+        if(formater != nullptr)
+        {
+            LoggerManager::instance()->AddSink( new LoggerFileSink(json["File"].toString(), level, formater) );
+            LogProcess(LOG_TYPE::OK, QString("Console LoggerFileSink added."));
+        }
+        else
+        {
+            LogProcess(LOG_TYPE::ERROR, QString("Cant create formater."));
+        }
     }
     else if(sinkType.toLower() == "db")
     {
+        if(json["Sender"].isUndefined())
+        { LogProcess(LOG_TYPE::ERROR, "Undefined Sender parameter in LoggerPSQLSink."); return; }
+
         //auto jsonObject = json.value("Database").toObject();
         LoggerPSQLSink * output = new LoggerPSQLSink(level,json["Sender"].toString());
         LoggerManager::instance()->AddSink( output );
