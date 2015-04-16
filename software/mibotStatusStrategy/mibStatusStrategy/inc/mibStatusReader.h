@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QTimer>
+#include <QElapsedTimer>
 #include <QMutex>
 
 #include <mibMCP3008.h>
@@ -30,6 +31,12 @@ public:
 
     const QString EnginesAccuVoltage = "accu_volt";
     const QString CpuTemperature = "cpu_temp";
+    const QString CpuUsageGeneral = "cpu_usage_general";
+    const QString CpuUsageServer = "cpu_usage_server";
+    const QString MemAvailable = "mem_available";
+    const QString MemUsageGeneral = "mem_usage_general";
+    const QString MemUsageServer = "mem_usage_server";
+
 private slots:
     void onRefreshReadings();
 
@@ -40,12 +47,28 @@ private:
     MCP3008 * _mcp3008;
     QMap<QString, QVariant> _readings;
 
-    QString readSystemStateValue(QString path);
-    const int __BUF_SIZE = 64;
+    QString readSystemStateValue(QString path, int length);
+    QString readSystemStateLine(QString path);
+    void readCpuUtilization(float *cpu_total, float *cpu_server);
+
+    unsigned int _last_cpu_idel;
+//    unsigned int _last_cpu_utime;
+//    unsigned int _last_cpu_stime;
+
+    unsigned int _last_process_utime;
+    unsigned int _last_process_stime;
+    unsigned int _last_process_cutime;
+    unsigned int _last_process_cstime;
+
+    QElapsedTimer _cpu_reading_timer;
 
     int    _ref_counter;
     static QMutex _mutex;
     static QMap<QUuid, StatusReader*> _readers;
+
+    static QString _cpu_temp_path;
+    static QString _cpu_state_path;
+    QString _cpu_process_cpu_path;
 };
 
 }

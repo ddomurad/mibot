@@ -1,8 +1,10 @@
 #include "inc/mibStatusReader.h"
 #include <mibLogger.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -16,6 +18,18 @@ StatusReader::StatusReader(StatusConfigRes *cfg) :
     QObject(nullptr), _cfg(cfg), _mcp3008(nullptr),
     _ref_counter(0)
 {
+//    _last_cpu_utime = 0;
+//    _last_cpu_stime = 0;
+    _last_cpu_idel = 0;
+    _last_process_stime = 0;
+    _last_process_utime = 0;
+    _last_process_cutime = 0;
+    _last_process_cstime = 0;
+
+    _cpu_reading_timer.start();
+
+    _cpu_process_cpu_path = QString("/proc/%1/stat").arg(getpid());
+
     _timer = new QTimer(this);
     connect(_timer,SIGNAL(timeout()),this,SLOT(onRefreshReadings()));
 }
@@ -135,33 +149,108 @@ void StatusReader::onRefreshReadings()
     }
     if(_cfg->ReadCpuTemp())
     {
-        //double val = readSystemStateValue("/sys/class/thermal/thermal_zone0/temp").toDouble();
-        double val = readSystemStateValue( _cfg->CpuTempPath() ).toDouble() * _cfg->CpuTempScale();
+        double val = readSystemStateValue( _cpu_temp_path , 64).toDouble() * _cfg->CpuTempScale();
         _readings.insert( CpuTemperature , QVariant(val) );
     }
+
+    float cpu_total = 0.0f;
+    float cpu_server = 0.0f;
+
+    readCpuUtilization(&cpu_total, &cpu_server);
+
+    _readings.insert( CpuUsageGeneral , QVariant( cpu_total ) );
+    _readings.insert( CpuUsageServer, QVariant( cpu_server ) );
 }
 
-QString StatusReader::readSystemStateValue(QString path)
+QString StatusReader::readSystemStateValue(QString path, int length)
 {
     int fd;
-    char buf[__BUF_SIZE];
-    memset( buf, 0, __BUF_SIZE );
-
     if ((fd = open(path.toStdString().c_str(), O_RDONLY)) == -1)
     {
         return "";
     }
 
-    if ((read(fd, buf, __BUF_SIZE)) == -1)
+    char *buf = new char[length];
+    memset( buf, 0, length );
+
+    if ( read(fd, buf, length) == -1 )
     {
+        delete[] buf;
         close(fd);
         return "";
     }
 
     close(fd);
-
-    return QString(buf);
+    QString ret = QString(buf);
+    delete[] buf;
+    return ret;
 }
+
+QString StatusReader::readSystemStateLine(QString path)
+{
+    std::fstream input(path.toStdString(),std::ios::in);
+
+    if(!input.is_open())
+        return "";
+
+    std::string line;
+    if(!std::getline(input, line))
+    {
+        input.close();
+        return "";
+    }
+
+    input.close();
+    return QString(line.c_str());
+}
+
+void StatusReader::readCpuUtilization(float * cpu_total, float * cpu_server)
+{
+    quint64 elapsed = _cpu_reading_timer.restart();
+    QString cpu_line = readSystemStateLine(_cpu_state_path);
+    QString server_line = readSystemStateLine(_cpu_process_cpu_path);
+
+    if(cpu_line.isEmpty())
+        return;
+
+    if( cpu_line.count() < 15 || cpu_line.left(4) != "cpu ")
+        return;
+
+    unsigned int cpu_itime;
+    unsigned int cpu_utime;
+    unsigned int cpu_stime;
+
+    unsigned int process_utime;
+    unsigned int process_stime;
+    unsigned int process_cutime;
+    unsigned int process_cstime;
+
+    sscanf(cpu_line.toStdString().c_str(), "%*s %u %*s %u %u", &cpu_utime, &cpu_stime, &cpu_itime);
+    sscanf(server_line.toStdString().c_str(), "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %u %u %u %u",
+           &process_utime, &process_stime,
+           &process_cutime, &process_cstime);
+
+    *cpu_total = 1.0f - (0.25f * 10.0f*float( cpu_itime - _last_cpu_idel)/float(elapsed));
+
+    float serv_cpu = 10.0*float(process_utime - _last_process_utime)/float(elapsed);
+          serv_cpu += 10.0*float(process_stime - _last_process_stime)/float(elapsed);
+          serv_cpu += 10.0*float(process_cutime - _last_process_cutime)/float(elapsed);
+          serv_cpu += 10.0*float(process_cstime - _last_process_cstime)/float(elapsed);
+
+    *cpu_server = serv_cpu;
+
+    _last_cpu_idel = cpu_itime;
+//    _last_cpu_stime = cpu_stime;
+//    _last_cpu_utime = cpu_utime;
+    _last_process_stime = process_stime;
+    _last_process_utime = process_utime;
+    _last_process_cstime = process_cstime;
+    _last_process_cutime = process_cutime;
+}
+
+
+QString StatusReader::_cpu_temp_path = "/sys/class/thermal/thermal_zone0/temp";
+QString StatusReader::_cpu_state_path = "/proc/stat";
 
 QMutex StatusReader::_mutex(QMutex::NonRecursive);
 QMap<QUuid, StatusReader*> StatusReader::_readers;

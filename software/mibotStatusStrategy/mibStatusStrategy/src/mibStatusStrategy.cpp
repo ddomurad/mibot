@@ -46,7 +46,7 @@ void StatusStrategy::onStrategyUpdate()
 void StatusStrategy::processNewData(QByteArray arr)
 {
     _json_protocol.PushData(arr);
-    QThread::msleep( _status_reader->Config()->InternalDelay() );
+    //QThread::msleep( _status_reader->Config()->InternalDelay() );
 }
 
 bool StatusStrategy::init()
