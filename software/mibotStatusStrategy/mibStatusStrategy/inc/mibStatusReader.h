@@ -31,10 +31,10 @@ public:
 
     const QString EnginesAccuVoltage = "accu_volt";
     const QString CpuTemperature = "cpu_temp";
-    const QString CpuUsageGeneral = "cpu_usage_general";
+    const QString CpuUsageTotal = "cpu_usage_total";
     const QString CpuUsageServer = "cpu_usage_server";
     const QString MemAvailable = "mem_available";
-    const QString MemUsageGeneral = "mem_usage_general";
+    const QString MemUsageTotal = "mem_usage_total";
     const QString MemUsageServer = "mem_usage_server";
 
 private slots:
@@ -50,8 +50,10 @@ private:
     QString readSystemStateValue(QString path, int length);
     QString readSystemStateLine(QString path);
     void readCpuUtilization(float *cpu_total, float *cpu_server);
+    void readRamUtilization(float *available, float *used_total, float *used_process);
     void calcCpuCount();
 
+    unsigned int _ram_available;
     unsigned int _cpu_count;
     unsigned int _last_cpu_idel;
     unsigned int _last_process_utime;
@@ -68,6 +70,7 @@ private:
     static QString _cpu_temp_path;
     static QString _cpu_state_path;
     QString _cpu_process_cpu_path;
+    QString _process_status_path;
 };
 
 }

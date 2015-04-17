@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "sys/sysinfo.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -14,10 +15,19 @@
 
 using namespace mibot;
 
+int parseLine(char* line){
+        int i = strlen(line);
+        while (*line < '0' || *line > '9') line++;
+        line[i-3] = '\0';
+        i = atoi(line);
+        return i;
+    }
+
 StatusReader::StatusReader(StatusConfigRes *cfg) :
     QObject(nullptr), _cfg(cfg), _mcp3008(nullptr),
     _ref_counter(0)
 {
+    _ram_available = 0;
     _last_cpu_idel = 0;
     _last_process_stime = 0;
     _last_process_utime = 0;
@@ -27,6 +37,7 @@ StatusReader::StatusReader(StatusConfigRes *cfg) :
     _cpu_reading_timer.start();
 
     _cpu_process_cpu_path = QString("/proc/%1/stat").arg(getpid());
+    _process_status_path = QString("/proc/%1/status").arg(getpid());
 
     _timer = new QTimer(this);
     connect(_timer,SIGNAL(timeout()),this,SLOT(onRefreshReadings()));
@@ -163,8 +174,18 @@ void StatusReader::onRefreshReadings()
 
     readCpuUtilization(&cpu_total, &cpu_server);
 
-    _readings.insert( CpuUsageGeneral , QVariant( cpu_total ) );
+    _readings.insert( CpuUsageTotal , QVariant( cpu_total ) );
     _readings.insert( CpuUsageServer, QVariant( cpu_server ) );
+
+    float avaiable = 0;
+    float used_total = 0;
+    float used_process = 0;
+
+    readRamUtilization(&avaiable, &used_total, &used_process);
+
+    _readings.insert( MemAvailable, QVariant( avaiable) );
+    _readings.insert( MemUsageTotal, QVariant( used_total ) );
+    _readings.insert( MemUsageServer, QVariant( used_process ) );
 }
 
 QString StatusReader::readSystemStateValue(QString path, int length)
@@ -251,6 +272,39 @@ void StatusReader::readCpuUtilization(float * cpu_total, float * cpu_server)
     _last_process_utime = process_utime;
     _last_process_cstime = process_cstime;
     _last_process_cutime = process_cutime;
+}
+
+void StatusReader::readRamUtilization(float *avaiable, float *used_total, float *used_process)
+{
+    struct sysinfo memInfo;
+    sysinfo (&memInfo);
+
+    if(_ram_available == 0)
+    {
+        _ram_available = memInfo.totalram * memInfo.mem_unit;
+    }
+    *avaiable = float(_ram_available)/(1024.0f*1024.0f);
+
+    *used_total = float((memInfo.totalram - memInfo.freeram)*memInfo.mem_unit)/(1024.0f*1024.0f);
+
+    std::fstream input(_process_status_path.toStdString(),std::ios::in);
+
+    if(!input.is_open())
+        return;
+
+    std::string l;
+
+    while(std::getline(input, l))
+    {
+        QString line(l.c_str());
+        if(line.startsWith("VmRSS"))
+        {
+            *used_process = float(parseLine(line.toLatin1().data()))/1024.0f;
+            break;
+        }
+    }
+
+    input.close();
 }
 
 void StatusReader::calcCpuCount()
