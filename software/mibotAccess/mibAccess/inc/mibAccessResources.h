@@ -42,6 +42,8 @@ public:
 
     QUuid Privileges();
     QString Alias();
+    QString CertificateName();
+    bool    IsEnabled();
 
     PrivilegeRes * PrivilegesObj;
 };
@@ -68,37 +70,6 @@ public:
     void SetEntryTime(QDateTime v);
     void SetEntryDetails(QString v);
 };
-
-class MIBACCESSSHARED_EXPORT UsersCertificateRes : public AbstractResource
-{
-public:
-    UsersCertificateRes();
-    ~UsersCertificateRes();
-
-    QUuid User();
-    QString FileName();
-};
-
-class MIBACCESSSHARED_EXPORT CertificateSocketBoundRes : public AbstractResource
-{
-public:
-    CertificateSocketBoundRes();
-    ~CertificateSocketBoundRes();
-
-    QUuid Socket();
-    QUuid Certificate();
-};
-
-/*class MIBACCESSSHARED_EXPORT GlobalConfigRes : public AbstractResource
-{
-public:
-    GlobalConfigRes();
-    ~GlobalConfigRes();
-
-    QString Subsystem();
-    QString Key();
-    QString Value();
-};*/
 
 }
 

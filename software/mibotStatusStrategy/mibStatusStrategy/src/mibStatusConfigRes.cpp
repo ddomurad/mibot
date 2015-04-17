@@ -13,6 +13,8 @@ StatusConfigRes::StatusConfigRes() :
     AddField("engines_accu_mcp3008_channel",QVariant::Int);
     AddField("engines_accu_v_scale",QVariant::Double);
     AddField("read_cpu_temp",QVariant::Bool);
+    AddField("read_cpu_usage",QVariant::Bool);
+    AddField("read_memory",QVariant::Bool);
     AddField("cpu_temp_scale",QVariant::Double);
     AddField("values_update_ratio",QVariant::Int);
     AddField("internal_delay_value",QVariant::Int);
@@ -64,6 +66,16 @@ bool StatusConfigRes::ReadCpuTemp()
 double StatusConfigRes::CpuTempScale()
 {
     return Get("cpu_temp_scale")->toDouble();
+}
+
+bool StatusConfigRes::ReadCpuUsage()
+{
+    return Get("read_cpu_usage")->toBool();
+}
+
+bool StatusConfigRes::ReadMemory()
+{
+    return Get("read_memory")->toBool();
 }
 
 int StatusConfigRes::UpdateRatio()

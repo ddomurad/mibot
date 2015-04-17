@@ -6,13 +6,14 @@
 #include <mibAbstractSocketStrategy.h>
 #include <mibMCP3008.h>
 
+#include "mibStatusStrategyGlobal.h"
 #include "mibStatusConfigRes.h"
 #include "mibStatusReader.h"
 
 namespace mibot
 {
 
-class StatusStrategy : public AbstractSocketStrategy
+class MIBSTATUSSTRATEGYSHARED_EXPORT StatusStrategy : public AbstractSocketStrategy
 {
     Q_OBJECT
 public:
@@ -31,7 +32,7 @@ private:
     JSONProtocol    _json_protocol;
 
     void fixIfJsonIsCorrupted();
-    QJsonObject processRequest(QJsonObject & obj);
+    QJsonObject createRequest(QJsonObject & obj);
     void readValuesToJsonObjec(QJsonObject & obj);
     StatusReader * _status_reader;
     QTimer * _update_timer;

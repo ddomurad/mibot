@@ -21,6 +21,9 @@ public:
     bool    ReadCpuTemp();
     double  CpuTempScale();
 
+    bool    ReadCpuUsage();
+    bool    ReadMemory();
+
     int     UpdateRatio();
     int     InternalDelay();
 };

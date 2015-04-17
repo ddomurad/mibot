@@ -161,23 +161,29 @@ void StatusReader::onRefreshReadings()
         _readings.insert( CpuTemperature , QVariant(val) );
     }
 
-    float cpu_total = 0.0f;
-    float cpu_server = 0.0f;
+    if(_cfg->ReadCpuUsage())
+    {
+        float cpu_total = 0.0f;
+        float cpu_server = 0.0f;
 
-    readCpuUtilization(&cpu_total, &cpu_server);
+        readCpuUtilization(&cpu_total, &cpu_server);
 
-    _readings.insert( CpuUsageTotal , QVariant( cpu_total ) );
-    _readings.insert( CpuUsageServer, QVariant( cpu_server ) );
+        _readings.insert( CpuUsageTotal , QVariant( cpu_total ) );
+        _readings.insert( CpuUsageServer, QVariant( cpu_server ) );
+    }
 
-    float avaiable = 0;
-    float used_total = 0;
-    float used_process = 0;
+    if(_cfg->ReadMemory())
+    {
+        float avaiable = 0;
+        float used_total = 0;
+        float used_process = 0;
 
-    readRamUtilization(&avaiable, &used_total, &used_process);
+        readRamUtilization( &avaiable, &used_total, &used_process );
 
-    _readings.insert( MemAvailable, QVariant( avaiable) );
-    _readings.insert( MemUsageTotal, QVariant( used_total ) );
-    _readings.insert( MemUsageServer, QVariant( used_process ) );
+        _readings.insert( MemAvailable, QVariant( avaiable ) );
+        _readings.insert( MemUsageTotal, QVariant( used_total ) );
+        _readings.insert( MemUsageServer, QVariant( used_process ) );
+    }
 }
 
 QString StatusReader::readSystemStateValue(QString path, int length)

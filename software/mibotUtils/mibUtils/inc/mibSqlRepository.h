@@ -26,11 +26,11 @@ public:
     GetResult GetResourceByID(QUuid id, AbstractResource *res);
     bool AddNewResource(AbstractResource *res);
     bool GetResourcesByParam(QString param, QVariant *var, AbstractResourcesSet *set);
+    bool GetAllResources(AbstractResourcesSet *set);
 
 private:
     QString asSQLAcceptableValue(QVariant *v, QString field);
     QSqlDatabase _db;
-
 };
 
 }

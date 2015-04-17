@@ -159,11 +159,11 @@ void Listener::onConnectionEncrypted()
     if(peerCommonNames.count() != 0)
     {
         LOG_INFO(QString("Connection encrypted ('%1': '%2')")
-             .arg( socket->peerAddress().toString(),peerCommonNames[0] ));
+                 .arg( socket->peerAddress().toString(),peerCommonNames[0] ));
     }else
     {
         LOG_INFO(QString("Connection encrypted ('%1')")
-             .arg( socket->peerAddress().toString()));
+                 .arg( socket->peerAddress().toString()));
     }
 }
 
@@ -180,57 +180,51 @@ bool Listener::initCaCertificates()
     if(_sockRes == nullptr)
         return false;
 
-    if(_certs.isEmpty())
+    ResourcesSet<UserRes> * set = GlobalAccess::EnabledUsers();
+
+    if(set == nullptr)
     {
-        ResourcesSet<CertificateSocketBoundRes> * set =
-            GlobalAccess::CertificateSocketBoundsSesBySocket( _sockRes->Id() );
-
-        if(set == nullptr)
-        {
-            LOG_ERROR( "Certificates Set loading error." );
-            return false;
-        }
-
-        for( int i=0; i<set->Count(); i++)
-        {
-            UsersCertificateRes * ucr =  GlobalAccess::UserCertificate( set->At(i)->Certificate() );
-             if(ucr == nullptr)
-             {
-                 LOG_ERROR(QString("Could not read UserCertificate from reposiroty: (Id:%1) ")
-                              .arg(set->At(i)->Certificate().toString()));
-                 continue;
-             }
-
-            QString caCrtName = ucr->FileName();
-            delete ucr;
-
-            if(caCrtName.isEmpty() || caCrtName.contains('.'))
-            {
-                LOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
-                             .arg(caCrtName));
-
-                continue;
-            }
-
-            QString caPath = QString("%1/%2.crt").arg( _crtDir, caCrtName );
-            QFile crtFile( caPath );
-
-            if( !crtFile.open( QIODevice::ReadOnly) )
-            {
-                LOG_ERROR(QString("Can't open certificate file (%1)")
-                             .arg(caPath));
-                continue;
-            }
-
-            _certs.append( QSslCertificate( crtFile.readAll() ));
-            crtFile.close();
-
-            LOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
-                         .arg( caPath, _sockRes->Alias() ) );
-        }
-
-        delete set;
+        LOG_ERROR( "Cant get all enabled users." );
+        return false;
     }
+
+    for( int i=0; i<set->Count(); i++)
+    {
+        UserRes * user = set->At(i);
+        if(user->CertificateName().isEmpty())
+        {
+            LOG_WARNING( QString("User: %1[id: %2] has no certificate specified").arg(user->Alias(), user->Id().toString()));
+            continue;
+        }
+
+        QString caCrtName = user->CertificateName();
+
+        if(caCrtName.isEmpty() || caCrtName.contains('.'))
+        {
+            LOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
+                      .arg(caCrtName));
+
+            continue;
+        }
+
+        QString caPath = QString("%1/%2.crt").arg( _crtDir, caCrtName );
+        QFile crtFile( caPath );
+
+        if( !crtFile.open( QIODevice::ReadOnly) )
+        {
+            LOG_ERROR(QString("Can't open certificate file (%1)")
+                      .arg(caPath));
+            continue;
+        }
+
+        _certs.append( QSslCertificate( crtFile.readAll() ));
+        crtFile.close();
+
+        LOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
+                  .arg( caPath, _sockRes->Alias() ) );
+    }
+
+    delete set;
 
     return true;
 }
@@ -247,8 +241,8 @@ void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorStr
     connection->User     =   QUuid();
     connection->ErrorStrnig = errorString;
     connection->Status   =   errorString.isEmpty() ?
-                            Connection::Success :
-                            Connection::Failure;
+                Connection::Success :
+                Connection::Failure;
 
     if(ssl && socket)
     {

@@ -20,14 +20,13 @@ public:
     static bool Init(QJsonObject &jobj);
 
     static SocketRes                                 *Socket(QUuid id);
+    static ResourcesSet<SocketRes>                   *AllSockets();
+    static ResourcesSet<SocketRes>                   *AllEnabledSockets();
+
     static UserRes                                   *User(QUuid id);
+    static ResourcesSet<UserRes>                     *EnabledUsers();
 
-    static UsersCertificateRes                       *UserCertificate(QUuid id);
-    static CertificateSocketBoundRes                 *CertificateSocketBound(QUuid id);
-    static ResourcesSet<CertificateSocketBoundRes>   *CertificateSocketBoundsSesBySocket(QUuid socketId);
-
-    //static ResourcesSet<GlobalConfigRes>             *AllGlobalConfigsForSubsystem(QString subsystem);
-    //static ResourcesSet<GlobalConfigRes>             *GlobalConfigsByKey(QString key);
+    static PrivilegeRes                              *Privilege(QUuid id);
 
     static bool PushConnectionAudit(ConnectionAuditRes *res);
     AbstractRepository                              *Repository();
@@ -38,10 +37,6 @@ private:
     ResourceWrapper<PrivilegeRes>               *_privilegesResWrapper;
     ResourceWrapper<UserRes>                    *_usersResWrapper;
     ResourceWrapper<ConnectionAuditRes>         *_connectionAuditResWrapper;
-
-    ResourceWrapper<UsersCertificateRes>        *_usersCertificateResWrapper;
-    ResourceWrapper<CertificateSocketBoundRes>  *_certificateSocketBoundResWrapper;
-    //ResourceWrapper<GlobalConfigRes>            *_globalConfigResWrapper;
 
     AbstractRepository                          *_repository;
 };

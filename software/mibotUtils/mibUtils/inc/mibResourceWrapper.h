@@ -44,6 +44,19 @@ public:
         return set;
     }
 
+    ResourcesSet<T> * getAll()
+    {
+        ResourcesSet<T> * set = new ResourcesSet<T>;
+
+        if( !_repo->GetAllResources(  (AbstractResourcesSet*)(set) ) )
+        {
+            delete set;
+            return nullptr;
+        }
+
+        return set;
+    }
+
     bool addNew(T * obj)
     {
         return _repo->AddNewResource( obj );

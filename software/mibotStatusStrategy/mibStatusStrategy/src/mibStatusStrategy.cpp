@@ -26,7 +26,7 @@ void StatusStrategy::onStrategyUpdate()
         QJsonObject object = _json_protocol.GetPendingObject();
         fixIfJsonIsCorrupted();
 
-        QJsonObject ret_obj = processRequest(object);
+        QJsonObject ret_obj = createRequest(object);
         if(!ret_obj.isEmpty())
         {
             QJsonDocument doc( ret_obj);
@@ -96,7 +96,7 @@ void StatusStrategy::fixIfJsonIsCorrupted()
 
 */
 
-QJsonObject StatusStrategy::processRequest(QJsonObject &obj)
+QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
 {
     QJsonObject out;
 

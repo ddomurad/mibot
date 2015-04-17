@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
     socket(nullptr)
 {
     ui->setupUi(this);
+    ui->line_pass->setEchoMode(QLineEdit::Password);
+    ui->line_pass->setInputMethodHints(Qt::ImhHiddenText| Qt::ImhNoPredictiveText|Qt::ImhNoAutoUppercase);
+
     send_type = 0;
     js_input_thread = new JsInput(this);
 
@@ -52,8 +55,8 @@ void MainWindow::on_btn_connect_clicked()
 
     if(ui->check_enable_ssl->isChecked())
     {
-        sslSocket->setLocalCertificate( "./certs/" + cert + "/c.crt" );
-        sslSocket->setPrivateKey( "./certs/" + cert + "/c.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
+        sslSocket->setLocalCertificate( "./certs/" + cert + "/ssl.crt" );
+        sslSocket->setPrivateKey( "./certs/" + cert + "/ssl.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
 
         sslSocket->setProtocol(QSsl::SslV3);
 
@@ -71,7 +74,7 @@ void MainWindow::on_btn_connect_clicked()
 }
 
 
-void MainWindow::onSocketError(QAbstractSocket::SocketError e)
+void MainWindow::onSocketError(QAbstractSocket::SocketError)
 {
     Log("ERR", QString("Socket error (%1)").arg( ((QSslSocket*)sender())->errorString() ));
 

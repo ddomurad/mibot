@@ -23,7 +23,8 @@ public:
     virtual bool IsOpen() = 0;
     virtual GetResult GetResourceByID( QUuid id ,AbstractResource *) = 0;
     virtual bool      AddNewResource( AbstractResource * ) = 0;
-    virtual bool      GetResourcesByParam( QString , QVariant* , AbstractResourcesSet* ) =0;
+    virtual bool      GetResourcesByParam( QString , QVariant* , AbstractResourcesSet* ) = 0;
+    virtual bool      GetAllResources( AbstractResourcesSet* ) = 0;
 };
 
 }

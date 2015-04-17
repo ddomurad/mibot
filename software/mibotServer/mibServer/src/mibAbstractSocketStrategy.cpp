@@ -16,29 +16,13 @@ bool AbstractSocketStrategy::ApplyStrategy(Connection * connection)
     if(connection->SocketObj() == nullptr) return false;
     QString strategy = connection->SocketObj()->Strategy();
 
-    /*if(strategy == "echo")
-    {
-        connection->Strategy = new EchoStrategy(connection);
-        return true;
-    }
-    else if(strategy == "drive")
-    {
-        connection->Strategy = new DriveStartegy(connection);
-        if(!connection->Strategy->init())
-        {
-            LOG_ERROR("Can't initialize socket stategy.");
-            return false;
-        }
-
-        return true;
-    }*/
-
-    QLibrary plugin( QString("/usr/local/lib/mi_bot/libmib%1.so").arg(strategy));
+    QLibrary plugin( QString("/usr/local/lib/mi_bot/libmib%1Strategy.so").arg(strategy));
     typedef AbstractSocketStrategy * (*StrategyLoader)(Connection *);
     StrategyLoader loader = (StrategyLoader)plugin.resolve("createStrategy");
     if(!loader)
     {
-        LOG_ERROR(QString("Can't load strategy '%1'").arg(strategy));
+        LOG_ERROR(QString("Can't load strategy '%1' [%2]").arg(strategy,plugin.errorString()));
+
         return false;
     }else
     {

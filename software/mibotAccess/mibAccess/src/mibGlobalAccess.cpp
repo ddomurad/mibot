@@ -48,12 +48,6 @@ bool GlobalAccess::Init(QJsonObject &jobj)
             new ResourceWrapper<UserRes>(GlobalAccess::get()._repository);
     GlobalAccess::get()._connectionAuditResWrapper =
             new ResourceWrapper<ConnectionAuditRes>(GlobalAccess::get()._repository);
-    GlobalAccess::get()._usersCertificateResWrapper =
-            new ResourceWrapper<UsersCertificateRes>(GlobalAccess::get()._repository);
-    GlobalAccess::get()._certificateSocketBoundResWrapper =
-            new ResourceWrapper<CertificateSocketBoundRes>(GlobalAccess::get()._repository);
-    //GlobalAccess::get()._globalConfigResWrapper =
-      //      new ResourceWrapper<GlobalConfigRes>(GlobalAccess::get()._repository);
 
     return GlobalAccess::get()._repository->IsOpen();
 }
@@ -69,6 +63,27 @@ SocketRes *GlobalAccess::Socket(QUuid id)
     return res;
 }
 
+ResourcesSet<SocketRes> *GlobalAccess::AllSockets()
+{
+    ResourcesSet<SocketRes> * res = GlobalAccess::get()._socketsResWrapper->getAll( );
+
+    for(int i=0; i<res->Count(); i++)
+        res->At(i)->PrivilegesObj = GlobalAccess::Privilege(res->At(i)->Privileges());
+
+    return res;
+}
+
+ResourcesSet<SocketRes> *GlobalAccess::AllEnabledSockets()
+{
+    QVariant enabled(true);
+    ResourcesSet<SocketRes> * res = GlobalAccess::get()._socketsResWrapper->getAllByParam("enabled",&enabled);
+
+    for(int i=0; i<res->Count(); i++)
+        res->At(i)->PrivilegesObj = GlobalAccess::Privilege(res->At(i)->Privileges());
+
+    return res;
+}
+
 UserRes *GlobalAccess::User(QUuid id)
 {
     UserRes * res = GlobalAccess::get()._usersResWrapper->getByID( id );
@@ -76,39 +91,20 @@ UserRes *GlobalAccess::User(QUuid id)
         return nullptr;
 
     res->PrivilegesObj = GlobalAccess::get()._privilegesResWrapper->getByID(res->Privileges());
-
     return res;
 }
 
-UsersCertificateRes *GlobalAccess::UserCertificate(QUuid id)
+ResourcesSet<UserRes> *GlobalAccess::EnabledUsers()
 {
-    return GlobalAccess::get()._usersCertificateResWrapper->getByID( id );
+    QVariant enabled(true);
+    ResourcesSet<UserRes> * res = GlobalAccess::get()._usersResWrapper->getAllByParam("enabled",&enabled);
+    return res;
 }
 
-CertificateSocketBoundRes *GlobalAccess::CertificateSocketBound(QUuid id)
+PrivilegeRes *GlobalAccess::Privilege(QUuid id)
 {
-    return GlobalAccess::get()._certificateSocketBoundResWrapper->getByID( id );
+    return GlobalAccess::get()._privilegesResWrapper->getByID( id );
 }
-
-ResourcesSet<CertificateSocketBoundRes> *GlobalAccess::CertificateSocketBoundsSesBySocket(QUuid socketId)
-{
-    QVariant var(socketId);
-    return GlobalAccess::get()._certificateSocketBoundResWrapper->getAllByParam( "socket",  &var );
-}
-
-/*
-ResourcesSet<GlobalConfigRes> *GlobalAccess::AllGlobalConfigsForSubsystem(QString subsystem)
-{
-    QVariant var(subsystem);
-    return GlobalAccess::get()._globalConfigResWrapper->getAllByParam( "subsystem",  &var );
-}
-
-ResourcesSet<GlobalConfigRes> *GlobalAccess::GlobalConfigsByKey(QString key)
-{
-    QVariant var(key);
-    return GlobalAccess::get()._globalConfigResWrapper->getAllByParam("key",&var);
-}
-*/
 
 bool GlobalAccess::PushConnectionAudit(ConnectionAuditRes *res)
 {

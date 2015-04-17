@@ -167,6 +167,48 @@ bool SqlRepository::GetResourcesByParam(QString param, QVariant * var, AbstractR
     return true;
 }
 
+bool SqlRepository::GetAllResources(AbstractResourcesSet *set)
+{
+    if(!IsOpen()) return false;
+    AbstractResource * temp_resource = set->Create();
+    QStringList fields = temp_resource->Fields();
+    QString class_name = temp_resource->ClassName();
+    delete temp_resource;
+
+    QStringList fields_string;
+    for( QString field : fields )
+        fields_string.append( QString("\"%1\"").arg( field) );
+
+    QString query_string = QString("SELECT %1 FROM \"%2\"")
+            .arg(fields_string.join(','), class_name);
+
+    QSqlQuery query;
+
+    if( !query.exec( query_string ) )
+    {
+        LOG_ERROR("SQL QUERY ERROR: " + query_string);
+        LOG_ERROR("SQL QUERY ERROR: " + query.lastError().text());
+        return false;
+    }
+    else
+        LOG_DEBUG("SQL QUERY: " + query_string);
+
+    if(query.size() == 0) return true;
+
+    set->InitializeSet( query.size() );
+    int res_iter = 0;
+    while(query.next())
+    {
+        AbstractResource * res = set->GetAbstract( res_iter );
+        for(int i=0; i<fields.length(); i++)
+            res->Get( fields[i] )->setValue<QString>(query.value(i).toString());
+
+        res_iter++;
+    }
+
+    return true;
+}
+
 QString SqlRepository::asSQLAcceptableValue(QVariant *v, QString field)
 {
     if(v->type() == QVariant::String)
@@ -179,7 +221,8 @@ QString SqlRepository::asSQLAcceptableValue(QVariant *v, QString field)
             || v->type() == QVariant::Double
             || v->type() == QVariant::UInt
             || v->type() == QVariant::LongLong
-            || v->type() == QVariant::ULongLong)
+            || v->type() == QVariant::ULongLong
+            || v->type() == QVariant::Bool)
         return v->toString();
 
 
@@ -187,7 +230,7 @@ QString SqlRepository::asSQLAcceptableValue(QVariant *v, QString field)
         return QString("'%1'").arg(v->toString());
 
     LOG_WARNING( QString("Unsuported type for sql writig. (%1: %2)")
-                    .arg(field, v->type()));
+                    .arg(field).arg(v->type()));
 
     return v->toString();
 }

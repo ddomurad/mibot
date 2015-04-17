@@ -85,6 +85,8 @@ UserRes::UserRes() :
 {
     AddField("alias",QVariant::String);
     AddField("privileges",QVariant::Uuid);
+    AddField("enabled",QVariant::Bool);
+    AddField("certificate",QVariant::String);
 }
 
 UserRes::~UserRes()
@@ -101,6 +103,16 @@ QUuid UserRes::Privileges()
 QString UserRes::Alias()
 {
     return Get("alias")->toString();
+}
+
+QString UserRes::CertificateName()
+{
+    return Get("certificate")->toString();
+}
+
+bool UserRes::IsEnabled()
+{
+    return Get("enabled")->toBool();
 }
 
 
@@ -190,74 +202,3 @@ void ConnectionAuditRes::SetEntryDetails(QString v)
     Get("entry_details")->setValue(v);
 }
 
-
-UsersCertificateRes::UsersCertificateRes() :
-    AbstractResource("users_certificates")
-{
-    AddField("user",QVariant::Uuid);
-    AddField("fname",QVariant::String);
-}
-
-UsersCertificateRes::~UsersCertificateRes()
-{}
-
-QUuid UsersCertificateRes::User()
-{
-    return Get("user")->toUuid();
-}
-
-QString UsersCertificateRes::FileName()
-{
-    return Get("fname")->toString();
-}
-
-
-CertificateSocketBoundRes::CertificateSocketBoundRes() :
-    AbstractResource("certificate_socket_bound")
-{
-    AddField("socket", QVariant::Uuid);
-    AddField("certificate", QVariant::Uuid);
-}
-
-CertificateSocketBoundRes::~CertificateSocketBoundRes()
-{
-
-}
-
-QUuid CertificateSocketBoundRes::Socket()
-{
-    return Get("socket")->toUuid();
-}
-
-QUuid CertificateSocketBoundRes::Certificate()
-{
-    return Get("certificate")->toUuid();
-}
-
-/*
-GlobalConfigRes::GlobalConfigRes():
-    AbstractResource("cfg_strings")
-{
-    AddField("subsystem", QVariant::String);
-    AddField("key",      QVariant::String);
-    AddField("value",    QVariant::String);
-}
-
-GlobalConfigRes::~GlobalConfigRes()
-{}
-
-QString GlobalConfigRes::Subsystem()
-{
-    return Get("subsystem")->toString();
-}
-
-QString GlobalConfigRes::Key()
-{
-    return Get("key")->toString();
-}
-
-QString GlobalConfigRes::Value()
-{
-    return Get("value")->toString();
-}
-*/
