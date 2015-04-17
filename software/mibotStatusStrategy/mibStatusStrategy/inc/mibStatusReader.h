@@ -50,11 +50,10 @@ private:
     QString readSystemStateValue(QString path, int length);
     QString readSystemStateLine(QString path);
     void readCpuUtilization(float *cpu_total, float *cpu_server);
+    void calcCpuCount();
 
+    unsigned int _cpu_count;
     unsigned int _last_cpu_idel;
-//    unsigned int _last_cpu_utime;
-//    unsigned int _last_cpu_stime;
-
     unsigned int _last_process_utime;
     unsigned int _last_process_stime;
     unsigned int _last_process_cutime;

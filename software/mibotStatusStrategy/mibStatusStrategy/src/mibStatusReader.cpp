@@ -18,8 +18,6 @@ StatusReader::StatusReader(StatusConfigRes *cfg) :
     QObject(nullptr), _cfg(cfg), _mcp3008(nullptr),
     _ref_counter(0)
 {
-//    _last_cpu_utime = 0;
-//    _last_cpu_stime = 0;
     _last_cpu_idel = 0;
     _last_process_stime = 0;
     _last_process_utime = 0;
@@ -92,6 +90,13 @@ StatusReader::~StatusReader()
 
 bool StatusReader::Init()
 {
+    calcCpuCount();
+    if(_cpu_count == 0)
+    {
+        LOG_ERROR("Can't detect any cpu.");
+        return false;
+    }
+
     _timer->start( _cfg->UpdateRatio() );
 
     if(_cfg->UseMcp3008())
@@ -206,7 +211,7 @@ QString StatusReader::readSystemStateLine(QString path)
 
 void StatusReader::readCpuUtilization(float * cpu_total, float * cpu_server)
 {
-    quint64 elapsed = _cpu_reading_timer.restart();
+    float elapsed = float(_cpu_reading_timer.restart());
     QString cpu_line = readSystemStateLine(_cpu_state_path);
     QString server_line = readSystemStateLine(_cpu_process_cpu_path);
 
@@ -230,22 +235,36 @@ void StatusReader::readCpuUtilization(float * cpu_total, float * cpu_server)
            &process_utime, &process_stime,
            &process_cutime, &process_cstime);
 
-    *cpu_total = 1.0f - (0.25f * 10.0f*float( cpu_itime - _last_cpu_idel)/float(elapsed));
+    *cpu_total = 1.0f - (10.0f*float( cpu_itime - _last_cpu_idel)/float(elapsed))/float(_cpu_count);
 
-    float serv_cpu = 10.0*float(process_utime - _last_process_utime)/float(elapsed);
-          serv_cpu += 10.0*float(process_stime - _last_process_stime)/float(elapsed);
-          serv_cpu += 10.0*float(process_cutime - _last_process_cutime)/float(elapsed);
-          serv_cpu += 10.0*float(process_cstime - _last_process_cstime)/float(elapsed);
+    float serv_cpu = 10.0*float(process_utime - _last_process_utime)/elapsed;
+          serv_cpu += 10.0*float(process_stime - _last_process_stime)/elapsed;
+          serv_cpu += 10.0*float(process_cutime - _last_process_cutime)/elapsed;
+          serv_cpu += 10.0*float(process_cstime - _last_process_cstime)/elapsed;
+
+          serv_cpu /= float(_cpu_count);
 
     *cpu_server = serv_cpu;
 
     _last_cpu_idel = cpu_itime;
-//    _last_cpu_stime = cpu_stime;
-//    _last_cpu_utime = cpu_utime;
     _last_process_stime = process_stime;
     _last_process_utime = process_utime;
     _last_process_cstime = process_cstime;
     _last_process_cutime = process_cutime;
+}
+
+void StatusReader::calcCpuCount()
+{
+    QString cpu_state = readSystemStateValue(_cpu_state_path, 512);
+    _cpu_count = 0;
+    if(cpu_state.isEmpty()) return;
+
+    while(true)
+    {
+        if(cpu_state.contains( QString("cpu%1").arg(_cpu_count) ))
+            _cpu_count++;
+        else break;
+    }
 }
 
 
