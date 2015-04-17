@@ -15,14 +15,6 @@
 
 using namespace mibot;
 
-int parseLine(char* line){
-        int i = strlen(line);
-        while (*line < '0' || *line > '9') line++;
-        line[i-3] = '\0';
-        i = atoi(line);
-        return i;
-    }
-
 StatusReader::StatusReader(StatusConfigRes *cfg) :
     QObject(nullptr), _cfg(cfg), _mcp3008(nullptr),
     _ref_counter(0)
@@ -299,7 +291,12 @@ void StatusReader::readRamUtilization(float *avaiable, float *used_total, float 
         QString line(l.c_str());
         if(line.startsWith("VmRSS"))
         {
-            *used_process = float(parseLine(line.toLatin1().data()))/1024.0f;
+            QString num;
+            for(int i=0;i<line.length(); i++)
+                if(line[i] >= '0' && line[i] <= '9')
+                    num += line[i];
+            *used_process = num.toFloat() / 1024.0f;
+
             break;
         }
     }
