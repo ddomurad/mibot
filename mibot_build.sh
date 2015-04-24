@@ -47,8 +47,8 @@ make install
 cd ../..
 
 echo "Build Server Starter ... "
-cd ./UtilsTests/build/
-qmake ../UtilsTests/
+cd ./ServerLauncher/build/
+qmake ../ServerLauncher/
 make
 make install
 cd ../..
