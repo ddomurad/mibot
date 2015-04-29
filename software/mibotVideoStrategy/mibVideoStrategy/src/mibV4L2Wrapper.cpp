@@ -19,7 +19,8 @@ using namespace mibot;
 V4L2Wrapper::V4L2Wrapper() :
     _is_opened(false),
     _is_started(false),
-    _buffer_ptrs(0)
+    _buffer_ptrs(0),
+    _frame_data(0)
 
 {}
 
@@ -27,6 +28,9 @@ V4L2Wrapper::~V4L2Wrapper()
 {
     if(_buffer_ptrs != 0)
         delete[] _buffer_ptrs;
+
+    if(_frame_data != 0)
+        delete[] _frame_data;
 }
 
 bool V4L2Wrapper::Open(QString dev, int buffers_count, int w, int h,
@@ -149,6 +153,8 @@ bool V4L2Wrapper::Open(QString dev, int buffers_count, int w, int h,
         }
     }
 
+    _frame_data = new char[ _buffer_ptrs[0].len ];
+
     _is_opened = true;
     return true;
 }
@@ -197,7 +203,6 @@ bool V4L2Wrapper::Start()
         return false;
     }
 
-    _grab_index = 0;
     _is_started = true;
     return true;
 }
@@ -224,25 +229,28 @@ char *V4L2Wrapper::GrabNext(unsigned int *size)
     memset(&buffer, 0, sizeof(v4l2_buffer));
     buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buffer.memory = V4L2_MEMORY_MMAP;
-    buffer.index = _grab_index;
 
     if(ioctl(_fd, VIDIOC_DQBUF, &buffer) == -1)
         return 0;
 
-    char * ptr = (char *)_buffer_ptrs[_grab_index].ptr;
-    *size = _buffer_ptrs[_grab_index].len;
+    if(buffer.index >= _buff_cnt)
+        return 0;
+
+    if(buffer.length > _buffer_ptrs[buffer.index].len)
+        return 0;
+
+    memcpy( _frame_data, _buffer_ptrs[buffer.index].ptr, buffer.length);
+    *size = buffer.length;
 
     if( ioctl(_fd, VIDIOC_QBUF, &buffer) == -1)
     {
         LOG_WARNING(QString("Can't queue buffer: _grab_index: %1 [%2]")
-                  .arg(_grab_index).arg( QString(strerror(errno)) ));
+                  .arg(buffer.index).arg( QString(strerror(errno)) ));
 
         return 0;
     }
 
-    _grab_index++;
-    _grab_index %= _buff_cnt;
-    return ptr ;
+    return _frame_data ;
 }
 
 unsigned int V4L2Wrapper::getFormat(V4L2Wrapper::VideoFormat format)

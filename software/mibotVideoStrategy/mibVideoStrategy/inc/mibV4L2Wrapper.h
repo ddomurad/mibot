@@ -40,13 +40,14 @@ private:
     unsigned int _buff_cnt;
     unsigned int _width;
     unsigned int _height;
-    unsigned int _grab_index;
 
     bool _is_opened;
     bool _is_started;
     BufferPtr * _buffer_ptrs;
     unsigned int getFormat(VideoFormat format);
     QString getFormatString(VideoFormat format);
+
+    char * _frame_data;
 };
 
 }
