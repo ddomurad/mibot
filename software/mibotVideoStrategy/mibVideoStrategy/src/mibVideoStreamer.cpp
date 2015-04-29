@@ -226,7 +226,7 @@ void VideoStreamer::streamThread()
                     connections[i].socket->write( data , data_len);
                 }*/
             }
-            usleep(1000 * 50);
+            usleep(1000 * 1000);
         }
     }
 
