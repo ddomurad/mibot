@@ -217,8 +217,10 @@ void VideoStreamer::streamThread()
                 LOG_WARNING("Can't grab next freme.");
             }else
             {
-                QByteArray arr = QByteArray::fromRawData(data, data_len);
-                emit OnFrameData(&arr);
+                VideoStreamFrameData frame;
+                frame.ptr = data;
+                frame.size = data_len;
+                emit OnFrameData(&frame);
                 /*for(int i=0;i<connections.count();i++)
                 {
                     connections[i].socket->write( data , data_len);

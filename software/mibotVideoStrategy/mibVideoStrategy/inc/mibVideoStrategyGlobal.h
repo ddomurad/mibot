@@ -9,4 +9,16 @@
 #  define MIBVIDEOSTRATEGYSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
+namespace mibot
+{
+
+class VideoStreamFrameData
+{
+public:
+    char * ptr;
+    unsigned int size;
+};
+
+}
+
 #endif // MIBVIDEOSTRATEGY_GLOBAL_H

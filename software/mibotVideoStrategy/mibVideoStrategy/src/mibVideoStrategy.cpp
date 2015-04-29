@@ -16,9 +16,10 @@ VideoStrategy::~VideoStrategy()
         VideoStreamer::get()->Detach(_connection->TcpSocket);
 }
 
-void VideoStrategy::onFrame(QByteArray *arr)
+void VideoStrategy::onFrame(VideoStreamFrameData *frame)
 {
-    _connection->TcpSocket->write( *arr );
+    qDebug() << frame->size;
+    _connection->TcpSocket->write( frame->ptr, frame->size );
 }
 
 void VideoStrategy::processNewData(QByteArray)
@@ -34,7 +35,7 @@ bool VideoStrategy::init()
         return false;
     }
 
-    connect(VideoStreamer::get(),SIGNAL(OnFrameData(QByteArray*)),this,SLOT(onFrame(QByteArray*)));
+    connect(VideoStreamer::get(),SIGNAL(OnFrameData(VideoStreamFrameData*)),this,SLOT(onFrame(VideoStreamFrameData*)));
     VideoStreamer::get()->Attach(_connection->TcpSocket);
     return true;
 }

@@ -1,6 +1,7 @@
 #ifndef VIDEOSTREAMER_H
 #define VIDEOSTREAMER_H
 
+#include "mibVideoStrategyGlobal.h"
 #include "mibVideoConfigRes.h"
 #include <QTcpSocket>
 #include <QElapsedTimer>
@@ -25,7 +26,7 @@ public:
     void KeepAlive(QTcpSocket*);
 
 signals:
-    void OnFrameData(QByteArray *arr);
+    void OnFrameData(VideoStreamFrameData *arr);
 
 private:
 

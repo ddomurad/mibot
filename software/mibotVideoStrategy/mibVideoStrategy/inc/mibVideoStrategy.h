@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <mibAbstractSocketStrategy.h>
+#include "mibVideoStrategyGlobal.h"
 
 namespace mibot
 {
@@ -18,7 +19,7 @@ signals:
 
 public slots:
 private slots:
-    void onFrame(QByteArray *);
+    void onFrame(VideoStreamFrameData *frame);
 
 protected:
     void processNewData(QByteArray);
