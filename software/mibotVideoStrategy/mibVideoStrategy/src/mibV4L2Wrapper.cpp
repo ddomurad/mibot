@@ -101,9 +101,9 @@ bool V4L2Wrapper::Open(QString dev, int buffers_count, int w, int h,
         return false;
     }
 
-    if(_buff_cnt != reqbuf.count)
+    if(_buff_cnt > reqbuf.count)
     {
-        LOG_ERROR( QString("Can't request buffers '_buff_cnt != reqbuf.count; [%1 != %2]")
+        LOG_ERROR( QString("Can't request buffers '_buff_cnt > reqbuf.count; [%1 != %2]")
                    .arg(_buff_cnt).arg(reqbuf.count));
 
         close(_fd);
