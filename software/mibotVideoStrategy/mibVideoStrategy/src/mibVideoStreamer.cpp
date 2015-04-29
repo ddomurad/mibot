@@ -170,7 +170,7 @@ void VideoStreamer::streamThread()
 
     v4l2_wrapper = new V4L2Wrapper();
 
-    if(v4l2_wrapper->Open("/dev/video0",10,640,480) == false)
+    if(v4l2_wrapper->Open("/dev/video0",1,640,480) == false)
     {
         delete v4l2_wrapper;
         v4l2_wrapper = nullptr;
