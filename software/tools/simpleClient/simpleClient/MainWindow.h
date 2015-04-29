@@ -39,6 +39,8 @@ private slots:
 
     void on_btn_send_plain_text_clicked();
 
+    void on_cb_repeat_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket * socket;
@@ -50,6 +52,7 @@ private:
     int send_type;
 
     void sendJsState();
+    void sendText();
 };
 
 #endif // MAINWINDOW_H

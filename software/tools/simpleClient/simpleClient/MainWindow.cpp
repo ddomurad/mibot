@@ -117,7 +117,12 @@ void MainWindow::onReadyRead()
 
         ui->incomming->append(str);
 
-    }else
+    }
+    else if( ui->combo_disp_inp->currentText() == "Video OpenCV" )
+    {
+
+    }
+    else
     {
         ui->incomming->append( QString( arr ) );
     }
@@ -213,6 +218,14 @@ void MainWindow::sendJsState()
     }
 }
 
+void MainWindow::sendText()
+{
+    if(socket == nullptr) return;
+    if(!socket->isOpen()) return;
+
+    socket->write( ui->out_plain_text->toPlainText().toLatin1() );
+}
+
 void MainWindow::on_btn_Check_js_clicked()
 {
     QString js_file = ui->le_js_file->text();
@@ -249,6 +262,9 @@ void MainWindow::onSendTimer()
     if(send_type == 2)
     { sendJsState(); return; }
 
+    if(send_type == 3)
+    { sendText(); return; }
+
     stopSending();
 }
 
@@ -264,8 +280,22 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_btn_send_plain_text_clicked()
 {
-    if(socket == nullptr) return;
-    if(!socket->isOpen()) return;
+    sendText();
+}
 
-    socket->write( ui->out_plain_text->toPlainText().toLatin1() );
+
+void MainWindow::on_cb_repeat_toggled(bool checked)
+{
+    if(checked)
+    {
+        if(send_timer->isActive()) stopSending();
+        js_input_thread->Start( ui->le_js_file->text() );
+
+        send_type = 3;
+        send_timer->start( ui->sb_send_Timer->value() );
+    }
+    else
+    {
+        send_timer->stop();
+    }
 }

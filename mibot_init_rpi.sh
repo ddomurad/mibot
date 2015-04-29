@@ -14,8 +14,11 @@ mkdir ./ServerLauncher/build
 mkdir /usr/local/etc/mi_bot
 mkdir /usr/local/lib/mi_bot
 
-chmod 666 /usr/local/etc/mi_bot
-chmod 666 /usr/local/lib/mi_bot
+chmod 777 /usr/local/etc/mi_bot
+chmod 777 /usr/local/lib/mi_bot
+
+chown mibot /usr/local/etc/mi_bot/
+chown mibot /usr/local/lib/mi_bot/
 
 echo "export MIBOT_CFG=ENABLE_GPIO" >> ~/.bash_profile
 
