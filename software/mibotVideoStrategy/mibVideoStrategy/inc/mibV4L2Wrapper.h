@@ -25,7 +25,7 @@ public:
     bool Open(QString dev,
               int buffers_count,
               int w, int h, bool blocking = true,
-              VideoFormat vformat = VideoFormat::H264);
+              VideoFormat vformat = VideoFormat::YUYV);
 
     void Close();
 
