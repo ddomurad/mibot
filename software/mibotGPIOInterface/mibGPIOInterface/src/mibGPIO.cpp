@@ -14,13 +14,13 @@ void    softPwmStop     ( int pin );
 #ifndef ENABLE_RPI_GPIO
 int wiringPiSetup(void )
 {
-    //qDebug() << "wiringPiSetup";
+    qDebug() << "(GPIO DISABLED) wiringPiSetup";
     return 0;
 }
 
 void pinMode( int , int )
 {
-    //qDebug() << "pinMode" << pin << mode;
+    qDebug() << "(GPIO DISABLED) pinMode" << pin << mode;
 }
 
 void digitalWrite( int , int )
@@ -30,7 +30,7 @@ void digitalWrite( int , int )
 
 int softPwmCreate( int , int , int )
 {
-    //qDebug() << "softPwmCreate" << pin << initialValue << pwmRange;
+    qDebug() << "(GPIO DISABLED) softPwmCreate" << pin << initialValue << pwmRange;
 
     return 0;
 }
@@ -42,7 +42,7 @@ void softPwmWrite( int , int )
 
 void softPwmStop(int )
 {
-    //qDebug() << "softPwmStop" << pin;
+    qDebug() << "(GPIO DISABLED) softPwmStop" << pin;
 }
 
 #endif
