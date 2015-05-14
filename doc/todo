@@ -1,0 +1,9 @@
+## TODO
+
+
+1. Remove user accounts 
+  1.1. And any item/object/code refertd to it
+2. Reproject db
+3. Move many as posible configs into db
+4. Automation deployement on RPI
+5. 
