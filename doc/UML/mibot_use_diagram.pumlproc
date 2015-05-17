@@ -1,0 +1,13 @@
+@startuml
+
+actor :Base Station Software: as BBS
+
+usecase UC_VIDEO_0 as "Setup video steaming parameters"
+usecase UC_VIDEO_1 as "Controll of video stream"
+usecase UC_VIDEO_2 as "Receive video stream"
+
+BBS --> UC_VIDEO_0
+BBS --> UC_VIDEO_1
+BBS --> UC_VIDEO_2
+
+@enduml

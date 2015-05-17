@@ -1,0 +1,24 @@
+@startuml
+
+actor :Base Station Software: as BBS
+
+rectangle RobotServer {
+usecase UC_VIDEO_0 as "Setup video steaming parameters"
+usecase UC_VIDEO_1 as "Controll of video stream"
+usecase UC_VIDEO_2 as "Receive video stream"
+
+usecase UC_STATUS_0 as "Read baterry status"
+usecase UC_STATUS_1 as "Read GPS possition"
+usecase UC_STATUS_2 as "Read system status.\n==\ncpu usage\nram usage\nrunning software"
+}
+
+BBS --> UC_VIDEO_0 
+BBS --> UC_VIDEO_1
+BBS --> UC_VIDEO_2
+
+BBS --> UC_STATUS_0
+BBS --> UC_STATUS_1
+BBS --> UC_STATUS_2
+
+
+@enduml

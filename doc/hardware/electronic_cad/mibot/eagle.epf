@@ -350,7 +350,7 @@ UsedLibrary="/home/work/.eagle/lbr/zilog.lbr"
 
 [Win_1]
 Type="Board Editor"
-Loc="0 0 599 399"
+Loc="0 31 599 430"
 State=0
 Number=2
 File="Logic_Level_Bidirectional.brd"
@@ -396,7 +396,7 @@ Layer=16
 
 [Win_2]
 Type="Control Panel"
-Loc="2065 145 3188 975"
+Loc="703 174 1826 1004"
 State=2
 Number=0
 

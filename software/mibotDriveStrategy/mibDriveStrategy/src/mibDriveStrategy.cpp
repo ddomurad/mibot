@@ -66,11 +66,11 @@ bool DriveStartegy::init()
 
     if(_config == nullptr)
     {
-        LOG_ERROR( QString("Can;t load strategy configuration (id: %1)").arg(_connection->SocketObj()->StrategyConfig()));
+        LOG_ERROR( QString("Can't load strategy configuration (id: %1)").arg(_connection->SocketObj()->StrategyConfig()));
         return false;
     }else
     {
-        LOG_IMPORTANT( QString("Driver strategy configuration laoded: '%1'").arg(_config->Alias()) );
+        LOG_IMPORTANT( QString("Driver strategy configuration loadet: '%1'").arg(_config->Alias()) );
     }
 
     if(!gpio()->Init())

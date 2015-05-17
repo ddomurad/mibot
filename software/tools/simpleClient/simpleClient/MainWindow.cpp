@@ -299,3 +299,4 @@ void MainWindow::on_cb_repeat_toggled(bool checked)
         send_timer->stop();
     }
 }
+

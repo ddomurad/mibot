@@ -91,7 +91,7 @@ void LoggerPSQLSink::WriteLog(LogLevel level, QString file, QString function, qi
     message = message.replace('\'',"''");
 
     QString query_string = "INSERT INTO logger_sink (\"datetime\",\"file\",\"method\",\"line\",\"type\",\"message\",\"sender\") VALUES( now(), '%1','%2',%6,'%3','%4','%5');";
-    qDebug() << query_string;
+    //qDebug() << query_string;
     query_string = query_string.arg(file,function, LoggerSimpleStringFormater::LogLevel2Str(level), message,_sender).arg(line);
 
     QSqlQuery query;
