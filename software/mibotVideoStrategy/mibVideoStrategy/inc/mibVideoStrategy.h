@@ -12,7 +12,7 @@ class VideoStrategy : public AbstractSocketStrategy
 {
     Q_OBJECT
 public:
-    explicit VideoStrategy(mibot::Connection *connection);
+    explicit VideoStrategy(Connection *connection);
     ~VideoStrategy();
 
 signals:

@@ -16,3 +16,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp
+
+unix {
+    target.path = /usr/local/bin/mi_bot
+    INSTALLS += target
+}

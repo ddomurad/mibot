@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <signal.h>
-#include <QCoreApplication>
+#include <cstdio>
+#include <cstdlib>
 
 void on_signall(int sig)
 {
@@ -28,6 +29,8 @@ int main(int argc, char *argv[])
     if( signal(SIGALRM, on_signall ) == SIG_ERR)
         return -2;
 
+
+    printf("arg: %s\n", argv[argc - 1]);
     if(system( argv[1] ) == -1)
         return errno;
 
