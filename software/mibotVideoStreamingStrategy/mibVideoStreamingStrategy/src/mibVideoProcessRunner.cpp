@@ -37,7 +37,17 @@ bool VideoProcessRunner::Start(int w, int h, int fps, int port)
 void VideoProcessRunner::Stop()
 {
     _process->terminate();
-    _process->waitForFinished(1000);
+    if(!_process->waitForFinished(1000))
+    {
+        LOG_WARNING("Problem with terminating raspivid stream command");
+        _process->kill();
+        if(!_process->waitForFinished(1000))
+        {
+            LOG_ERROR("Can't kill streamer");
+            return;
+        }
+        LOG_WARNING("Process killed");
+    }
 }
 
 void VideoProcessRunner::OnReadyRead()
