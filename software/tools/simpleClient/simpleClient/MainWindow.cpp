@@ -13,6 +13,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->line_pass->setEchoMode(QLineEdit::Password);
     ui->line_pass->setInputMethodHints(Qt::ImhHiddenText| Qt::ImhNoPredictiveText|Qt::ImhNoAutoUppercase);
 
+    proc = new QProcess(this);
+    connect(proc, SIGNAL(started()), this, SLOT(onProcessStart()));
+    connect(proc, SIGNAL(finished(int)), this, SLOT(onProcessStop(int)));
+    connect(proc, SIGNAL(readyRead()), this, SLOT(onDataFromProcess()));
+
     send_type = 0;
     js_input_thread = new JsInput(this);
 
@@ -179,7 +184,7 @@ void MainWindow::sendJsState()
     {
         0x30, // write cmd
         0x00, // addr
-         // driver model ( 0000 100S )
+        // driver model ( 0000 100S )
         ( brake_state ? 0x01 : 0x00 ),
         ( turbo_state ? 0x01 : 0x00 ),
         (uchar)left,
@@ -300,3 +305,67 @@ void MainWindow::on_cb_repeat_toggled(bool checked)
     }
 }
 
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QString request = "{ \"start\":\"start\", \"width\":%1, \"height\":%2, \"fps\":%3, \"port\":%4 }";
+    request = request.arg(ui->le_width->text(), ui->le_height->text(), ui->le_fps->text(), ui->le_port->text());
+    socket->write( QByteArray(request.toLatin1()) );
+
+
+    QStringList list;
+    list << QString("sleep 5; socat tcp:%1:%2 - | mplayer -fps %3 -cache %4 -")
+            .arg(ui->line_host->text())
+            .arg(ui->le_port->text())
+            .arg(ui->le_fsp2->text())
+            .arg(ui->le_cache->text());
+
+    proc->setArguments(list);
+    proc->setProgram("/usr/local/bin/mi_bot/mibSystemExecute");
+    proc->start();
+
+    Log("INFO", "process starting");
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    QString request = "{ \"stop\":\"stop\" }";
+    socket->write( QByteArray(request.toLatin1()) );
+}
+
+void MainWindow::onProcessStart()
+{
+    Log("INFO","Process started");
+}
+
+void MainWindow::onProcessStop(int i)
+{
+    Log("INFO","Process stoped with code: " + QString::number(i));
+}
+
+void MainWindow::onDataFromProcess()
+{
+    QString str = proc->readAll();
+    Log("PROC",str);
+
+    QStringList split = str.split(' ');
+    if(split.length() > 15)
+    {
+        QString last_str ;
+        for(int i=15;i>0;i--)
+        {
+            if(i < 10) return;
+            last_str = split[i].trimmed();
+            if(last_str.endsWith("%"))
+                break;
+        }
+
+
+        if(last_str.endsWith("%"))
+        {
+            last_str = last_str.left( last_str.size() - 1 );
+            ui->pb_cache->setMaximum( 100 );
+            ui->pb_cache->setValue( last_str.toInt() );
+        }
+    }
+}

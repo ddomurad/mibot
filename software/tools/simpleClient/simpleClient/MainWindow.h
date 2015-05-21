@@ -41,6 +41,14 @@ private slots:
 
     void on_cb_repeat_toggled(bool checked);
 
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void onProcessStart();
+    void onProcessStop(int i);
+    void onDataFromProcess();
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket * socket;
@@ -53,6 +61,7 @@ private:
 
     void sendJsState();
     void sendText();
+    QProcess * proc;
 };
 
 #endif // MAINWINDOW_H
