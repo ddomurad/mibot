@@ -43,38 +43,26 @@ int VideoStreamer::Fps()
 void VideoStreamer::thread_entry()
 {
     _is_running = true;
+
+    if(!enableStream())
+    {
+        _is_running = false;
+        disconnectFromServer();
+        return;
+    }
+
     while(_shall_run)
     {
-        v4l2_buffer buffer;
-        memset(&buffer, 0, sizeof(v4l2_buffer));
-        buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        buffer.memory = V4L2_MEMORY_MMAP;
-
-        if(ioctl(_fd_video, VIDIOC_DQBUF, &buffer) == -1)
+        if(!sendNextFrame())
         {
-            pushError("Can't dequeue buffer!");
             _is_running = false;
-            return;
+            break;
         }
-
-        if(write(_fd_socket, _buffers_maps[buffer.index],buffer.bytesused) == -1)
-        {
-            pushError("Can't send frame data!");
-            _is_running = false;
-            return;
-        }
-
-        if( ioctl(_fd_video, VIDIOC_QBUF, &buffer) == -1)
-        {
-            pushError("Can't queue buffer!");
-            _is_running = false;
-            return;
-        }
-
-        pushFps();
     }
 
     _is_running = false;
+    disableStream();
+    disconnectFromServer();
 }
 
 void VideoStreamer::StreamStop()
@@ -82,23 +70,20 @@ void VideoStreamer::StreamStop()
     if(!stopStreamThread())
         pushError("Thread closed can't join.");
 
-    disableStream();
     disconnectFromServer();
 }
 
 bool VideoStreamer::StreamStart(QString addr, int port, QString video_device, int width, int height, int buffcount, QString format)
 {
+    this->video_device = video_device;
+    this->width = width;
+    this->height = height;
+    this->buffcount = buffcount;
+    this->fmt = format;
+
     if(!connectToServer(addr,port)) return false;
-    if(enableStream(video_device, width, height, buffcount, format))
-    {
-        if(!startStreamThread())
-        {
-            disableStream();
-            disconnectFromServer();
-            return false;
-        }
-    }
-    else
+
+    if(!startStreamThread())
     {
         disconnectFromServer();
         return false;
@@ -166,7 +151,7 @@ void VideoStreamer::disconnectFromServer()
     close(_fd_socket);
 }
 
-bool VideoStreamer::enableStream(QString video_device, int width, int height, unsigned int buffcount, QString fmt)
+bool VideoStreamer::enableStream()
 {
     if((_fd_video = open(video_device.toStdString().c_str(), O_RDWR)) == -1)
     {
@@ -314,6 +299,36 @@ bool VideoStreamer::stopStreamThread()
     bool r = pthread_timedjoin_np(_thread,&ret,&time_spec) == 0;
     _thread = 0;
     return r;
+}
+
+bool VideoStreamer::sendNextFrame()
+{
+    v4l2_buffer buffer;
+    memset(&buffer, 0, sizeof(v4l2_buffer));
+    buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buffer.memory = V4L2_MEMORY_MMAP;
+
+    if(ioctl(_fd_video, VIDIOC_DQBUF, &buffer) == -1)
+    {
+        pushError("Can't dequeue buffer!");
+        return false;
+    }
+
+    if(write(_fd_socket, _buffers_maps[buffer.index],buffer.bytesused) == -1)
+    {
+        pushError("Can't send frame data!");
+        return false;
+    }
+
+    if( ioctl(_fd_video, VIDIOC_QBUF, &buffer) == -1)
+    {
+        pushError("Can't queue buffer!");
+        return false;
+    }
+
+    pushFps();
+
+    return true;
 }
 
 void VideoStreamer::pushError(QString error)

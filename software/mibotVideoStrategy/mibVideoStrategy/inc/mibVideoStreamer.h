@@ -32,6 +32,12 @@ private:
     int _fps_cnt;
     timeval last_time;
     unsigned int _buf_length;
+    QString video_device;
+    int width;
+    int height;
+    unsigned int buffcount;
+    QString fmt;
+
     //netowrk
     int _fd_socket;
     int _port;
@@ -48,11 +54,12 @@ private:
     bool connectToServer(QString addr, int port);
     void disconnectFromServer();
 
-    bool enableStream(QString video_device, int width, int height, unsigned int buffcount, QString format);
+    bool enableStream();
     void disableStream();
 
     bool startStreamThread();
     bool stopStreamThread();
+    bool sendNextFrame();
 
     void pushError(QString error);
     void pushFps();
