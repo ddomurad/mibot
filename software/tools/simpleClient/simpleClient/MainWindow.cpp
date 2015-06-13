@@ -369,3 +369,9 @@ void MainWindow::onDataFromProcess()
         }
     }
 }
+
+void MainWindow::onServerNewConnection()
+{
+
+}
+

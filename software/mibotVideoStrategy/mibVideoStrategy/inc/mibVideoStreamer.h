@@ -1,70 +1,65 @@
-#ifndef VIDEOSTREAMER_H
-#define VIDEOSTREAMER_H
+#ifndef STREAMER_H
+#define STREAMER_H
 
-#include "mibVideoStrategyGlobal.h"
-#include "mibVideoConfigRes.h"
-#include <QTcpSocket>
-#include <QElapsedTimer>
-
-#include <thread>
-#include <mutex>
-#include "mibV4L2Wrapper.h"
+#include <QtCore>
+#include <pthread.h>
+#include <vector>
 
 namespace mibot
 {
 
-class VideoStreamer : public QObject
+class VideoStreamer
 {
-    Q_OBJECT
 public:
-    static VideoStreamer * get();
+    VideoStreamer();
     ~VideoStreamer();
 
-    bool Init(QString configId);
-    void Attach(QTcpSocket*);
-    void Detach(QTcpSocket*);
-    void KeepAlive(QTcpSocket*);
+    QList<QString> Errors();
+    void ClearErrors();
 
-signals:
-    void OnFrameData(VideoStreamFrameData *arr);
+    bool StreamStart(QString addr, int port, QString video_device, int width, int height, int buffcount, QString format);
+    void StreamStop();
+    bool IsStreaming();
+    int  Fps();
 
 private:
+    QList<QString> _errors;
 
-    class TimedConnection
-    {
-    public:
-        QTcpSocket * socket;
-        QElapsedTimer timer;
-    };
+    //video
+    int _fd_video;
+    std::vector<void*> _buffers_maps;
+    int _fps;
+    int _fps_cnt;
+    timeval last_time;
+    unsigned int _buf_length;
+    //netowrk
+    int _fd_socket;
+    int _port;
+    QString addr;
 
-    bool startStreaming();
-    void stopStreaming();
-
-    void lockConnectionList();
-    void unlockConnectionList();
-
-    bool timedLock(int sec);
-    void unlock();
-
-    void  streamThread();
-    static void * __streamThread(void *);
-
-    VideoStreamer();
-
-    VideoConfigRes *config;
-    QList<TimedConnection> connections;
-
-    pthread_mutex_t _connections_update_mutex;
+    //thread
+    bool _shall_run;
+    bool _is_running;
     pthread_t _thread;
 
-    bool shallStreamingThreadRun;
-    bool shallUpdateConnectionList;
-    bool isStreaming;
-    bool isInitialized;
+    void thread_entry();
+    static void* __thread_entry(void *);
 
-    V4L2Wrapper * v4l2_wrapper;
+    bool connectToServer(QString addr, int port);
+    void disconnectFromServer();
+
+    bool enableStream(QString video_device, int width, int height, unsigned int buffcount, QString format);
+    void disableStream();
+
+    bool startStreamThread();
+    bool stopStreamThread();
+
+    void pushError(QString error);
+    void pushFps();
+
+    int getFMTFromString(QString str);
+    QString getStringFromFMT(int);
 };
 
 }
-
-#endif // VIDEOSTREAMER_H
+#endif // STREAMER_H

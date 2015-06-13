@@ -20,7 +20,7 @@ public:
     QJsonObject GetPendingObject();
 
     void RemoveCoruptedData();
-
+    void RemoveAllData();
 private:
     QByteArray _arr;
     int last_bracket;

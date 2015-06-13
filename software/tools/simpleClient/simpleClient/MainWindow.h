@@ -49,9 +49,11 @@ private slots:
     void onProcessStop(int i);
     void onDataFromProcess();
 
+    void onServerNewConnection();
 private:
     Ui::MainWindow *ui;
     QTcpSocket * socket;
+
     void Log(QString type, QString msg);
     QTimer *send_timer;
     JsInput * js_input_thread;

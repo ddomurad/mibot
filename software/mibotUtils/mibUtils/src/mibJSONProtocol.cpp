@@ -111,3 +111,8 @@ void JSONProtocol::RemoveCoruptedData()
 
     _arr.clear();
 }
+
+void JSONProtocol::RemoveAllData()
+{
+    _arr.clear();
+}

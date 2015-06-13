@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-04-28T19:02:52
+# Project created by QtCreator 2015-05-29T15:49:39
 #
 #-------------------------------------------------
 
@@ -8,31 +8,31 @@ QT       += network sql
 
 QT       -= gui
 
-TARGET = mibVideoStrategy
+TARGET = mibGPS
 TEMPLATE = lib
 
-CONFIG += c++11
+DEFINES += MIBGPS_LIBRARY
 
-DEFINES += MIBVIDEOSTRATEGY_LIBRARY
+CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
+INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibAccess.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
+LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 SOURCES += \
-    src/mibVideoStrategy.cpp \
-    src/mibVideoStreamer.cpp
+    src/mibGPSDataParser.cpp
 
 HEADERS += \
-    inc/mibVideoStrategyGlobal.h \
-    inc/mibVideoStrategy.h \
-    inc/mibVideoStreamer.h
+    inc/mibGpsGlobal.h \
+    inc/mibGPSDataParser.h
 
 unix {
-    target.path = /usr/local/lib/mi_bot
+    target.path = /usr/local/lib/mi_bot/
     INSTALLS += target
 }

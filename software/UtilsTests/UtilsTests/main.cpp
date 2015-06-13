@@ -12,100 +12,40 @@
 
 #include <mibLogger.h>
 #include <mibStandardLoggerBuilder.h>
+#include <mibGPSDataParser.h>
 
-#include <mibServer.h>
-#include <mibAbstractResource.h>
-#include <mibResourceWrapper.h>
-#include <mibSqlRepository.h>
-#include <mibGlobalAccess.h>
-#include <mibConnectionHandler.h>
+#include <QHttpPart>
 
-#define TRACE(...) qDebug() << #__VA_ARGS__ << __VA_ARGS__
+#include "Reader.h"
+#include <WMSClient.h>
 
-
-class TestApp : public QCoreApplication
+double long2tilex(double lon, int z)
 {
-public:
-    TestApp(int &argc,char * argv[]) :
-        QCoreApplication(argc,argv)
-    {}
+    return (lon + 180.0) / 360.0 * pow(2.0, z);
+}
 
-
-    void RunServer(mibot::Server * server)
-    {
-        _server = server;
-        _timer = new QTimer(this);
-
-        connect(_timer, SIGNAL(timeout()), _server,SLOT(StopServer()));
-        connect( server, SIGNAL(ServerStoped()), this,SLOT(quit()));
-
-        emit _server->StartServer();
-
-       // _timer->start(10000);
-    }
-
-
-private:
-    mibot::Server * _server;
-    QTimer * _timer;
-};
-
-void testFnc()
+double  lat2tiley(double lat, int z)
 {
+    return (1.0 - log( tan(lat * M_PI/180.0) + 1.0 / cos(lat * M_PI/180.0)) / M_PI) / 2.0 * pow(2.0, z);
+}
+
+double tilex2long(int x, int z)
+{
+    return x / pow(2.0, z) * 360.0 - 180;
+}
+
+double tiley2lat(int y, int z)
+{
+    double n = M_PI - 2.0 * M_PI * y / pow(2.0, z);
+    return 180.0 / M_PI * atan(0.5 * (exp(n) - exp(-n)));
 }
 
 int main(int argc, char *argv[])
 {
-    TestApp a(argc,argv);
+    QCoreApplication a(argc,argv);
+    //SerialReader* reader = new SerialReader(&a);
 
-    QFile file("/usr/local/etc/mi_bot/mibot_server.config");
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        qDebug() << "Can't load configuration file.";
-        exit(1);
-    }
-
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( file.readAll() );
-    file.close();
-
-    QJsonObject root_obj = jsonDoc.object();
-
-    if(root_obj["Logger"].isNull())
-    {
-        qDebug() << "No logger configs.";
-        exit(1);
-    }
-
-    if(root_obj["Server"].isNull())
-    {
-        qDebug() << "No server configs.";
-        exit(1);
-    }
-
-    if(root_obj["Access"].isNull())
-    {
-        qDebug() << "No Access configs.";
-        exit(1);
-    }
-
-    mibot::StandardLoggerBuilder buildier;
-    QJsonObject loggerObject = root_obj["Logger"].toObject();
-    buildier.BuildLogger( loggerObject  );
-
-    LOG_IMPORTANT("Mibot Server Starting");
-    LOG_IMPORTANT("Loading GlobalAccess");
-
-    QJsonObject access_obj = root_obj["Access"].toObject();
-    mibot::GlobalAccess::Init( access_obj );
-
-   // testFnc(); return 0;
-
-
-    LOG_IMPORTANT("Loading Server");
-    QJsonObject server_obj = root_obj["Server"].toObject();
-    mibot::Server * server =  mibot::Server::BuildServer( server_obj,  &a);
-
-    a.RunServer(  server );
-
+    WMSClient * client = new WMSClient(&a);
+    client->Test();
     a.exec();
 }

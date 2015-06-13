@@ -3,7 +3,10 @@
 
 #include <QObject>
 #include <mibAbstractSocketStrategy.h>
+#include <mibJSONProtocol.h>
+
 #include "mibVideoStrategyGlobal.h"
+#include "mibVideoStreamer.h"
 
 namespace mibot
 {
@@ -18,12 +21,26 @@ public:
 signals:
 
 public slots:
+
 private slots:
-    void onFrame(VideoStreamFrameData *frame);
+    void onStrategyUpdate();
 
 protected:
     void processNewData(QByteArray);
     bool init();
+
+private:
+    JSONProtocol protocol;
+    void tryRemoveCoruptedJSONProtocolData();
+    void processCommand(QJsonObject &obj);
+
+    VideoStreamer streamer;
+    QTimer * timer;
+
+    bool _shuld_stream;
+    QList<QJsonObject> _objsToSend;
+
+    void pushStateResponse(QString state, QList<QString> errorList = QList<QString>());
 };
 
 }
