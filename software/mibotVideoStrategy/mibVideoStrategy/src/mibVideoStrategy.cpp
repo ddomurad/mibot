@@ -17,15 +17,19 @@ VideoStrategy::VideoStrategy(Connection *connection) :
 
 VideoStrategy::~VideoStrategy()
 {
+    streamer.StreamStop();
 }
 
 void VideoStrategy::onStrategyUpdate()
 {
+    bool _shall_return = false;
     if(protocol.ContainsValidJSONObject())
     {
         QJsonObject obj = protocol.GetPendingObject();
         processCommand(obj);
         tryRemoveCoruptedJSONProtocolData();
+
+        _shall_return = true;
     }
     if(_objsToSend.count() != 0)
     {
@@ -34,8 +38,10 @@ void VideoStrategy::onStrategyUpdate()
 
         QJsonDocument doc(obj);
         _connection->TcpSocket->write(doc.toJson(QJsonDocument::Compact));
+
     }
 
+    if(_shall_return) return;
     if(_shuld_stream == false) return;
     if(_shuld_stream && streamer.IsStreaming()) return;
 
