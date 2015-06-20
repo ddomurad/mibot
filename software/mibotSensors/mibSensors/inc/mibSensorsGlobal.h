@@ -1,0 +1,12 @@
+#ifndef MIBSENSORS_GLOBAL_H
+#define MIBSENSORS_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(MIBSENSORS_LIBRARY)
+#  define MIBSENSORSSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define MIBSENSORSSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // MIBSENSORS_GLOBAL_H
