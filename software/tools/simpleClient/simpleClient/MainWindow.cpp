@@ -63,7 +63,7 @@ void MainWindow::on_btn_connect_clicked()
         sslSocket->setLocalCertificate( "./certs/" + cert + "/ssl.crt" );
         sslSocket->setPrivateKey( "./certs/" + cert + "/ssl.key", QSsl::Rsa, QSsl::Pem, ui->line_pass->text().toLatin1());
 
-        sslSocket->setProtocol(QSsl::SslV3);
+        sslSocket->setProtocol(QSsl::SecureProtocols);
 
         sslSocket->setCaCertificates(QSslCertificate::fromPath("./certs/s.pem"));
 

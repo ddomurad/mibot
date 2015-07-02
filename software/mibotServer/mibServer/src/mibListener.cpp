@@ -111,7 +111,7 @@ void Listener::onIncommingConnection()
                     this, SLOT(onPeerVerifyError(QSslError)));
 
             sslPendingSocket->setCaCertificates( _certs );
-            sslPendingSocket->setProtocol(QSsl::SslV3);
+            sslPendingSocket->setProtocol(QSsl::SecureProtocols);
             sslPendingSocket->setLocalCertificate( QString("%1/%2.crt").arg( _caCrtDir, _crtName) );
             sslPendingSocket->setPrivateKey( QString("%1/%2.key").arg( _caCrtDir, _crtName) );
             sslPendingSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
