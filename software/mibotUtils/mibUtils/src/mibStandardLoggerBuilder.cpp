@@ -114,11 +114,10 @@ void StandardLoggerBuilder::BuildSink(QJsonObject &json)
         if(json["Sender"].isUndefined())
         { LogProcess(LOG_TYPE::ERROR, "Undefined Sender parameter in LoggerPSQLSink."); return; }
 
-        //auto jsonObject = json.value("Database").toObject();
+        auto jsonObject = json.value("Database").toObject();
         LoggerPSQLSink * output = new LoggerPSQLSink(level,json["Sender"].toString());
-        LoggerManager::instance()->AddSink( output );
 
-        /*if(!output->Open(jsonObject,json["Sender"].toString() ))
+        if(!output->Open(jsonObject,json["Sender"].toString() ))
         {
             delete output;
             LogProcess(LOG_TYPE::ERROR, QString("Database LoggerSink NOT added."));
@@ -127,7 +126,7 @@ void StandardLoggerBuilder::BuildSink(QJsonObject &json)
         {
             LoggerManager::instance()->AddSink( output );
             LogProcess(LOG_TYPE::OK, QString("Database LoggerSink added."));
-        }*/
+        }
     }
     else
     {

@@ -16,11 +16,11 @@ DEFINES += MIBSERVER_LIBRARY
 CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
-INCLUDEPATH += ../../mibotAccess/mibAccess/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
-LIBS += /usr/local/lib/mi_bot/libmibAccess.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 SOURCES += \

@@ -1,12 +1,23 @@
 #ifndef GPSSENSOR_H
 #define GPSSENSOR_H
 
+#include "mibSensor.h"
 
-class GPSSensor
+namespace mibot
+{
+class GPSSensor: public Sensor<QString>
 {
 public:
-    GPSSensor();
     ~GPSSensor();
+    static GPSSensor * get();
+private:
+    GPSSensor();
+
+    // Sensor interface
+protected:
+    bool _intialize();
+    void _readAllSensors();
 };
+}
 
 #endif // GPSSENSOR_H

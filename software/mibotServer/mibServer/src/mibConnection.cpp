@@ -5,8 +5,8 @@ using namespace mibot;
 
 Connection::Connection() :
     Strategy(nullptr),
-    _user(nullptr),
-    _socket(nullptr)
+    UserObj(nullptr),
+    SocketObj(nullptr)
 {}
 
 Connection::~Connection()
@@ -14,40 +14,18 @@ Connection::~Connection()
     if( Strategy != nullptr)
         delete Strategy;
 
-    if(_user != nullptr)
-        delete _user;
+    if(UserObj != nullptr)
+        UserObj->Release();
 
-    if(_socket != nullptr)
-        delete _socket;
+    if(SocketObj != nullptr)
+       SocketObj->Release();
 }
 
-UserRes *Connection::UserObj()
-{
-    if(_user == nullptr)
-    {
-        _user = GlobalAccess::User( User );
-    }
-
-    return _user;
-}
-
-SocketRes *Connection::SocketObj()
-{
-    if(_socket == nullptr)
-    {
-        _socket = GlobalAccess::Socket( Socket );
-    }
-
-    return _socket;
-}
 
 QString Connection::Dump(bool deep)
 {
     if(deep)
     {
-        SocketRes *sock = SocketObj();
-        UserRes   *user = UserObj();
-
 
         QString socket_dump;
         if(TcpSocket == nullptr)
@@ -57,18 +35,17 @@ QString Connection::Dump(bool deep)
                     .arg(TcpSocket->peerAddress().toString())
                     .arg(TcpSocket->peerPort());
 
-        return QString("{ Socket:{ %1 Privileges:{ %5 } }, User:{ %2 Privileges:{ %6 } } , Socket:{ %3 }, Other:{ (Status:%4), (Ssl:%7) } }")
-                .arg( sock == nullptr ? "read_error" : sock->Dump() )
-                .arg( user == nullptr ? "read_error" : user->Dump() )
+        return QString("{ Socket:{ %1 } }, User:{ %2  } , Socket:{ %3 }, Other:{ (Status:%4), (Ssl:%5) } }")
+                .arg( SocketObj == nullptr ? "read_error" : SocketObj->Dump() )
+                .arg( UserObj == nullptr ? "read_error" : UserObj->Dump() )
                 .arg( socket_dump )
                 .arg( Status == Connection::Success ? "Success" : "Failed ("+ErrorStrnig+")")
-                .arg( sock == nullptr ? "read_error" : ( sock->PrivilegesObj == nullptr ? "read_error" : sock->PrivilegesObj->Dump()) )
-                .arg( user == nullptr ? "read_error" : ( user->PrivilegesObj == nullptr ? "read_error" : user->PrivilegesObj->Dump()) )
                 .arg( UseSsl );
     }
     else
         return QString( "{User: %1, Socket: %2, Status: %3, Ssl: %4}" )
-                .arg( User.toString(), Socket.toString() )
+                .arg( UserObj == nullptr ? "read_error" : UserObj->alias->value )
+                .arg( SocketObj == nullptr ? "read_error" : SocketObj->alias->value)
                 .arg( Status == Connection::Success ? "Success" : "Failed" )
                 .arg( UseSsl );
 }

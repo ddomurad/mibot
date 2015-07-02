@@ -37,6 +37,8 @@ private:
     QJsonArray getSocketInfo();
 
     void fixIfJsonIsCorrupted();
+
+    PrivilegeSetting * getPrivileges(QString res);
 };
 
 }

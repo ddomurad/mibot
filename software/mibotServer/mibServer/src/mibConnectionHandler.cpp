@@ -1,4 +1,5 @@
 #include "inc/mibConnectionHandler.h"
+
 #include <mibLogger.h>
 #include <QHostAddress>
 
@@ -21,32 +22,82 @@ void ConnectionHandler::NewConnection(Connection * connection)
     {
         if(connection->UseSsl)
         {
-            if( connection->UserObj()->PrivilegesObj->Level() <
-                    connection->SocketObj()->PrivilegesObj->Level())
+            if(connection->UserObj == nullptr)
             {
-                pushAndReleaseAudit( connection, "ConnctionFailure" , "Access level too low");
-
+                pushConnectionAudit( connection, "ConnctionFailure" , "Unknown user");
                 connection->TcpSocket->disconnectFromHost();
+
                 delete connection;
                 return;
             }
+
+            PrivilegeSetting * userPrivObj = SettingsClient::CreateReource<PrivilegeSetting>(connection->UserObj->privileges->value);
+            PrivilegeSetting * socketPrivObj = SettingsClient::CreateReource<PrivilegeSetting>(connection->SocketObj->privileges->value);
+
+            if(!userPrivObj->Sync())
+            {
+                LOG_ERROR( QString("Can't get users '%1' privilige settings: '%2'")
+                           .arg(connection->UserObj->alias->value)
+                           .arg(connection->UserObj->privileges->value));
+
+                pushConnectionAudit( connection, "ConnctionFailure" , "Unknown user access level");
+
+                connection->TcpSocket->disconnectFromHost();
+
+                userPrivObj->Release();
+                delete connection;
+                return;
+            }
+
+            if(!socketPrivObj->Sync())
+            {
+                LOG_ERROR( QString("Can't get socket '%1' privilige settings: '%2'")
+                           .arg(connection->SocketObj->alias->value)
+                           .arg(connection->UserObj->privileges->value));
+
+                pushConnectionAudit( connection, "ConnctionFailure" , "Unknown socket access level");
+
+                connection->TcpSocket->disconnectFromHost();
+
+                socketPrivObj->Release();
+                userPrivObj->Release();
+
+                delete connection;
+                return;
+            }
+
+            if( userPrivObj->level->value < socketPrivObj->level->value)
+            {
+                pushConnectionAudit( connection, "ConnctionFailure" , "Access level too low");
+
+                connection->TcpSocket->disconnectFromHost();
+
+                socketPrivObj->Release();
+                userPrivObj->Release();
+
+                delete connection;
+                return;
+            }
+
+            socketPrivObj->Release();
+            userPrivObj->Release();
         }
 
         if(!AbstractSocketStrategy::ApplyStrategy(connection))
         {
-            pushAndReleaseAudit( connection, "ConnctionFailure" , "Can't apply stategy");
+            pushConnectionAudit( connection, "ConnctionFailure" , "Can't apply stategy");
 
             connection->TcpSocket->disconnectFromHost();
             delete connection;
             return;
         }
 
-        pushAndReleaseAudit( connection, "Connected" , QString());
+        pushConnectionAudit( connection, "Connected" , QString());
         addConnection(connection);
     }
     else
     {
-        pushAndReleaseAudit( connection, "ConnctionFailure", connection->ErrorStrnig );
+        pushConnectionAudit( connection, "ConnctionFailure", connection->ErrorStrnig );
         connection->TcpSocket->close();
         delete connection;
         return;
@@ -58,7 +109,7 @@ void ConnectionHandler::onDisconnected()
     Connection * connection = connectionFromSocket( (QTcpSocket *)sender());
     LOG_IMPORTANT(connection->Dump(true));
 
-    pushAndReleaseAudit( connection, "Disconnected", QString() );
+    pushConnectionAudit( connection, "Disconnected", QString() );
 
     removeConnection(connection);
 }
@@ -88,22 +139,27 @@ void ConnectionHandler::removeConnection(Connection *connection)
     delete connection;
 }
 
-void ConnectionHandler::pushAndReleaseAudit(Connection *connection, QString entry_type, QString entry_desc)
+void ConnectionHandler::pushConnectionAudit(Connection *connection, QString entry_type, QString entry_desc)
 {
-    ConnectionAuditRes * audit = new ConnectionAuditRes;
+    QString addr = "unknown";
+    QString user = "unknown";
+    QString socket = "unknown";
+    QString strategy = "unknown";
+
     if(connection->TcpSocket != nullptr)
-    {
-        audit->SetFromAddr( connection->TcpSocket->peerAddress().toString() );
-    }
+        addr = connection->TcpSocket->peerAddress().toString();
 
-    audit->SetConnectionId( connection->Id );
-    audit->SetUser( connection->User );
-    audit->SeteSocket( connection->Socket );
-    audit->SetEntryTime( QDateTime::currentDateTime() );
+    if(connection->UserObj != nullptr)
+        user = connection->UserObj->alias->value;
 
-    audit->SetEntryType( entry_type );
-    audit->SetEntryDetails( entry_desc );
-    GlobalAccess::PushConnectionAudit(audit);
-    delete audit;
+    if(connection->SocketObj != nullptr)
+        socket = connection->SocketObj->alias->value;
+
+    if(connection->SocketObj != nullptr)
+        strategy = connection->SocketObj->strategy->value;
+
+
+    LOG_IMPORTANT( QString("%1 (%2) from '%3@%4' on socket '%5' with strategy '%6'")
+                   .arg(entry_type, entry_desc,user,addr, socket, strategy));
 }
 

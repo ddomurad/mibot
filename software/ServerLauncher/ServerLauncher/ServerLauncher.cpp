@@ -2,9 +2,9 @@
 #include "ServerLauncher.h"
 #include <QDebug>
 
+#include <mibSettingsClient.h>
 #include <mibLogger.h>
 #include <mibStandardLoggerBuilder.h>
-#include <mibGlobalAccess.h>
 
 ServerLauncher::ServerLauncher(QCoreApplication *parent) : QObject(parent)
 {
@@ -79,15 +79,11 @@ bool ServerLauncher::Init(QStringList args)
         exit(1);
     }
 
-    if(root_obj["Access"].isNull())
+    if(root_obj["SettingsClient"].isNull())
     {
-        qDebug() << "No Access configs.";
+        qDebug() << "No server configs.";
         exit(1);
     }
-
-    qDebug() << "Initialize Global Access";
-    QJsonObject access_obj = root_obj["Access"].toObject();
-    mibot::GlobalAccess::Init( access_obj );
 
     qDebug() << "Initialize Logger";
     mibot::StandardLoggerBuilder buildier;
@@ -103,6 +99,14 @@ bool ServerLauncher::Init(QStringList args)
     }
 
     LOG_IMPORTANT("Mibot Server Starting.");
+    LOG_IMPORTANT("Initializie SettingsClient.");
+
+    QJsonObject settingsClientObj = root_obj["SettingsClient"].toObject();
+    if(!mibot::SettingsClient::StartClient(settingsClientObj, 5000))
+    {
+        LOG_ERROR("Can't start SettingsClient");
+        exit(1);
+    }
 
     LOG_IMPORTANT("Loading Server.");
     QJsonObject server_obj = root_obj["Server"].toObject();
@@ -124,6 +128,9 @@ void ServerLauncher::Close()
     {
         _server->StopServer();
     }
+
+    mibot::SettingsClient::StopClient();
+
     //emit Closed();
 }
 

@@ -45,7 +45,7 @@ public:
     LoggerPSQLSink(LogLevel level, QString sender);
     ~LoggerPSQLSink();
 
-    //bool Open(QJsonObject &config, QString sender);
+    bool Open(QJsonObject &config, QString sender);
 
     // LoggerOutput interface
 public:

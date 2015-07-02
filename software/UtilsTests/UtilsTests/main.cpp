@@ -1,51 +1,98 @@
-#include <QCoreApplication>
-#include <qobject.h>
-#include <QFile>
 #include <QDebug>
-#include <cstdio>
-
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QVariant>
-
+#include <QCoreApplication>
+#include <mibSettingsClient.h>
+#include <mibSettingsObject.h>
 #include <mibLogger.h>
-#include <mibStandardLoggerBuilder.h>
-#include <mibGPSDataParser.h>
+#include <mibLoggerStandardSinks.h>
 
-#include <QHttpPart>
+#include <pthread.h>
 
-#include "Reader.h"
-#include <WMSClient.h>
-
-double long2tilex(double lon, int z)
+class MyUser : public mibot::SettingsObject
 {
-    return (lon + 180.0) / 360.0 * pow(2.0, z);
-}
+public:
+    MyUser(QString res):
+        SettingsObject(res, true)
+    {
+        alias = new mibot::StringSettingsValue("alias");
+        enabled = new mibot::BoolSettingsValue("enabled");
 
-double  lat2tiley(double lat, int z)
-{
-    return (1.0 - log( tan(lat * M_PI/180.0) + 1.0 / cos(lat * M_PI/180.0)) / M_PI) / 2.0 * pow(2.0, z);
-}
+        AddValue( alias );
+        AddValue( enabled );
+    }
 
-double tilex2long(int x, int z)
-{
-    return x / pow(2.0, z) * 360.0 - 180;
-}
+    mibot::StringSettingsValue *alias;
+    mibot::BoolSettingsValue *enabled;
+};
 
-double tiley2lat(int y, int z)
+void TestFunction()
 {
-    double n = M_PI - 2.0 * M_PI * y / pow(2.0, z);
-    return 180.0 / M_PI * atan(0.5 * (exp(n) - exp(-n)));
+    QStringList resList = mibot::SettingsClient::GetResourceList("./users/", 10 * 60 * 1000);
+    QList<MyUser*> users;
+    for(QString res : resList)
+    {
+        qDebug() << "GET: " << res;
+        users.append(mibot::SettingsClient::CreateReource<MyUser>( "./users/" + res ));
+    }
+
+    for(MyUser * user : users)
+        if(!user->Sync(1000,false))
+            LOG_WARNING("Can't sync: " + user->Resource());
+
+    for(MyUser * user : users)
+        if(user->Exists())
+            qDebug() << user->Resource()<< user->alias->value << user->enabled->value;
+
+    while(true)
+    {
+        int cnt = users.count();
+        for(MyUser * u : users)
+            if(u->enabled->value == false)
+                cnt--;
+
+        if(cnt == 0) break;
+        QThread::msleep(500);
+        LOG_INFO("Tick ...");
+    }
+
+    for(MyUser * u : users)
+    {
+        u->enabled->value = true;
+        if(!u->Upload(1000))
+            LOG_ERROR("Can't upload object: " + u->Resource());
+    }
+
+    for(MyUser * user : users)
+        user->Release();
 }
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc,argv);
-    //SerialReader* reader = new SerialReader(&a);
+    QCoreApplication app(argc, argv);
 
-    WMSClient * client = new WMSClient(&a);
-    client->Test();
-    a.exec();
+    mibot::LoggerManager::instance()->AddSink(
+                new mibot::LoggerConsoleSink(
+                mibot::LogLevel::Debug,
+                new mibot::LoggerSimpleConsoleFormater()));
+
+    LOG_INFO("Test log ...");
+    QJsonObject settings;
+    settings.insert("cert",QJsonValue("/home/work/Projects/praca_mgr/mibot/software/tools/SettingsManager/debug/certs/manager"));
+    settings.insert("caCerts",QJsonValue("/home/work/Projects/praca_mgr/mibot/software/tools/SettingsManager/debug/certs/trusted.pem"));
+    settings.insert("addr",QJsonValue("localhost"));
+    settings.insert("port",QJsonValue(20400));
+    settings.insert("peerName",QJsonValue("SettingsServer"));
+
+    if(!mibot::SettingsClient::StartClient( settings , 10 * 60 * 1000))
+    {
+        LOG_ERROR("Can't start settigns cloient !");
+        return 1;
+    }
+
+    TestFunction();
+
+    QThread::sleep(1);
+    mibot::SettingsClient::StopClient();
+
+
+    return app.exec();
 }

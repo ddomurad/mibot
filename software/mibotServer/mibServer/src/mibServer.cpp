@@ -1,5 +1,8 @@
 #include <mibLogger.h>
-#include <mibGlobalAccess.h>
+
+#include <mibSettingsClient.h>
+#include <mibSettingsDefs.h>
+
 #include "inc/mibConnection.h"
 #include "inc/mibServer.h"
 
@@ -27,86 +30,53 @@ Server *Server::BuildServer(QJsonObject &config, QObject * parent)
     out_server->_connectionHandler = new ConnectionHandler();
     out_server->_connectionHandler->moveToThread( out_server->_listenersThread );
 
-    if(config["Sockets"].isNull())
+    if(config["Ssl"].isNull())
     {
-        LOG_ERROR("No listeners defined.");
+        LOG_ERROR("No ssl config defined.");
         return out_server;
     }
 
-    QJsonArray listeners = config["Sockets"].toArray();
-    for(int i=0; i<listeners.count(); i++)
+    QJsonObject sslConfig = config["Ssl"].toObject();
+    if(!sslConfig["Cert"].isString() || !sslConfig["CaCerts"].isString())
     {
-        QJsonObject listener = listeners.at(i).toObject();
-        if( listener["Socket"].isNull())
-        {
-            LOG_ERROR("Id is not defined for listener.");
-            continue;
-        }
-
-        QString sockId = listener["Socket"].toString();
-        SocketRes * sockRes = GlobalAccess::Socket( sockId );
-
-        if(sockRes == nullptr)
-        {
-            LOG_ERROR("Socket with given id does not exit: " + sockId );
-            delete sockRes;
-            continue;
-        }
-
-        if(!sockRes->IsEnabled())
-        {
-            LOG_WARNING("Socket with given id is disabled: " + sockId );
-            delete sockRes;
-            continue;
-        }
-
-        if(sockRes->PrivilegesObj == nullptr)
-        {
-            LOG_ERROR("Socket privilage resolving error: " + sockId);
-            delete sockRes;
-            continue;
-        }
-
-
-        LOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
-                          arg(sockRes->Alias(), QString::number(sockRes->Port()), sockRes->UseSsl() ? "Yes" : "No") );
-
-        Listener * list = new Listener( sockRes );
-
-        auto sslSettings = listener["Ssl"];
-        if(sslSettings.isNull())
-        {
-            LOG_WARNING(QString("No ssl certificates setings specified. (%1)")
-                           .arg( sockRes->Alias() ));
-
-            if(sockRes->UseSsl())
-            {
-                LOG_ERROR(QString("This listener (%1) need to use ssl, but no setings are spesified.")
-                             .arg( sockRes->Alias() ));
-
-                delete list;
-                continue;
-            }
-        }else
-        {
-            QString crtDir = sslSettings.toObject()["CrtDir"].toString();
-            QString crtName = sslSettings.toObject()["Crt"].toString();
-
-            LOG_DEBUG( QString("Setup ssl ( CrtDir='%1', Crt='%2' )")
-                          .arg( crtDir, crtName ));
-
-            if(!list->InitCertificates( crtDir, crtName ))
-            {
-                LOG_ERROR("Certificates initialization error.");
-            }
-
-        }
-
-        connect( list, SIGNAL(NewConnection(Connection*)), out_server->_connectionHandler, SLOT(NewConnection(Connection*)));
-
-        out_server->AddListener( list );
+        LOG_ERROR("Invalid ssl config!");
+        return out_server;
     }
 
+    QStringList socketsList = SettingsClient::GetResourceList(SocketSetting::DefaultDir, 5000);
+
+    if(socketsList.empty())
+    {
+        LOG_ERROR("Can't read sockets!");
+        return out_server;
+    }
+
+    for(QString socketResName : socketsList)
+    {
+        QString socketResPath = SocketSetting::DefaultDir + socketResName;
+
+        SocketSetting * socketObj = SettingsClient::CreateReource<SocketSetting>(socketResPath);
+        if(!socketObj->Sync())
+        {
+            LOG_ERROR(QString("Can't read socket settings: %1").arg(socketResPath));
+            continue;
+        }
+
+        LOG_IMPORTANT( QString("Adding listener (Name='%1', Port='%2', UseSSL=%3).").
+                       arg(socketObj->alias->value, QString::number(socketObj->port->value), socketObj->useSsl->value ? "Yes" : "No") );
+
+        Listener * list = new Listener( socketObj );
+
+        if( !list->InitCertificates(sslConfig["CaCerts"].toString(), sslConfig["Cert"].toString()) )
+        {
+            LOG_ERROR( QString("Can't intialize certificates for socker: %1").arg(socketObj->alias->value));
+            delete list;
+        }else
+        {
+            connect( list, SIGNAL(NewConnection(Connection*)), out_server->_connectionHandler, SLOT(NewConnection(Connection*)));
+            out_server->AddListener( list );
+        }
+    }
 
     return out_server;
 }

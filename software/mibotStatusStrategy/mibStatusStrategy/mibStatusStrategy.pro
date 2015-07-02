@@ -15,26 +15,26 @@ DEFINES += MIBSTATUSSTRATEGY_LIBRARY
 CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
-INCLUDEPATH += ../../mibotAccess/mibAccess/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
 INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
+INCLUDEPATH += ../../mibotSensors/mibSensors/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
-LIBS += /usr/local/lib/mi_bot/libmibAccess.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
 LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
+LIBS += /usr/local/lib/mi_bot/libmibSensors.so
 
 
 SOURCES += \
     src/mibStatusStrategy.cpp \
-    src/mibStatusConfigRes.cpp \
-    src/mibStatusReader.cpp
+    src/mibStatusSettings.cpp
 
 HEADERS += \
     inc/mibStatusStrategyGlobal.h \
     inc/mibStatusStrategy.h \
-    inc/mibStatusConfigRes.h \
-    inc/mibStatusReader.h
+    inc/mibStatusSettings.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

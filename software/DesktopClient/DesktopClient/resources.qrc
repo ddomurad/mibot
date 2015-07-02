@@ -1,2 +1,9 @@
-<RCC/>
-
+<RCC>
+    <qresource prefix="/gui/incons">
+        <file>resources/remove.png</file>
+        <file>resources/edit.png</file>
+        <file>resources/add.png</file>
+        <file>resources/save.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>

@@ -14,7 +14,7 @@ class AbstractSocketStrategy : public QObject
 public:
     ~AbstractSocketStrategy();
 
-    static bool ApplyStrategy(Connection*connection);
+    static bool ApplyStrategy(Connection *connection);
 signals:
 
 public slots:

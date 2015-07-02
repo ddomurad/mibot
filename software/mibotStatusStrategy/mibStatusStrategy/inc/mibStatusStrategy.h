@@ -4,11 +4,10 @@
 #include <QObject>
 #include <mibJSONProtocol.h>
 #include <mibAbstractSocketStrategy.h>
-#include <mibMCP3008.h>
 
+#include <mibSensors.h>
 #include "mibStatusStrategyGlobal.h"
-#include "mibStatusConfigRes.h"
-#include "mibStatusReader.h"
+#include "mibStatusSettings.h"
 
 namespace mibot
 {
@@ -34,7 +33,12 @@ private:
     void fixIfJsonIsCorrupted();
     QJsonObject createRequest(QJsonObject & obj);
     void readValuesToJsonObjec(QJsonObject & obj);
-    StatusReader * _status_reader;
+
+    StatusSettings * _statusSettigns;
+    SensorReader<QString> *_systemSensorsReader;
+    SensorReader<int> *_mcp3008Reader;
+    SensorReader<QString> *_gpsSensorsReader;
+
     QTimer * _update_timer;
     bool    _auto_send;
     QList<QString> _read_values_filter;

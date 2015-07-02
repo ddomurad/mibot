@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <mibGPIO.h>
 
-#include "mibDriveConfigRes.h"
+#include "mibDriveSettings.h"
 #include "mibDriveStrategyGlobal.h"
 
 #include <mibAbstractSocketStrategy.h>
@@ -52,8 +52,7 @@ private:
     QTimer * _update_timer;
     QElapsedTimer _emergency_brake_timer;
 
-    //DriveStartegyConfig _config;
-    DriveConfigRes *_config;
+    DriveConfigSettings *_driveSettings;
     DrivingState *_state;
 
     template <typename T>

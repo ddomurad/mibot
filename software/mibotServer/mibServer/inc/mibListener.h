@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QtNetwork>
 
-#include <mibGlobalAccess.h>
 #include "mibConnection.h"
 
 namespace mibot
@@ -25,10 +24,10 @@ class Listener : public QObject
 {
     Q_OBJECT
 public:
-    explicit Listener( SocketRes *sock );
+    explicit Listener( SocketSetting *sock );
     ~Listener();
 
-    bool InitCertificates(QString crtDir, QString crt);
+    bool InitCertificates(QString caCrtDir, QString crt);
     bool UsingSsl();
     QString Name();
 
@@ -53,9 +52,9 @@ private:
 
     bool initCaCertificates();
     QTcpServer * _server;
-    SocketRes *_sockRes;
+    SocketSetting *_sockSettings;
 
-    QString     _crtDir;
+    QString     _caCrtDir;
     QString     _crtName;
     QStringList _caCrts;
 

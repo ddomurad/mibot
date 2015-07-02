@@ -13,8 +13,8 @@ AbstractSocketStrategy::~AbstractSocketStrategy()
 
 bool AbstractSocketStrategy::ApplyStrategy(Connection * connection)
 {
-    if(connection->SocketObj() == nullptr) return false;
-    QString strategy = connection->SocketObj()->Strategy();
+    if(connection->SocketObj == nullptr) return false;
+    QString strategy = connection->SocketObj->strategy->value;
 
     QLibrary plugin( QString("/usr/local/lib/mi_bot/libmib%1Strategy.so").arg(strategy));
     typedef AbstractSocketStrategy * (*StrategyLoader)(Connection *);

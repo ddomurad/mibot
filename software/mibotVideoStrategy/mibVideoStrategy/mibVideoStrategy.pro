@@ -16,11 +16,11 @@ CONFIG += c++11
 DEFINES += MIBVIDEOSTRATEGY_LIBRARY
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
-INCLUDEPATH += ../../mibotAccess/mibAccess/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
-LIBS += /usr/local/lib/mi_bot/libmibAccess.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
 
 SOURCES += \

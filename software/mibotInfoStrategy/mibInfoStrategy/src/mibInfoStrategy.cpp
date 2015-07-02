@@ -1,5 +1,6 @@
 #include <mibLogger.h>
-#include <mibGlobalAccess.h>
+#include <mibSettingsClient.h>
+#include <mibSettingsDefs.h>
 
 #include "inc/mibInfoStrategy.h"
 
@@ -12,9 +13,7 @@ InfoStrategy::InfoStrategy(Connection *connection)
 }
 
 InfoStrategy::~InfoStrategy()
-{
-
-}
+{}
 
 void InfoStrategy::onStrategyUpdate()
 {
@@ -79,31 +78,61 @@ void InfoStrategy::getInfoObject(QJsonObject &obj, QString request)
 
 QJsonArray InfoStrategy::getSocketInfo()
 {
-    int client_priviliges = _connection->UserObj()->PrivilegesObj->Level();
+    PrivilegeSetting * userPrivObj = getPrivileges( _connection->UserObj->privileges->value );
 
-    ResourcesSet<SocketRes> * socket_set =  GlobalAccess::AllEnabledSockets();
-    if(socket_set == nullptr) return QJsonArray();
-    QJsonArray arr;
-    for(int i=0;i<socket_set->Count(); i++)
+    if(userPrivObj == nullptr) return QJsonArray();
+    int client_priviliges = userPrivObj->level->value;
+
+    userPrivObj->Release();
+
+    QStringList socketsList = SettingsClient::GetResourceList(SocketSetting::DefaultDir);
+
+    if(socketsList.empty())
     {
-        SocketRes * socket = socket_set->At(i);
-
-        if(socket->PrivilegesObj == nullptr)
-            continue;
-
-        if(socket->PrivilegesObj->Level() > client_priviliges)
-            continue;
-
-        QJsonObject json_socket;
-        json_socket.insert("type", QJsonValue(socket->Strategy()));
-        json_socket.insert("privileges", QJsonValue(socket->PrivilegesObj->Level()));
-        json_socket.insert("port", QJsonValue(socket->Port()));
-        json_socket.insert("ssl", QJsonValue(socket->UseSsl()));
-        arr.append( QJsonValue(json_socket) );
-
+        LOG_ERROR("Can't get socket list");
+        return QJsonArray();
     }
 
-    delete socket_set;
+    QJsonArray arr;
+    for(QString socketResName : socketsList)
+    {
+        QString socketResPath = SocketSetting::DefaultDir + socketResName;
+
+        SocketSetting * socketObj = SettingsClient::CreateReource<SocketSetting>(socketResPath);
+        if(!socketObj->Sync(SC_OP_DEF_TIME, true))
+        {
+            LOG_ERROR("Can't get socket settings");
+            socketObj->Release();
+            continue;
+        }
+
+        PrivilegeSetting * socketPriv = getPrivileges( socketObj->privileges->value );
+
+        if(socketPriv == nullptr)
+        {
+            socketObj->Release();
+            continue;
+        }
+
+        if(socketPriv->level->value > client_priviliges)
+        {
+            socketPriv->Release();
+            socketObj->Release();
+            continue;
+        }
+
+        QJsonObject json_socket;
+        json_socket.insert("type", QJsonValue(socketObj->strategy->value));
+        json_socket.insert("privileges", QJsonValue(socketPriv->level->value));
+        json_socket.insert("port", QJsonValue(socketObj->port->value));
+        json_socket.insert("ssl", QJsonValue(socketObj->useSsl->value));
+
+        arr.append( QJsonValue(json_socket) );
+
+        socketPriv->Release();
+        socketObj->Release();
+    }
+
     return arr;
 }
 
@@ -114,6 +143,20 @@ void InfoStrategy::fixIfJsonIsCorrupted()
         LOG_WARNING("StatusStrategy JSONProtocol handler contains corrupted json data. The handler will try to remove corrupted data.");
         _json_protocol.RemoveCoruptedData();
     }
+}
+
+PrivilegeSetting *InfoStrategy::getPrivileges(QString res)
+{
+    PrivilegeSetting * privObj = SettingsClient::CreateReource<PrivilegeSetting>(res);
+
+    if(!privObj->Sync(SC_OP_DEF_TIME, true))
+    {
+        LOG_ERROR(QString("Can't get privilege settings: '%1'").arg(res));
+        privObj->Release();
+        return nullptr;
+    }
+
+    return privObj;
 }
 
 AbstractSocketStrategy *createStrategy(Connection *connection)

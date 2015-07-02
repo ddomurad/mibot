@@ -4,7 +4,7 @@
 #include <QTcpSocket>
 #include <QString>
 
-#include <mibGlobalAccess.h>
+#include <mibSettingsDefs.h>
 #include "mibAbstractSocketStrategy.h"
 
 namespace mibot
@@ -19,24 +19,20 @@ public:
     Connection();
     ~Connection();
 
-    QUuid               Id;
-    QUuid               User;
-    QUuid               Socket;
     QTcpSocket *        TcpSocket;
     ConnectionStatus    Status;
     QString             ErrorStrnig;
 
     bool                UseSsl;
 
-    UserRes             *UserObj();
-    SocketRes           *SocketObj();
+    UserSetting             *UserObj;
+    SocketSetting           *SocketObj;
 
     AbstractSocketStrategy * Strategy;
 
     QString             Dump(bool deep);
 private:
-    UserRes             *_user;
-    SocketRes           *_socket;
+
 };
 
 }

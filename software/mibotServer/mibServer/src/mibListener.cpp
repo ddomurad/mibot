@@ -19,10 +19,10 @@ void SslTcpServer::incomingConnection(qintptr descriptor)
 }
 
 
-Listener::Listener(SocketRes *sock) :
-    QObject(nullptr), _sockRes(sock)
+Listener::Listener(SocketSetting *sock) :
+    QObject(nullptr), _sockSettings(sock)
 {
-    if(_sockRes->UseSsl())
+    if(_sockSettings->useSsl->value)
         _server = new SslTcpServer(this);
     else
         _server = new QTcpServer(this);
@@ -38,22 +38,25 @@ Listener::Listener(SocketRes *sock) :
 
 Listener::~Listener()
 {
-    if(_sockRes != nullptr)
-        delete _sockRes;
+    if(_sockSettings != nullptr)
+    {
+        _sockSettings->Release();
+        _sockSettings = nullptr;
+    }
 }
 
-bool Listener::InitCertificates(QString crtDir, QString crt)
+bool Listener::InitCertificates(QString caCrtDir, QString crt)
 {
-    if( _sockRes->UseSsl() )
+    if( _sockSettings->useSsl->value )
     {
-        _crtDir = crtDir;
+        _caCrtDir = caCrtDir;
         _crtName = crt;
         if( !initCaCertificates() )
             return false;
     }
     else
     {
-        LOG_WARNING( QString("Ssl support in socket '%1'' is disabled.").arg(_sockRes->Alias()));
+        LOG_WARNING( QString("Ssl support in socket '%1'' is disabled.").arg(_sockSettings->alias->value));
     }
 
     return true;
@@ -62,21 +65,21 @@ bool Listener::InitCertificates(QString crtDir, QString crt)
 
 void Listener::StartListen()
 {
-    if(!_server->listen( QHostAddress::Any, _sockRes->Port() ))
+    if(!_server->listen( QHostAddress::Any, _sockSettings->port->value ))
     {
-        LOG_ERROR(QString("Listener '%1' starting error.").arg(_sockRes->Alias()));
+        LOG_ERROR(QString("Listener '%1' starting error.").arg(_sockSettings->alias->value));
         emit ListenError();
     }
     else
     {
-        LOG_INFO(QString("Listener '%1' is started.").arg(_sockRes->Alias()));
+        LOG_INFO(QString("Listener '%1' is started.").arg(_sockSettings->alias->value));
         emit ListeningStarted();
     }
 }
 
 void Listener::StopListen()
 {
-    LOG_INFO(QString("Stoping listener '%1'.").arg(_sockRes->Alias()));
+    LOG_INFO(QString("Stoping listener '%1'.").arg(_sockSettings->alias->value));
     if(_server->isListening())
     {
         _server->close();
@@ -95,7 +98,7 @@ void Listener::onIncommingConnection()
 
 
         pendingSocket->setSocketOption(QAbstractSocket::KeepAliveOption, true );
-        if(_sockRes->UseSsl())
+        if(_sockSettings->useSsl->value)
         {
             QSslSocket * sslPendingSocket = (QSslSocket *) pendingSocket;
             connect( sslPendingSocket, SIGNAL(sslErrors(QList<QSslError>)),
@@ -109,8 +112,8 @@ void Listener::onIncommingConnection()
 
             sslPendingSocket->setCaCertificates( _certs );
             sslPendingSocket->setProtocol(QSsl::SslV3);
-            sslPendingSocket->setLocalCertificate( QString("%1/%2.crt").arg( _crtDir, _crtName) );
-            sslPendingSocket->setPrivateKey( QString("%1/%2.key").arg( _crtDir, _crtName) );
+            sslPendingSocket->setLocalCertificate( QString("%1/%2.crt").arg( _caCrtDir, _crtName) );
+            sslPendingSocket->setPrivateKey( QString("%1/%2.key").arg( _caCrtDir, _crtName) );
             sslPendingSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);
 
             sslPendingSocket->startServerEncryption();
@@ -169,7 +172,6 @@ void Listener::onConnectionEncrypted()
 
 void Listener::onPeerVerifyError(QSslError e)
 {
-    //QTcpSocket * socket = (QTcpSocket*)sender();
     LOG_ERROR(QString("PeerVerifyError error ( %1 ).")
               .arg(e.errorString()) );
 }
@@ -177,43 +179,61 @@ void Listener::onPeerVerifyError(QSslError e)
 bool Listener::initCaCertificates()
 {
     _certs.clear();
-    if(_sockRes == nullptr)
+    if(_sockSettings == nullptr)
         return false;
 
-    ResourcesSet<UserRes> * set = GlobalAccess::EnabledUsers();
+    QStringList usersList = SettingsClient::GetResourceList(UserSetting::DefaultDir);
 
-    if(set == nullptr)
+    if(usersList.empty())
     {
-        LOG_ERROR( "Cant get all enabled users." );
+        LOG_ERROR( "Cant get users list." );
         return false;
     }
 
-    for( int i=0; i<set->Count(); i++)
+    for(QString userResName : usersList)
     {
-        UserRes * user = set->At(i);
-        if(user->CertificateName().isEmpty())
+        QString userResPath = UserSetting::DefaultDir + userResName;
+        UserSetting * userObj = SettingsClient::CreateReource<UserSetting>(userResPath);
+
+        if(!userObj->Sync())
         {
-            LOG_WARNING( QString("User: %1[id: %2] has no certificate specified").arg(user->Alias(), user->Id().toString()));
+            LOG_ERROR(QString("Can't get user setting '%1'").arg(userResPath));
             continue;
         }
 
-        QString caCrtName = user->CertificateName();
+        if(userObj->isEnabled->value == false)
+        {
+            userObj->Release();
+            continue;
+        }
+
+        if(userObj->certificate->value.isEmpty())
+        {
+            LOG_WARNING( QString("User: %1[res: %2] has no certificate specified").arg(userObj->alias->value, userObj->Resource()));
+            userObj->Release();
+            continue;
+        }
+
+        QString caCrtName = userObj->certificate->value;
 
         if(caCrtName.isEmpty() || caCrtName.contains('.'))
         {
             LOG_ERROR(QString("CaCertficate name can't be empnty or contains a '.' char. (%1)")
                       .arg(caCrtName));
 
+            userObj->Release();
             continue;
         }
 
-        QString caPath = QString("%1/%2.crt").arg( _crtDir, caCrtName );
+        QString caPath = QString("%1/%2.crt").arg( _caCrtDir, caCrtName );
         QFile crtFile( caPath );
 
         if( !crtFile.open( QIODevice::ReadOnly) )
         {
             LOG_ERROR(QString("Can't open certificate file (%1)")
                       .arg(caPath));
+
+            userObj->Release();
             continue;
         }
 
@@ -221,10 +241,10 @@ bool Listener::initCaCertificates()
         crtFile.close();
 
         LOG_INFO( QString("CaCertificate laoded (%1) for (%2)")
-                  .arg( caPath, _sockRes->Alias() ) );
-    }
+                  .arg( caPath, _sockSettings->alias->value ) );
 
-    delete set;
+        userObj->Release();
+    }
 
     return true;
 }
@@ -235,11 +255,10 @@ void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorStr
 
     connection->UseSsl = ssl;
 
-    connection->Id       =   QUuid::createUuid();
-    connection->Socket   =   _sockRes->Id();
     connection->TcpSocket   =   socket;
-    connection->User     =   QUuid();
     connection->ErrorStrnig = errorString;
+    connection->UserObj =   nullptr;
+    connection->SocketObj = _sockSettings->CloneRef<SocketSetting>();
     connection->Status   =   errorString.isEmpty() ?
                 Connection::Success :
                 Connection::Failure;
@@ -248,12 +267,23 @@ void Listener::emitNewConnection(QTcpSocket * socket, bool ssl, QString errorStr
     {
         QSslSocket * sslSocket = (QSslSocket*) socket;
         QList<QString> peerIDs = sslSocket->peerCertificate().subjectInfo(QSslCertificate::CommonName);
-        if(peerIDs.count() != 0) connection->User = QUuid( peerIDs[0] );
+        if(peerIDs.count() != 0)
+        {
+            UserSetting * userObj = SettingsClient::CreateReource<UserSetting>(peerIDs[0]);
+            if(!userObj->Sync())
+            {
+                LOG_ERROR("Can't get user settings.");
+                userObj->Release();
+                connection->UserObj = nullptr;
+            }else
+            {
+                connection->UserObj = userObj;
+            }
+        }
     }
 
     qDebug() << "New conenction ssl:" << ssl
-             << "id:" << _sockRes->Id()
-             << "user:" << connection->User
+             << "user:" << (connection->UserObj == nullptr ? "unknown" : connection->UserObj->Resource())
              << "error:" << connection->ErrorStrnig
              << "status:" << connection->Status;
 

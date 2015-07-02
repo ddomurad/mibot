@@ -17,12 +17,12 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
-INCLUDEPATH += ../../mibotAccess/mibAccess/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
-LIBS += /usr/local/lib/mi_bot/libmibAccess.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 
 SOURCES += main.cpp \
     ServerLauncher.cpp

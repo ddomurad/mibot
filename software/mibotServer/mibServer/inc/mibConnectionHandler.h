@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "mibConnection.h"
-#include <mibAccessResources.h>
 
 namespace mibot
 {
@@ -27,7 +26,7 @@ private:
     Connection *    connectionFromSocket(QTcpSocket *socket);
     void            addConnection(Connection *connection);
     void            removeConnection(Connection *connection);
-    void            pushAndReleaseAudit(Connection *connection, QString entry_type, QString entry_desc);
+    void            pushConnectionAudit(Connection *connection, QString entry_type, QString entry_desc);
 
     QList<Connection *> _connections;
 };

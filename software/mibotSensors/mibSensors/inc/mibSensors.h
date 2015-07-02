@@ -1,13 +1,10 @@
 #ifndef MIBSENSORS_H
 #define MIBSENSORS_H
 
-#include "mibsensors_global.h"
-
-class MIBSENSORSSHARED_EXPORT mibSensors
-{
-
-public:
-    mibSensors();
-};
+#include "mibSensorsGlobal.h"
+#include "mibSensor.h"
+#include "mibSystemSensors.h"
+#include "mibMCP3008Sensor.h"
+#include "mibGPSSensor.h"
 
 #endif // MIBSENSORS_H

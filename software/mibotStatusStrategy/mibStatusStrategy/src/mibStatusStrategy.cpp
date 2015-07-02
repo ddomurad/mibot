@@ -1,11 +1,15 @@
 #include <mibLogger.h>
-#include <mibGlobalAccess.h>
+#include <mibSettingsClient.h>
 #include "inc/mibStatusStrategy.h"
 
 using namespace mibot;
 
 StatusStrategy::StatusStrategy(Connection *connection) :
     AbstractSocketStrategy(connection),
+    _statusSettigns(nullptr),
+    _systemSensorsReader(nullptr),
+    _mcp3008Reader (nullptr),
+    _gpsSensorsReader(nullptr),
     _auto_send(false)
 {
     _update_timer = new QTimer(this);
@@ -14,7 +18,23 @@ StatusStrategy::StatusStrategy(Connection *connection) :
 
 StatusStrategy::~StatusStrategy()
 {
-    StatusReader::ReleaseStatusReader( _connection );
+    if(_systemSensorsReader != nullptr)
+    {
+        delete _systemSensorsReader;
+    }
+
+    if(_mcp3008Reader != nullptr)
+    {
+        delete _mcp3008Reader;
+    }
+
+    if(_gpsSensorsReader != nullptr)
+    {
+        delete _gpsSensorsReader;
+    }
+
+    if(_statusSettigns != nullptr)
+        _statusSettigns->Release();
 }
 
 void StatusStrategy::onStrategyUpdate()
@@ -50,15 +70,38 @@ void StatusStrategy::processNewData(QByteArray arr)
 }
 
 bool StatusStrategy::init()
-{
-    _status_reader = StatusReader::GetStatusReader(_connection);
-    if(_status_reader == nullptr)
+{    
+    _statusSettigns = SettingsClient::CreateReource<StatusSettings>( _connection->SocketObj->strategyConfig->value );
+    if(!_statusSettigns->Sync())
     {
-        LOG_ERROR("Can't initialize StatusStrategy. (_status_reader == nullptr)");
+        LOG_ERROR(QString("Can't get status settings '%1'").arg( _connection->SocketObj->strategyConfig->value ));
+        _statusSettigns->Release();
         return false;
     }
 
-    _update_timer->setInterval( _status_reader->Config()->InternalDelay() );
+    if(!SystemSensors::get()->Initialize())
+    {
+        LOG_ERROR("Can't initialize SystemSensors!");
+        return false;
+    }
+
+    if(!MCP3008Sensor::get()->Initialize())
+    {
+        LOG_ERROR("Can't initialize MCP3008Sensor");
+        return false;
+    }
+
+    if(!GPSSensor::get()->Initialize())
+    {
+        LOG_ERROR("Can't initialize GPSSensor");
+        return false;
+    }
+
+    _systemSensorsReader = SystemSensors::get()->GetReader( _statusSettigns->updateRatio->value );
+    _mcp3008Reader = MCP3008Sensor::get()->GetReader( _statusSettigns->updateRatio->value );
+    _gpsSensorsReader = GPSSensor::get()->GetReader( _statusSettigns->updateRatio->value );
+
+    _update_timer->setInterval( _statusSettigns->internalDelay->value );
     _update_timer->start();
 
     return true;
@@ -134,27 +177,58 @@ QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
         }
     }
 
-
     return out;
 }
 
 void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
 {
     QJsonArray arr;
-    QMap<QString,QVariant> values = _status_reader->Readings();
+    QMap<QString,QVariant> values = _systemSensorsReader->ReadAll();
+    float accValue  = _mcp3008Reader->Read(
+                _statusSettigns->enginesAccuMcp3008Channel->value
+                ).toFloat() * _statusSettigns->enginesAccuVScale->value;
+
+    QPointF gpsPos = _gpsSensorsReader->Read("pos").toPointF();
+
     if(_read_values_filter.empty())
     {
         for(QString k : values.keys())
         {
             QJsonObject obj;
-            obj.insert(k,QJsonValue( values[k].toString() ));
+            obj.insert(k,QJsonValue(values[k].toDouble()));
             arr.append( QJsonValue(obj) );
         }
+
+        QJsonObject obj;
+        obj.insert("accu_volt", QJsonValue( accValue ));
+        arr.append( QJsonValue(obj) );
+
+        QJsonObject obj2;
+        obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
+        obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
+        arr.append( QJsonValue(obj2) );
     }
     else
     {
         for(QString k : _read_values_filter)
         {
+            if(k == "accu_volt")
+            {
+                QJsonObject obj;
+                obj.insert(k,accValue);
+                arr.append( QJsonValue(obj) );
+                continue;
+            }
+
+            if(k == "gps_pos")
+            {
+                QJsonObject obj2;
+                obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
+                obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
+                arr.append( QJsonValue(obj2) );
+                continue;
+            }
+
             if(!values.contains(k))
             {
                 QJsonObject obj;

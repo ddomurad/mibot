@@ -57,30 +57,30 @@ LoggerPSQLSink::~LoggerPSQLSink()
     _db.close();
 }
 
-//bool LoggerPSQLSink::Open(QJsonObject &config, QString sender)
-//{
-//    _db = QSqlDatabase::addDatabase( config["Driver"].toString(), "LOGGER_BASE");
+bool LoggerPSQLSink::Open(QJsonObject &config, QString sender)
+{
+    _db = QSqlDatabase::addDatabase( config["Driver"].toString());
 
-//    _db.setHostName( config["Host"].toString() );
-//    _db.setPort( config["Port"].toInt() );
-//    _db.setDatabaseName( config["Base"].toString());
-//    _db.setUserName( config["User"].toString() );
-//    _db.setPassword( config["Password"].toString() );
+    _db.setHostName( config["Host"].toString() );
+    _db.setPort( config["Port"].toInt() );
+    _db.setDatabaseName( config["Base"].toString());
+    _db.setUserName( config["User"].toString() );
+    _db.setPassword( config["Password"].toString() );
 
-//    _sender = sender;
+    _sender = sender;
 
-//    QString logStr = QString("Connecting to database server: (h='%1:%4', u='%2', db='%3')")
-//                    .arg(_db.hostName(), _db.userName(), _db.databaseName())
-//                    .arg(_db.port());
+    QString logStr = QString("Connecting to database server: (h='%1:%4', u='%2', db='%3')")
+                    .arg(_db.hostName(), _db.userName(), _db.databaseName())
+                    .arg(_db.port());
 
-//    qDebug() << logStr;
-//        if(!_db.open())
-//        qDebug() << "PSql database connection failure.";
-//    else
-//        qDebug() << "PSql database connection success.";
+    qDebug() << logStr;
+        if(!_db.open())
+        qDebug() << "PSql database connection failure.";
+    else
+        qDebug() << "PSql database connection success.";
 
-//    return _db.isOpen();
-//}
+    return _db.isOpen();
+}
 
 void LoggerPSQLSink::Write(QString)
 {}

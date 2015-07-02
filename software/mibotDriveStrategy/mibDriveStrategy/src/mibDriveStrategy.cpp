@@ -1,7 +1,7 @@
 #include <mibLogger.h>
 
 #include "inc/mibDriveStrategy.h"
-#include <mibGlobalAccess.h>
+#include <mibSettingsClient.h>
 
 template <typename T>
 inline T _clamp_value(T v, T min, T max)
@@ -15,7 +15,7 @@ using namespace mibot;
 
 DriveStartegy::DriveStartegy(Connection *connection) :
     AbstractSocketStrategy(connection),
-    _config(nullptr),
+    _driveSettings(nullptr),
     _model(nullptr)
 {
     _update_timer = new QTimer( this );
@@ -31,8 +31,8 @@ DriveStartegy::~DriveStartegy()
     gpio()->DisableAllPwms();
     _cnt--;
 
-    if(_config != nullptr)
-        delete _config;
+    if(_driveSettings != nullptr)
+        _driveSettings->Release();
 }
 
 void DriveStartegy::processNewData(QByteArray data)
@@ -60,18 +60,17 @@ bool DriveStartegy::init()
 
     _cnt++;
 
-    ResourceWrapper<DriveConfigRes> *repo = new ResourceWrapper<DriveConfigRes> (GlobalAccess::get().Repository());
-    _config = repo->getByID( _connection->SocketObj()->StrategyConfig() );
-    delete repo;
+    _driveSettings = SettingsClient::CreateReource<DriveConfigSettings>(_connection->SocketObj->strategyConfig->value);
 
-    if(_config == nullptr)
+    if(!_driveSettings->Sync())
     {
-        LOG_ERROR( QString("Can't load strategy configuration (id: %1)").arg(_connection->SocketObj()->StrategyConfig()));
+        LOG_ERROR(QString("Can't get driver strategy '%1'").arg(_driveSettings->Resource()));
+        _driveSettings->Release();
+        _driveSettings = nullptr;
         return false;
-    }else
-    {
-        LOG_IMPORTANT( QString("Driver strategy configuration loadet: '%1'").arg(_config->Alias()) );
     }
+
+    LOG_IMPORTANT( QString("Driver strategy settings loadet: '%1'").arg(_driveSettings->alias->value));
 
     if(!gpio()->Init())
     {
@@ -81,29 +80,29 @@ bool DriveStartegy::init()
 
     gpio()->DisableAllPwms();
 
-    gpio()->SetPinMode( _config->LeftAPin(), PinMode::Output );
-    gpio()->SetPinMode( _config->LeftBPin(), PinMode::Output );
-    gpio()->SetPinMode( _config->RightAPin(), PinMode::Output );
-    gpio()->SetPinMode( _config->RightBPin(), PinMode::Output );
+    gpio()->SetPinMode( _driveSettings->leftAPin->value, PinMode::Output );
+    gpio()->SetPinMode( _driveSettings->leftBPin->value, PinMode::Output );
+    gpio()->SetPinMode( _driveSettings->rightAPin->value, PinMode::Output );
+    gpio()->SetPinMode( _driveSettings->rightBPin->value, PinMode::Output );
 
-    if(!gpio()->EnablePwm( _config->LeftPwmPin(), true) ||
-    !gpio()->EnablePwm( _config->RightPwmPin(), true))
+    if(!gpio()->EnablePwm( _driveSettings->leftPwmPin->value, true) ||
+    !gpio()->EnablePwm( _driveSettings->rightPwmPin->value, true))
     {
             LOG_ERROR("Initializing PWM error.");
     }
 
-    gpio()->SetPwmValue( _config->LeftPwmPin(), 0 );
-    gpio()->SetPwmValue( _config->RightPwmPin(), 0 );
+    gpio()->SetPwmValue( _driveSettings->leftPwmPin->value, 0 );
+    gpio()->SetPwmValue( _driveSettings->rightPwmPin->value, 0 );
 
     _state = new DrivingState();
     _model = new VehicleDriveModel();
 
     _model->Init(
-                new WheelDriver( _config->LeftAPin(), _config->LeftBPin(), _config->LeftPwmPin(), gpio() ),
-                new WheelDriver( _config->RightAPin(), _config->RightBPin(), _config->RightPwmPin(), gpio() ),
+                new WheelDriver( _driveSettings->leftAPin->value, _driveSettings->leftBPin->value, _driveSettings->leftPwmPin->value, gpio() ),
+                new WheelDriver( _driveSettings->rightAPin->value, _driveSettings->rightBPin->value, _driveSettings->rightPwmPin->value, gpio() ),
                 _state );
 
-    _state->fake_gpio = _config->UseFakeGPIO() ? 0x01 : 0x00;
+    _state->fake_gpio = _driveSettings->useFakeGPIO->value ? 0x01 : 0x00;
 
     _protocol_handler.InitRegisters( 0x04, 0x02);
     _protocol_handler.SetReadableAddr(ADDRR_IS_SIMULATION_MODE,   & (_state->fake_gpio) );
@@ -116,14 +115,14 @@ bool DriveStartegy::init()
 
 
      _emergency_brake_timer.start();
-    _update_timer->start( _config->UpdateRatio());
+    _update_timer->start( _driveSettings->updateRatio->value);
 
     return true;
 }
 
 void DriveStartegy::onUpdate()
 {
-    if(_emergency_brake_timer.elapsed() >= _config->EmergencyBreakTimeout())
+    if(_emergency_brake_timer.elapsed() >= _driveSettings->emergencyBreakTimeout->value)
     {
         if(_state->brake != 0x01)
         {
@@ -132,7 +131,7 @@ void DriveStartegy::onUpdate()
             _state->brake = 0x01;
     }
 
-    _model->Update( float(_config->UpdateRatio())/1000.0f );
+    _model->Update( float(_driveSettings->updateRatio->value)/1000.0f );
 }
 
 //template <typename T>
@@ -151,7 +150,7 @@ void DriveStartegy::onUpdate()
 
 GPIO *DriveStartegy::gpio()
 {
-    return GPIO::GetGPIO( !_config->UseFakeGPIO() );
+    return GPIO::GetGPIO( !_driveSettings->useFakeGPIO->value);
 }
 
 int DriveStartegy::_cnt = 0;

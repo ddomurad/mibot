@@ -1,12 +1,5 @@
 #include "inc/mibSensor.h"
 
-Sensor::Sensor()
-{
+using namespace mibot;
 
-}
-
-Sensor::~Sensor()
-{
-
-}
 

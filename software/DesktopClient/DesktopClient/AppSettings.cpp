@@ -1,12 +1,88 @@
 #include "AppSettings.h"
 
 AppSettings::AppSettings()
-{
+{}
 
+QVariant AppSettings::findKey(QString key, bool *found)
+{
+    if(!_settings.contains(key))
+    {
+        *found = false;
+        return QVariant();
+    }
+
+    *found = true;
+    return _settings[key];
+}
+
+QVariant AppSettings::loadKeyFromFile(QString combinedKey)
+{
+    QSettings settings("./config.cfg",QSettings::NativeFormat);
+    return settings.value(combinedKey);
+}
+
+void AppSettings::saveKeyToFile(QString key, QVariant value)
+{
+    QSettings settings("./config.cfg",QSettings::NativeFormat);
+    settings.setValue(key, value);
 }
 
 AppSettings::~AppSettings()
-{
+{}
 
+AppSettings *AppSettings::get()
+{
+    static AppSettings settings;
+    return &settings;
 }
 
+QVariant AppSettings::GetKey(QString key)
+{
+    bool found = false;
+    QVariant value = findKey(key, &found);
+    if(!found)
+    {
+        value = loadKeyFromFile(key);
+        SetKey(key, value);
+    }
+    return value;
+}
+
+void AppSettings::SetKey(QString key, QVariant value)
+{
+    if(!_settings.contains(key))
+        _settings.insert(key, value);
+    else
+        _settings[key] = value;
+}
+
+void AppSettings::SaveAllCachedSettings()
+{
+    QList<QString> keys = _settings.keys();
+    for(int i=0; i< keys.size(); i++)
+    {
+        saveKeyToFile(keys[i], _settings[keys[i]]);
+    }
+}
+
+void AppSettings::ClearCachedSettings()
+{
+    _settings.clear();
+}
+
+
+QMap<QString, QVariant> AppSettings::_settings = QMap<QString, QVariant>();
+
+QString AppSettings::OSM_Server_Address = "OSM_server_address";
+QString AppSettings::OSM_Missing_Tile = "OSM_missing_tile";
+QString AppSettings::OSM_Cache_Dir = "OSM_cache_dir";
+QString AppSettings::OSM_Tiles_Format = "OSM_tiles_format";
+
+QString AppSettings::MapEdit_Locations_File = "MapEdit_location_file";
+QString AppSettings::MapEdit_Routes_File = "MapEdit_routes_file";
+QString AppSettings::MapEdit_Marker_Color = "MapEdit_marker_color";
+QString AppSettings::MapEdit_Active_Marker_Color = "MapEdit_active_marker_color";
+QString AppSettings::MapEdit_Selected_Route_Color = "MapEdit_selected_route_color";
+QString AppSettings::MapEdit_Enabled_Route_Opacity = "MapEdit_enabled_route_opacity";
+QString AppSettings::MapEdit_Disabled_Route_Opacity = "MapEdit_disabled_route_opacity";
+QString AppSettings::MapEdit_Start_Location_Name = "MapEdit_start_location_nane";

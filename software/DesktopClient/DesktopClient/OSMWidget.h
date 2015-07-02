@@ -1,143 +1,83 @@
 #ifndef OSMWIDGET_H
 #define OSMWIDGET_H
 
-#include <QDir>
-#include <QFile>
 #include <QWidget>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsItem>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsLineItem>
-#include <QGraphicsEllipseItem>
+#include <QPixmap>
+#include <QtNetwork>
+#include <QPen>
 
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
+#define STD_TILE_WIDTH 256.0
+#define STD_TILE_HEIGHT 256.0
 
-class OSMTileDesc;
-
-class OSMResourceDesc
+class OSMTile
 {
 public:
-    OSMResourceDesc();
-    OSMResourceDesc(QString osmUrl, QString cacheDir, QString format, QString errorTile);
-    ~OSMResourceDesc();
-
-    QString getTileUrl(OSMTileDesc &) const;
-    QString getCachedTileFileName(OSMTileDesc &) const;
-    QString getCachedTileFilePath(OSMTileDesc &) const;
-    QString getCachedTileFileDir() const;
-    QString getErrorTileFilePath() const;
-    bool    tileFileExists(OSMTileDesc &);
-
-    QString cacheDir() const;
-    QString cacheSubDir() const;
-
-    void Setup(OSMResourceDesc &);
-private:
-    QString _osmUrl;
-    QString _cacheDir;
-    QString _cacheSubDir;
-    QString _tileFormat;
-    QString _errorTileFilePath;
-};
-
-class OSMTileDesc
-{
-public:
-    OSMTileDesc();
-    OSMTileDesc(int ix, int iy, int iz);
-
     int ix;
     int iy;
-    int iz;
+    QPixmap pixmap;
 };
 
-class OSMTileItem : public QGraphicsItem
+enum class OSMMarkerType { Circle, Square, Triangle, Triangle2};
+
+class OSMRoute;
+
+class OSMMarker
 {
 public:
-    OSMTileItem(OSMTileDesc & , OSMResourceDesc *, QGraphicsItem *parent = nullptr);
-    ~OSMTileItem();
+    OSMMarker();
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-
-    void updateTile(bool force);
-
-    bool isValid();
-    QPixmap pixmap();
-    OSMTileDesc tileDesc();
-
-private:
-    bool _isValid;
-    QPixmap _pixmap;
-    OSMResourceDesc * _resDesc;
-    OSMTileDesc _tileDesc;
+    QString name;
+    QPointF possition;
+    QPen    pen;
+    QBrush  bgBrush;
+    QPen    penWhenSelected;
+    QBrush  bgBrushWhenSelected;
+    qreal   size;
+    qreal   sizeWhenSelected;
+    OSMMarkerType type;    
 };
 
-class OSMScene : public QGraphicsScene
+class OSMRoute
 {
-    Q_OBJECT
 public:
-    OSMScene(OSMResourceDesc *, QObject * parent);
+    OSMRoute();
 
-public slots:
-    void updateTile(OSMTileDesc t);
+    QString name;
+    QPen pen;
+    QPen    complitePen;
+    QList<OSMMarker> route;
 
-    OSMTileItem * getTileItem(OSMTileDesc &t);
-    void addTile(OSMTileDesc &t);
-    void updateScene();
-    void setZoom(int z);
-    void focusGPSPoint(QPointF p);
-    void enableScrollZoom(bool enable);
+    qreal stdMarkerSize;
+    OSMMarkerType stdMarkerType;
+    OSMMarkerType stdFirstMarkerType;
+    QPen stdMarkerPen;
+    QBrush  stdBgBrush;
 
-signals:
-    void downlaodTile(OSMTileDesc trd);
+    int addPoint(QPointF pos);
+    int addPoint(QPointF pos, int before);
 
+    OSMMarker * getMarker(QString name);
+    OSMMarker * getMarker(int index);
+
+    bool        closed;
+    bool        visible;
+    bool        editable;
+    double      disabledOpacity;
+    double      enabledOpacity;
 private:
-    OSMResourceDesc * _resDesc;
-    int _iz;
-    bool _enableScrollZoom;
-    bool _drag;
-    QPointF _translation;
-    QGraphicsRectItem * _secret_item;
-    // QGraphicsScene interface
-protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void wheelEvent(QGraphicsSceneWheelEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    int _marker_counter;
 };
 
-class OSMTileDownloader : public QObject
+class OSMMenuItem
 {
-    Q_OBJECT
 public:
-    OSMTileDownloader(OSMResourceDesc *, QObject * parent);
-    ~OSMTileDownloader();
+    qint32      id;
+    QString     text;
 
-    bool isWaitingForTile(OSMTileDesc & trd);
-    int waitingRequests();
-
-signals:
-    void tileDownloaded(OSMTileDesc);
-    void allTilesDownloaded();
-
-private slots:
-
-    void downlaodTile(OSMTileDesc trd);
-    void onTileDownloaded();
-    void onTileDownloadingError(QNetworkReply::NetworkError);
-
-private:
-
-    bool getAndRemoveFromListCorrespondingGetRequest(QNetworkRequest &, OSMTileDesc * getReqInfo);
-    void copyErrorTileAsNewTile(OSMTileDesc & trd);
-    void tryAddMissingDirectories();
-
-    QNetworkAccessManager * _accessManager;
-    QList<OSMTileDesc> _getsWaiting;
-    OSMResourceDesc * _resDesc;
+    OSMRoute    *route;
+    OSMMarker   *marker;
+    QPoint       mouePos;
+    QPointF      gpsPos;
 };
 
 class OSMWidget : public QWidget
@@ -147,27 +87,146 @@ public:
     explicit OSMWidget(QWidget *parent = 0);
     ~OSMWidget();
 
-    void setResourcesDesc(OSMResourceDesc desc);
-    void setZoom(int z);
-    void focusPoint(QPointF p);
-    void enableScrollZoom(bool enable);
+    qint32 toDownload();
+
+    void setGPSPossition(QPointF p, QPointF sp);
+    QPointF getGPSPossition(QPointF sp);
+
+    void setZoomRange(int minZoom, int maxZoom);
+    void setResources(QString osmUrl, QString getCacheDir, QString format, QString errorTile);
+
+    void setGPSAndZoom(QPointF gpsPos,int newZoom, QPointF sp);
+
+    QPointF getPointFromGPS(QPointF gps);
+
+    OSMRoute *getRoute(int index);
+    OSMRoute *getRoute(QString name);
+    int       getRouteCount();
+
+    QPoint widgetCenter();
+
+    bool canMouseDrag() const;
+    void setCanMouseDrag(bool canMouseDrag);
+    bool canMouseZoom() const;
+    void setCanMouseZoom(bool canMouseZoom);
+    bool enableDbClick() const;
+    void setEnableDbClick(bool enableDbClick);
+    bool markerSelectEnable() const;
+    void setMarkerSelectEnable(bool markerSelectEnable);
+
+    void addMapMenu(qint32 id, QString text);
+    void addMarkerMenu(qint32 id, QString text);
+
+    void setMarkerEdit(OSMMarker * marker);
+
+    void removeRoute(int index);
+    void removeRoute(QString name);
+    void removeAllRoutes();
 
 signals:
-    void pedingTilesCountChanged(int);
+    void mapMoved(QPointF gpsPossitionOnWidgetCenter);
+    void zoomChanged(int zoom);
+    void tileDownloadingDone(int left);
+    void mouseMoved(QPointF gpsPos);
+    void menuAction(OSMMenuItem item);
+    void markerSelected(OSMMarker * markerSelected);
 
 public slots:
+    void setZoom(int newZoom);
+    void setTileSize(double size);
+    void addRoute(OSMRoute route);
+    void centreGPSPossition(QPointF p);
 
 private slots:
-    void onTileDownloaded(OSMTileDesc);
-    void onAllTilesDownladed();
+    void onTileDownloaded();
+    void onTileDownloadingError(QNetworkReply::NetworkError e);
+    void onDownloadTimer();
+    void onContextMenu(const QPoint &pos);
 
+protected:
+    void mousePressEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *);
+    void wheelEvent(QWheelEvent *);
+    void paintEvent(QPaintEvent *);
 
+    void updateMapTiles();
+    void renderMapTiles(QPainter &painter);
+    void renderMarkers(QPainter &painter);
+    void renderMarker(QPainter &painter, OSMMarker *marker);
+    void renderRoutes(QPainter &painter);
+    void renderRoute(QPainter &painter, OSMRoute & route);
+    void renderRouteSegment(QPainter &painter, OSMMarker *m1, OSMMarker *m2);
+
+    void addTile(int ix, int iy, int iz);
+
+    QString getTileUrl(int ix, int iy, int iz) const;
+    QString getCachedTileFileName(int ix, int iy, int iz) const;
+    QString getCachedTileFilePath(int ix, int iy, int iz) const;
+    QString getCachedTileFileDir() const;
+    QString getErrorTileFilePath() const;
+    bool    tileFileExists(int ix, int iy, int iz);
+
+    QString getCacheDir() const;
+    QString getCacheSubDir() const;
+
+    void tryAddMissingDirectories();
+    void copyErrorTileAsNewTile(int ix, int iy, int iz);
+
+    void downlaodTile(int ix, int iy, int iz);
+    void _downlaodTile();
+
+    bool isTileVisible(OSMTile &tile);
+    bool isMarkerVisible(OSMMarker *m);
+
+    void updateTile(OSMTile *tile);
+    void loadErrorPixMap();
+
+    QPointF GetTileSize();
+
+    void updateSelection(QPoint mouse);
 private:
-    QGraphicsView * _graphicsView;
-    OSMScene * _scene;
 
-    OSMResourceDesc *_resourceDesc;
-    OSMTileDownloader * _tileDownloader;
+    bool _canMouseDrag;
+    bool _canMouseZoom;
+    bool _markerSelectEnable;
+
+    bool _drag;
+    qreal _dragSpeed;
+    QPointF _translate;
+    QPointF _lastMousePos;
+
+    qint8 _zoom;
+    qint8 _minZoom;
+    qint8 _maxZoom;
+
+    QList<OSMTile> _tiles;
+
+    QString _osmUrl;
+    QString _cacheDir;
+    QString _cacheSubDir;
+    QString _tileFormat;
+    QString _errorTileFilePath;
+
+    QNetworkAccessManager * _accessManager;
+
+    QList<QString> _getRequestsQueue;
+    QString        _waitingForRequestResp;
+    QPixmap _errorPixMap;
+    QTimer *_download_timer;
+
+    QPointF _tile_size;
+    QList<OSMRoute> _routes;
+
+    QList<OSMMenuItem> _mapMenu;
+    QList<OSMMenuItem> _markerMenu;
+
+    OSMMarker * _selectedMarker;
+    OSMRoute * _selectedRoute;
+
+    OSMMarker  * _editidMarker;
+
 };
 
 #endif // OSMWIDGET_H

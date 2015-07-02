@@ -18,19 +18,14 @@ INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
 INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 INCLUDEPATH += ../../mibotGPS/mibGPS/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
-LIBS += /usr/local/lib/mi_bot/libmibServer.so
-LIBS += /usr/local/lib/mi_bot/libmibAccess.so
-LIBS += /usr/local/lib/mi_bot/libmibGPS.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 
 
-SOURCES += main.cpp \
-    WMSClient.cpp \
-    wgs84_puwg92_v11/wgs84_do_puwg92.cc
+SOURCES += main.cpp
 
 HEADERS += \
-    Reader.h \
-    WMSClient.h \
-    wgs84_puwg92_v11/wgs84_do_puwg92.h
+    Tester.h
