@@ -192,7 +192,7 @@ bool SettingsClientAsyncWorker::_startClient()
     _socket->setPrivateKey( QString("%1.key").arg(_cert) );
     _socket->setLocalCertificate( QString("%1.crt").arg(_cert) );
     _socket->setCaCertificates( caCerts );
-    _socket->setProtocol(QSsl::SslV3);
+    _socket->setProtocol(QSsl::SecureProtocols);
 
     connect(_socket, SIGNAL(peerVerifyError(QSslError)), this, SLOT(onPeerVerifyError(QSslError)));
     connect(_socket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(onSslErrors(QList<QSslError>)));
