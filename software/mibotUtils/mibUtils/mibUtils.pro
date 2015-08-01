@@ -22,7 +22,8 @@ SOURCES += \
     src/mibSqlRepository.cpp \
     src/mibLoggerSink.cpp \
     src/mibLoggerStandardSinks.cpp \
-    src/mibJSONProtocol.cpp
+    src/mibJSONProtocol.cpp \
+    src/mibAsyncWaitEvent.cpp
 
 HEADERS +=\
     inc/mibLogger.h \
@@ -37,7 +38,8 @@ HEADERS +=\
     inc/mibSqlRepository.h \
     inc/mibLoggerSink.h \
     inc/mibLoggerStandardSinks.h \
-    inc/mibJSONProtocol.h
+    inc/mibJSONProtocol.h \
+    inc/mibAsyncWaitEvent.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

@@ -103,7 +103,7 @@ void ClientListener::onIncommingConnection()
 
 
         sslPendingSocket->setCaCertificates( _caCerts );
-        sslPendingSocket->setProtocol(QSsl::SslV3);
+        sslPendingSocket->setProtocol(QSsl::SecureProtocols);
         sslPendingSocket->setLocalCertificate( QString("%1.crt").arg( _certFile) );
         sslPendingSocket->setPrivateKey( QString("%1.key").arg( _certFile) );
         sslPendingSocket->setPeerVerifyMode(QSslSocket::VerifyPeer);

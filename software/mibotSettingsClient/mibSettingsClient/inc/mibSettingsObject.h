@@ -3,8 +3,8 @@
 
 #include <QtCore>
 #include <QMutex>
+#include <mibAsyncWaitEvent.h>
 
-#include "mibClientAsyncWaitEvent.h"
 #include "mibSettingsValue.h"
 
 namespace mibot
@@ -53,7 +53,7 @@ protected:
 private:
     QString _resource;
 
-    ClientAutoOpenAsyncWaitEvent _syncEvent;
+    AutoOpenAsyncWaitEvent _syncEvent;
     bool _synchronized;
     int _refCounter;
     bool _registerForNotification;

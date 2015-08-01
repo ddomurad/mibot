@@ -12,6 +12,8 @@ TARGET = DesktopClient
 TEMPLATE = app
 CONFIG += c++11
 
+#DEFINES += SHOW_SPLASH
+
 SOURCES += main.cpp\
         MainWindow.cpp \
     DoubleView.cpp \

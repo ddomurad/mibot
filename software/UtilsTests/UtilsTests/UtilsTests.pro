@@ -19,10 +19,12 @@ INCLUDEPATH += ../../mibotServer/mibServer/inc
 INCLUDEPATH += ../../mibotAccess/mibAccess/inc
 INCLUDEPATH += ../../mibotGPS/mibGPS/inc
 INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
+INCLUDEPATH += ../../mibotSensors/mibSensors/inc
 
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
+LIBS += /usr/local/lib/mi_bot/libmibSensors.so
 
 
 SOURCES += main.cpp

@@ -4,7 +4,6 @@
 #include "mibSensorsGlobal.h"
 #include "mibSensor.h"
 #include "mibSystemSensors.h"
-#include "mibMCP3008Sensor.h"
-#include "mibGPSSensor.h"
+#include "mibArduinoSensorNode.h"
 
 #endif // MIBSENSORS_H

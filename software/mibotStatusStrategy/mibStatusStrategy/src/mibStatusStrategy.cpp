@@ -7,9 +7,8 @@ using namespace mibot;
 StatusStrategy::StatusStrategy(Connection *connection) :
     AbstractSocketStrategy(connection),
     _statusSettigns(nullptr),
-    _systemSensorsReader(nullptr),
-    _mcp3008Reader (nullptr),
-    _gpsSensorsReader(nullptr),
+    _systemSensors(nullptr),
+    _arduinoSensorNode (nullptr),
     _auto_send(false)
 {
     _update_timer = new QTimer(this);
@@ -18,21 +17,6 @@ StatusStrategy::StatusStrategy(Connection *connection) :
 
 StatusStrategy::~StatusStrategy()
 {
-    if(_systemSensorsReader != nullptr)
-    {
-        delete _systemSensorsReader;
-    }
-
-    if(_mcp3008Reader != nullptr)
-    {
-        delete _mcp3008Reader;
-    }
-
-    if(_gpsSensorsReader != nullptr)
-    {
-        delete _gpsSensorsReader;
-    }
-
     if(_statusSettigns != nullptr)
         _statusSettigns->Release();
 }
@@ -85,21 +69,14 @@ bool StatusStrategy::init()
         return false;
     }
 
-    if(!MCP3008Sensor::get()->Initialize())
+    if(!ArduinoSensorNode::get()->Initialize())
     {
-        LOG_ERROR("Can't initialize MCP3008Sensor");
+        LOG_ERROR("Can't initialize ArduinoSensorNode");
         return false;
     }
 
-    if(!GPSSensor::get()->Initialize())
-    {
-        LOG_ERROR("Can't initialize GPSSensor");
-        return false;
-    }
-
-    _systemSensorsReader = SystemSensors::get()->GetReader( _statusSettigns->updateRatio->value );
-    _mcp3008Reader = MCP3008Sensor::get()->GetReader( _statusSettigns->updateRatio->value );
-    _gpsSensorsReader = GPSSensor::get()->GetReader( _statusSettigns->updateRatio->value );
+    _systemSensors = SystemSensors::get();
+    _arduinoSensorNode = ArduinoSensorNode::get();
 
     _update_timer->setInterval( _statusSettigns->internalDelay->value );
     _update_timer->start();
@@ -183,53 +160,47 @@ QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
 void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
 {
     QJsonArray arr;
-    QMap<QString,QVariant> values = _systemSensorsReader->ReadAll();
-    float accValue  = _mcp3008Reader->Read(
-                _statusSettigns->enginesAccuMcp3008Channel->value
-                ).toFloat() * _statusSettigns->enginesAccuVScale->value;
-
-    QPointF gpsPos = _gpsSensorsReader->Read("pos").toPointF();
+    QMap<QString,QVariant> systemSensorValues = _systemSensors->ReadAllSensors();
+    QMap<QString, float>   arduinoNodeValues = _arduinoSensorNode->ReadAllSensors();
 
     if(_read_values_filter.empty())
     {
-        for(QString k : values.keys())
+        for(QString k : systemSensorValues.keys())
         {
             QJsonObject obj;
-            obj.insert(k,QJsonValue(values[k].toDouble()));
+            obj.insert(k,QJsonValue(systemSensorValues[k].toDouble()));
             arr.append( QJsonValue(obj) );
         }
 
-        QJsonObject obj;
-        obj.insert("accu_volt", QJsonValue( accValue ));
-        arr.append( QJsonValue(obj) );
-
-        QJsonObject obj2;
-        obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
-        obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
-        arr.append( QJsonValue(obj2) );
+        for(QString k : arduinoNodeValues.keys())
+        {
+            QJsonObject obj;
+            obj.insert(k,QJsonValue(arduinoNodeValues[k]));
+            arr.append( QJsonValue(obj) );
+        }
     }
     else
     {
         for(QString k : _read_values_filter)
         {
-            if(k == "accu_volt")
-            {
-                QJsonObject obj;
-                obj.insert(k,accValue);
-                arr.append( QJsonValue(obj) );
-                continue;
-            }
+//            if(k == "accu_volt")
+//            {
+//                QJsonObject obj;
+//                obj.insert(k,accValue);
+//                arr.append( QJsonValue(obj) );
+//                continue;
+//            }
 
-            if(k == "gps_pos")
-            {
-                QJsonObject obj2;
-                obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
-                obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
-                arr.append( QJsonValue(obj2) );
-                continue;
-            }
+//            if(k == "gps_pos")
+//            {
+//                QJsonObject obj2;
+//                obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
+//                obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
+//                arr.append( QJsonValue(obj2) );
+//                continue;
+//            }
 
-            if(!values.contains(k))
+            if(!systemSensorValues.contains(k))
             {
                 QJsonObject obj;
                 obj.insert(k,QJsonValue( "" ));
@@ -238,7 +209,7 @@ void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
             else
             {
                 QJsonObject obj;
-                obj.insert(k,QJsonValue(values[k].toString() ));
+                obj.insert(k,QJsonValue(systemSensorValues[k].toString() ));
                 arr.append( QJsonValue(obj) );
             }
         }

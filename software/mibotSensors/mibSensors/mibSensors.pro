@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+QT       += network sql serialport
 QT       -= gui
 
 TARGET = mibSensors
@@ -27,16 +28,18 @@ LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 SOURCES += \
     src/mibSensor.cpp \
     src/mibSystemSensors.cpp \
-    src/mibMCP3008Sensor.cpp \
-    src/mibGPSSensor.cpp
+    src/mibArduinoSensorNode.cpp \
+    src/mibArduinoSensorsNodeReader.cpp \
+    src/mibSensorsSettings.cpp
 
 HEADERS += \
     inc/mibSensors.h \
     inc/mibSensorsGlobal.h \
     inc/mibSensor.h \
     inc/mibSystemSensors.h \
-    inc/mibMCP3008Sensor.h \
-    inc/mibGPSSensor.h
+    inc/mibArduinoSensorNode.h \
+    inc/mibArduinoSensorsNodeReader.h \
+    inc/mibSensorsSettings.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

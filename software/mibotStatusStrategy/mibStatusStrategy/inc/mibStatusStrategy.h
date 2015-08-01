@@ -35,9 +35,8 @@ private:
     void readValuesToJsonObjec(QJsonObject & obj);
 
     StatusSettings * _statusSettigns;
-    SensorReader<QString> *_systemSensorsReader;
-    SensorReader<int> *_mcp3008Reader;
-    SensorReader<QString> *_gpsSensorsReader;
+    SystemSensors *_systemSensors;
+    ArduinoSensorNode * _arduinoSensorNode;
 
     QTimer * _update_timer;
     bool    _auto_send;

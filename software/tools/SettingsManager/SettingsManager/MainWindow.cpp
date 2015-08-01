@@ -91,7 +91,7 @@ void MainWindow::connectToHost(QString addr, int port)
     _socket->setLocalCertificate( "./certs/manager.crt"  );
     _socket->setPrivateKey( "./certs/manager.key");
 
-    _socket->setProtocol(QSsl::SslV3);
+    _socket->setProtocol(QSsl::SecureProtocols);
 
     _socket->setCaCertificates(QSslCertificate::fromPath("./certs/trusted.pem"));
 

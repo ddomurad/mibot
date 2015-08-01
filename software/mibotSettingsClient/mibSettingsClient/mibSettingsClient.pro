@@ -22,8 +22,7 @@ SOURCES += \
     src/mibSettingsObject.cpp \
     src/mibSettingsValue.cpp \
     src/mibSettingsDefs.cpp \
-    src/mibSettingsClientAsyncWorker.cpp \
-    src/mibClientAsyncWaitEvent.cpp
+    src/mibSettingsClientAsyncWorker.cpp
 
 HEADERS += \
     inc/mibSettingsClient.h \
@@ -31,8 +30,7 @@ HEADERS += \
     inc/mibSettingsValue.h \
     inc/mibSettingsObject.h \
     inc/mibSettingsDefs.h \
-    inc/mibSettingsClientAsyncWorker.h \
-    inc/mibClientAsyncWaitEvent.h
+    inc/mibSettingsClientAsyncWorker.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

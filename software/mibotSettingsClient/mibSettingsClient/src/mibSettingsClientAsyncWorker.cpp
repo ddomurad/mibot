@@ -406,4 +406,3 @@ QString SettingsClientAsyncWorker::createSetCommand(QString res, QString data)
 {
     return QString("{\"Command\":\"Set\", \"Resource\":\"%1\",\"Data\":%2}").arg(res).arg(data);
 }
-

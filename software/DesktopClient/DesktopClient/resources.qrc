@@ -1,9 +1,12 @@
 <RCC>
-    <qresource prefix="/gui/incons">
-        <file>resources/remove.png</file>
-        <file>resources/edit.png</file>
+    <qresource prefix="/"/>
+    <qresource prefix="/other">
+        <file>resources/rover.png</file>
+    </qresource>
+    <qresource prefix="/gui/icons">
         <file>resources/add.png</file>
+        <file>resources/edit.png</file>
+        <file>resources/remove.png</file>
         <file>resources/save.png</file>
     </qresource>
-    <qresource prefix="/"/>
 </RCC>

@@ -16,7 +16,9 @@
 using namespace mibot;
 
 SystemSensors::SystemSensors()
-{}
+{
+    lastReadingElapsed.start();
+}
 
 SystemSensors::~SystemSensors()
 {}
@@ -29,6 +31,14 @@ SystemSensors *SystemSensors::get()
 
 bool SystemSensors::_intialize()
 {
+    _settings = SensorsSettings::getGlobal();
+    if(!_settings->Sync())
+    {
+        LOG_ERROR("Can't sync sensor settings.");
+        _settings->Release();
+        return false;
+    }
+
     _ram_available = 0;
     _last_cpu_idel = 0;
     _last_process_stime = 0;
@@ -50,19 +60,33 @@ bool SystemSensors::_intialize()
     return true;
 }
 
-void SystemSensors::_readAllSensors()
+void SystemSensors::_updateReadsIfNeeded()
+{
+    if(lastReadingElapsed.elapsed() > _settings->systemSensorsUpdateTime->value)
+    {
+        readAllSensors();
+        lastReadingElapsed.restart();
+    }
+}
+
+QMap<QString, QVariant> SystemSensors::getLastReads()
+{
+    return _last_radings;
+}
+
+void SystemSensors::readAllSensors()
 {
 
     float val = readSystemStateValue( _cpu_temp_path , 64).toDouble() * 0.001;
-    _last_reads.insert( CpuTemperature , QVariant(val) );
+    _last_radings.insert( CpuTemperature , QVariant(val) );
 
     float cpu_total = 0.0f;
     float cpu_server = 0.0f;
 
     readCpuUtilization(&cpu_total, &cpu_server);
 
-    _last_reads.insert( CpuUsageTotal , QVariant( cpu_total ) );
-    _last_reads.insert( CpuUsageServer, QVariant( cpu_server ) );
+    _last_radings.insert( CpuUsageTotal , QVariant( cpu_total ) );
+    _last_radings.insert( CpuUsageServer, QVariant( cpu_server ) );
 
     float avaiable = 0;
     float used_total = 0;
@@ -70,9 +94,9 @@ void SystemSensors::_readAllSensors()
 
     readRamUtilization( &avaiable, &used_total, &used_process );
 
-    _last_reads.insert( MemAvailable, QVariant( avaiable ) );
-    _last_reads.insert( MemUsageTotal, QVariant( used_total ) );
-    _last_reads.insert( MemUsageServer, QVariant( used_process ) );
+    _last_radings.insert( MemAvailable, QVariant( avaiable ) );
+    _last_radings.insert( MemUsageTotal, QVariant( used_total ) );
+    _last_radings.insert( MemUsageServer, QVariant( used_process ) );
 
 }
 

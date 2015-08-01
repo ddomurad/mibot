@@ -2,11 +2,12 @@
 #define SYSTEMSENSORS_H
 
 #include "mibSensor.h"
+#include "mibSensorsSettings.h"
 
 namespace mibot
 {
 
-class MIBSENSORSSHARED_EXPORT SystemSensors : public Sensor<QString>
+class MIBSENSORSSHARED_EXPORT SystemSensors : public Sensor<QString, QVariant>
 {
 public:
     ~SystemSensors();
@@ -21,13 +22,16 @@ public:
     const QString MemUsageServer = "mem_usage_server";
     // Sensor interface
 protected:
-
     bool _intialize();
-    void _readAllSensors();
+    void _updateReadsIfNeeded();
+    QMap<QString, QVariant> getLastReads();
 
 private:
 
     SystemSensors();
+
+    QElapsedTimer lastReadingElapsed;
+    void readAllSensors();
     QString readSystemStateValue(QString path, int length);
     QString readSystemStateLine(QString path);
     void readCpuUtilization(float *cpu_total, float *cpu_server);
@@ -48,6 +52,10 @@ private:
     static QString _cpu_state_path;
     QString _cpu_process_cpu_path;
     QString _process_status_path;
+
+    QMap<QString, QVariant> _last_radings;
+
+    SensorsSettings * _settings;
 };
 
 }

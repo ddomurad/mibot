@@ -10,9 +10,10 @@
 #include <QSslSocket>
 #include <QMutex>
 #include <QMutexLocker>
-#include <mibJSONProtocol.h>
 
-#include "mibClientAsyncWaitEvent.h"
+#include <mibJSONProtocol.h>
+#include <mibAsyncWaitEvent.h>
+
 #include "mibSettingsObject.h"
 
 namespace mibot
@@ -67,9 +68,9 @@ private:
     JSONProtocol _protocol;
     QMutex       _syncMutex;
 
-    ClientAutoCloseAsyncWaitEvent _connectionEvent;
-    ClientAutoCloseAsyncWaitEvent _dirListEvent;
-    ClientAutoCloseAsyncWaitEvent _uploadEvent;
+    AutoCloseAsyncWaitEvent _connectionEvent;
+    AutoCloseAsyncWaitEvent _dirListEvent;
+    AutoCloseAsyncWaitEvent _uploadEvent;
 
     QMap<QString,SettingsObject*> _objectCache;
     QStringList _lastDirList;
@@ -99,3 +100,4 @@ private:
 
 }
 #endif // SETTINGSCLIENTASYNCWORKER_H
+
