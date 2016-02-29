@@ -12,9 +12,6 @@
 #define GSERIAL_BAUD 19200
 #define GSERIAL &Serial
 
-#define GPS_SERIAL_BAUD 9600
-#define GPS_SERIAL &Serial2
-
 #define __ERROR_TIMER   1000
 
 #define LSM_ACC_ADDR               0b0011000 //accelerometer address
@@ -41,5 +38,16 @@
 #define LSM_MAG_CRA_REG_M ( LSM_MAG_DO )
 #define LSM_MAG_CRB_REG_M ( LSM_MAG_GN )
 #define LSM_MAG_MR_REG_M  ( LSM_MAG_MD )
+
+#define US1_TRIG_PIN 53
+#define US2_TRIG_PIN 52
+#define US1_ECHO_PIN 51
+#define US2_ECHO_PIN 50
+
+#define US1_MAX_DISTANCE 200
+#define US2_MAX_DISTANCE 200
+
+#define PIEZZO_1_PIN 31
+#define PIEZZO_2_PIN 30
 #endif
 

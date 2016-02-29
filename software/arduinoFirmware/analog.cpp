@@ -2,11 +2,13 @@
 #include "utils.h"
 #include "analog.h"
 
-#define ANALOG_CHANNELS 5
+#define ANALOG_CHANNELS 2
 unsigned char _last_analog_channels_state_flags[ANALOG_CHANNELS];
 unsigned int _read_from_channels_state[ANALOG_CHANNELS];
 
 const char *_analog_labels = "A1\0A2\0A3\0A4\0A5\0";
+const char _analog_flags[ANALOG_CHANNELS] = {50,50};
+
 void InitAnalog()
 {
   for(int i=0;i<ANALOG_CHANNELS;i++) 
@@ -17,7 +19,7 @@ void ReadAndSendAnalog()
 {
   for(int i=0;i<ANALOG_CHANNELS;i++)
   {
-    unsigned char s = GetStateFlags(F_USE_ANALOG1 + i);
+    unsigned char s = _analog_flags[i];
     if(s == 0xFF) continue;
     
     if(_last_analog_channels_state_flags[i] != s)

@@ -1,32 +1,38 @@
+#include <TimerOne.h>
+
+#include <NewPing.h>
 #include <Wire.h>
+
 #include "config.h"
 #include "utils.h"
 #include "analog.h"
 #include "lsm303.h"
-#include "gps.h"
+#include "us.h"
+#include "PiezzoSignal.h"
+
+char trig = 1;
+unsigned long timeA = 0;
+unsigned long timeB = 0;
+unsigned long timeC = 0;
+
 
 void setup()
 {
   InitGSerial(GSERIAL, GSERIAL_BAUD);
-  InitStateFlags();
+
   InitAnalog();
   LSM_Init();
-  GPS_Init();
+  InitPiezzo();
+  PiezzoState(true);
 }
 
 void loop()
 {
-  ReadStateFlags();
- 
-  ReadAndSendAnalog();
- 
-  if(GetStateFlags(F_USE_ACC) == '1')
-      LSM_ReadAccAndSend();
-    
-  if(GetStateFlags(F_USE_MAG) == '1')
-      LSM_ReadMagAndSend();
-      
-  if(GetStateFlags(F_USE_GPS) == '1')
-      GPS_ReadAndSend();
-      
+
+  /*ReadAndSendAnalog();
+  LSM_ReadAccAndSend();
+  LSM_ReadMagAndSend();
+  ReadAndSendUS();*/
 }
+
+

@@ -1,0 +1,46 @@
+Settings state flags:
+
+write flag: '>'
+read flag: '<'
+
+---------------------------------
+writing flags:
+
+command template: '>AV'
+A - flag addr from CHAR '0' to CHAR '9'
+V - new value
+
+return: nothing
+
+---------------------------------
+read flags:
+
+command tempalre: '<A'
+A - flag addr from CHAR '0' to CHAR '9'
+
+return: flag value as 1 char or "ADDR ERROR" string when address is not valid
+
+
+---------------------------------
+FLAGS:
+
+NAME	| ADDRESS	| VALUES
+USE_ACC	| '1'		| '1' - enabled, else disabled
+USE_MAG	| '2'		| '1' - enabled, else disabled
+USE_GSP	| '3'		| '1' - enabled, else disabled
+USE_AN1	| '4'		| 0xFF - disabled, else enabled with delay = (value<<8)
+USE_AN2	| '5'		| 0xFF - disabled, else enabled with delay = (value<<8)
+USE_AN3	| '6'		| 0xFF - disabled, else enabled with delay = (value<<8)
+USE_AN4	| '7'		| 0xFF - disabled, else enabled with delay = (value<<8)
+USE_AN5	| '8'		| 0xFF - disabled, else enabled with delay = (value<<8)
+
+tempaltes:
+>11 - enable ACC
+>21 - enable MAG
+>31 - enable GPS
+
+>10 - disable ACC
+>20 - disable MAG
+>30 - disable GPS
+
+<1 - read ACC FLAG

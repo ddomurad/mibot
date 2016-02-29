@@ -102,19 +102,10 @@ void SendData(const char * n,T val1, T val2, T val3)
 
 // FLAGS
 
-#define FLAGS_CNT 10
-#define F_USE_ACC 1
-#define F_USE_MAG 2
-#define F_USE_GPS 3
-#define F_USE_ANALOG1 4
-#define F_USE_ANALOG2 5
-#define F_USE_ANALOG3 6
-#define F_USE_ANALOG4 7
-#define F_USE_ANALOG5 8
 
-void InitStateFlags();
-void ReadStateFlags();
-void SetStateFlags(char addr, char state);
-char GetStateFlags(char addr);
+#define CMD_WRITE '>'
+#define CMD_READ '<'
+#define CMD_SYNC '!'
+
 
 #endif
