@@ -23,6 +23,18 @@ public:
     static QString MapEdit_Disabled_Route_Opacity;
     static QString MapEdit_Start_Location_Name;
 
+    static QString Connection_Rover_Addr;
+    static QString Connection_Rover_Info_Port;
+    static QString Connection_Rover_Info_SSL;
+
+    static QString Connection_Cert_Path;
+    static QString Connection_PK_Path;
+    static QString Connection_CA_Path;
+
+    static QString Connection_Status_Service;
+    static QString Connection_Driver_Service;
+    static QString Connection_Video_Service;
+
     static QString VServer_Listen_Port;
     static QString VServer_Forward_Addr;
     static QString VServer_Forward_Port;

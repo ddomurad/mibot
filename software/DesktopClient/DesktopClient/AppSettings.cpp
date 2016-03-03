@@ -86,3 +86,15 @@ QString AppSettings::MapEdit_Selected_Route_Color = "MapEdit_selected_route_colo
 QString AppSettings::MapEdit_Enabled_Route_Opacity = "MapEdit_enabled_route_opacity";
 QString AppSettings::MapEdit_Disabled_Route_Opacity = "MapEdit_disabled_route_opacity";
 QString AppSettings::MapEdit_Start_Location_Name = "MapEdit_start_location_nane";
+
+
+QString AppSettings::Connection_Rover_Addr = "Connection_rover_addr";
+QString AppSettings::Connection_Rover_Info_Port = "Connection_rover_info_port";
+QString AppSettings::Connection_Rover_Info_SSL = "Connection_rover_info_ssl";
+QString AppSettings::Connection_Cert_Path = "Connection_cert_path";
+QString AppSettings::Connection_PK_Path = "Connection_pk_path";
+QString AppSettings::Connection_CA_Path = "Connection_ca_path";
+
+QString AppSettings::Connection_Status_Service = "Connection_status_service";
+QString AppSettings::Connection_Driver_Service = "Connection_driver_service";
+QString AppSettings::Connection_Video_Service = "Connection_video_service";

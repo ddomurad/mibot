@@ -1,3 +1,4 @@
+#include <QtNetwork>
 #include "SettingsForm.h"
 #include "ui_SettingsForm.h"
 #include "AppSettings.h"
@@ -5,6 +6,8 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QColorDialog>
+#include "Socket.h"
+#include "GlobalPasswordProvider.h"
 
 SettingsForm::SettingsForm(QWidget *parent) :
     QWidget(parent),
@@ -35,6 +38,18 @@ void SettingsForm::restore()
     setBtnColor(ui->toolButton_select_selected_route_color, AppSettings::MapEdit_Selected_Route_Color);
     setBtnColor(ui->toolButton_select_selected_marker_color, AppSettings::MapEdit_Active_Marker_Color);
     setBtnColor(ui->toolButton_select_marker_color, AppSettings::MapEdit_Marker_Color);
+
+    ui->lineEdit_rover_addr->setText(AppSettings::GetKey(AppSettings::Connection_Rover_Addr).toString());
+    ui->spinBox_rover_info_port->setValue(AppSettings::GetKey(AppSettings::Connection_Rover_Info_Port).toInt());
+    ui->lineEdit_cert_path->setText(AppSettings::GetKey(AppSettings::Connection_Cert_Path).toString());
+    ui->lineEdit_ca_certs->setText(AppSettings::GetKey(AppSettings::Connection_CA_Path).toString());
+    ui->lineEdit_private_key->setText(AppSettings::GetKey(AppSettings::Connection_PK_Path).toString());
+
+    ui->checkBox_infi_with_ssl->setChecked(AppSettings::GetKey(AppSettings::Connection_Rover_Info_SSL).toBool());
+
+    ui->lineEdit_sensors_service->setText(AppSettings::GetKey(AppSettings::Connection_Status_Service).toString());
+    ui->lineEdit_driver_service->setText(AppSettings::GetKey(AppSettings::Connection_Driver_Service).toString());
+    ui->lineEdit_video_service->setText(AppSettings::GetKey(AppSettings::Connection_Video_Service).toString());
 }
 
 void SettingsForm::setBtnColor(QToolButton *btn, QString propName)
@@ -199,4 +214,101 @@ void SettingsForm::on_toolButton_select_selected_route_color_clicked()
 void SettingsForm::on_lineEdit_start_location_name_textChanged(const QString &text)
 {
     AppSettings::SetKey( AppSettings::MapEdit_Start_Location_Name, QVariant(text) );
+}
+
+void SettingsForm::on_spinBox_rover_info_port_valueChanged(const QString &val)
+{
+    AppSettings::SetKey( AppSettings::Connection_Rover_Info_Port, QVariant(val.toInt()) );
+}
+
+void SettingsForm::on_lineEdit_rover_addr_textChanged(const QString &text)
+{
+    AppSettings::SetKey( AppSettings::Connection_Rover_Addr, QVariant(text) );
+}
+
+void SettingsForm::on_lineEdit_cert_path_textChanged(const QString &text)
+{
+    AppSettings::SetKey( AppSettings::Connection_Cert_Path, QVariant(text) );
+}
+
+void SettingsForm::on_pushButton_open_cert_clicked()
+{
+    QString fname = QFileDialog::getOpenFileName(this, QFileDialog::tr("Select Certificate file"), QDir::currentPath());
+    if(!fname.isEmpty())
+    {
+        ui->lineEdit_cert_path->setText( fname );
+    }
+}
+
+void SettingsForm::on_pushButton_connection_test_clicked()
+{
+    Socket * socket = new Socket("TestConnection", ui->checkBox_infi_with_ssl->isChecked(),this);
+
+    if(!socket->ConnectToRover(AppSettings::GetKey(AppSettings::Connection_Rover_Info_Port).toInt()))
+    {
+        QMessageBox::critical(this, "Failure", "Can't connect to host.");
+        GlobalPasswordProvider::Clear();
+    }
+    else
+        QMessageBox::information(this,"Success", "Test connection success.");
+
+    socket->close();
+    delete socket;
+}
+
+void SettingsForm::on_checkBox_infi_with_ssl_toggled(bool checked)
+{
+    AppSettings::SetKey( AppSettings::Connection_Rover_Info_SSL, QVariant(checked) );
+}
+
+void SettingsForm::on_lineEdit_private_key_textChanged(const QString &text)
+{
+    AppSettings::SetKey( AppSettings::Connection_PK_Path, QVariant(text) );
+}
+
+void SettingsForm::on_lineEdit_ca_certs_textChanged(const QString &text)
+{
+    AppSettings::SetKey( AppSettings::Connection_CA_Path, QVariant(text) );
+}
+
+void SettingsForm::on_pushButton_open_pk_clicked()
+{
+    QString fname = QFileDialog::getOpenFileName(this, QFileDialog::tr("Select Private key file"),
+                        AppSettings::GetKey(AppSettings::Connection_Cert_Path).toString());
+
+    if(!fname.isEmpty())
+    {
+        ui->lineEdit_private_key->setText( fname );
+    }
+}
+
+void SettingsForm::on_pushButton_open_ca_cert_clicked()
+{
+    QString fname = QFileDialog::getOpenFileName(this, QFileDialog::tr("Select CA Certificate file"), QDir::currentPath());
+    if(!fname.isEmpty())
+    {
+        ui->lineEdit_ca_certs->setText( fname );
+    }
+}
+
+void SettingsForm::on_pushButton_reset_pass_clicked()
+{
+    GlobalPasswordProvider::Clear();
+    GlobalPasswordProvider::Get();
+}
+
+
+void SettingsForm::on_lineEdit_sensors_service_textChanged(const QString &arg1)
+{
+    AppSettings::SetKey(AppSettings::Connection_Status_Service, QVariant(arg1));
+}
+
+void SettingsForm::on_lineEdit_driver_service_textChanged(const QString &arg1)
+{
+    AppSettings::SetKey(AppSettings::Connection_Driver_Service, QVariant(arg1));
+}
+
+void SettingsForm::on_lineEdit_video_service_textChanged(const QString &arg1)
+{
+    AppSettings::SetKey(AppSettings::Connection_Video_Service, QVariant(arg1));
 }

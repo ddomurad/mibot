@@ -58,6 +58,34 @@ private slots:
 
     void on_lineEdit_start_location_name_textChanged(const QString &arg1);
 
+    void on_spinBox_rover_info_port_valueChanged(const QString &arg1);
+
+    void on_lineEdit_rover_addr_textChanged(const QString &arg1);
+
+    void on_lineEdit_cert_path_textChanged(const QString &arg1);
+
+    void on_pushButton_open_cert_clicked();
+
+    void on_pushButton_connection_test_clicked();
+
+    void on_checkBox_infi_with_ssl_toggled(bool checked);
+
+    void on_lineEdit_private_key_textChanged(const QString &arg1);
+
+    void on_lineEdit_ca_certs_textChanged(const QString &arg1);
+
+    void on_pushButton_open_pk_clicked();
+
+    void on_pushButton_open_ca_cert_clicked();
+
+    void on_pushButton_reset_pass_clicked();
+
+    void on_lineEdit_sensors_service_textChanged(const QString &arg1);
+
+    void on_lineEdit_driver_service_textChanged(const QString &arg1);
+
+    void on_lineEdit_video_service_textChanged(const QString &arg1);
+
 private:
     Ui::SettingsForm *ui;
 

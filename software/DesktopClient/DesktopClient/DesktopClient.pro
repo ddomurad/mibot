@@ -24,7 +24,17 @@ SOURCES += main.cpp\
     RouteEditorForm.cpp \
     VideoWidget.cpp \
     VideoServer.cpp \
-    CtrlPanelForm.cpp
+    CtrlPanelForm.cpp \
+    GlobalPasswordProvider.cpp \
+    InfoServiceForm.cpp \
+    Socket.cpp \
+    LoggerDialog.cpp \
+    mibJSONProtocol.cpp \
+    InfoServiceClient.cpp \
+    SensorsReaderForm.cpp \
+    RoverConnectionForm.cpp \
+    RoverSensorClient.cpp \
+    RoverClient.cpp
 
 HEADERS  += MainWindow.h \
     DoubleView.h \
@@ -35,12 +45,25 @@ HEADERS  += MainWindow.h \
     RouteEditorForm.h \
     VideoWidget.h \
     VideoServer.h \
-    CtrlPanelForm.h
+    CtrlPanelForm.h \
+    GlobalPasswordProvider.h \
+    InfoServiceForm.h \
+    Socket.h \
+    LoggerDialog.h \
+    mibJSONProtocol.h \
+    InfoServiceClient.h \
+    SensorsReaderForm.h \
+    RoverConnectionForm.h \
+    RoverSensorClient.h \
+    RoverClient.h
 
 FORMS    += MainWindow.ui \
     SettingsForm.ui \
     RouteEditorForm.ui \
-    CtrlPanelForm.ui
+    CtrlPanelForm.ui \
+    InfoServiceForm.ui \
+    SensorsReaderForm.ui \
+    RoverConnectionForm.ui
 
 RESOURCES += \
     resources.qrc

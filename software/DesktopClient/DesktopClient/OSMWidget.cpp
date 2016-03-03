@@ -140,7 +140,6 @@ void OSMWidget::onDownloadTimer()
 void OSMWidget::onContextMenu(const QPoint &pos)
 {
     OSMMenuItem mitem;
-    OSMMenuItem *tmpitem;
 
     QPoint gpos = mapToGlobal(pos);
     QPointF gpsPos = getGPSPossition(pos);

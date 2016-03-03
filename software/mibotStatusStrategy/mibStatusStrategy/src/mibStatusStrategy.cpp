@@ -31,23 +31,13 @@ void StatusStrategy::onStrategyUpdate()
         QJsonObject object = _json_protocol.GetPendingObject();
         fixIfJsonIsCorrupted();
 
-        QJsonObject ret_obj = createRequest(object);
-        if(!ret_obj.isEmpty())
-        {
-            QJsonDocument doc( ret_obj);
-            _connection->TcpSocket->write( doc.toJson( QJsonDocument::Compact ) );
-        }
+        QString dataToSend  = createRequest(object);
+        if(!dataToSend.isEmpty())
+            _connection->TcpSocket->write( dataToSend.toUtf8() );
     }
 
     if(_auto_send)
-    {
-//        QJsonObject obj;
-//        readValuesToJsonObjec(obj);
-//        QJsonDocument doc(obj);
-//        _connection->TcpSocket->write( doc.toJson( QJsonDocument::Compact ) );
-
         _connection->TcpSocket->write( getStringToSend().toUtf8() );
-    }
 }
 
 void StatusStrategy::processNewData(QByteArray arr)
@@ -116,10 +106,8 @@ void StatusStrategy::fixIfJsonIsCorrupted()
 
 */
 
-QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
+QString StatusStrategy::createRequest(QJsonObject &obj)
 {
-    QJsonObject out;
-
     if(obj["send_trigger"].isString())
     {
         if(obj["send_trigger"].toString() == "manual")
@@ -137,59 +125,11 @@ QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
         if(obj["action"].toString() == "send")
         {
             if(!_auto_send)
-                readValuesToJsonObjec( out );
+                getStringToSend();
         }
     }
 
-    return out;
-}
-
-void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
-{
-    QJsonArray arr;
-    SystemSensorsReading ssReading = _systemSensors->Readings();
-    ArduinoReadings arReadings = _arduinoSensorNode->Readings();
-
-    QJsonObject systemReading;
-    systemReading.insert("cpu_temp",QJsonValue(ssReading.cpu_temp));
-    systemReading.insert("cpu_usage_server",QJsonValue(ssReading.cpu_usage_server));
-    systemReading.insert("cpu_usage_total",QJsonValue(ssReading.cpu_usage_total));
-    systemReading.insert("mem_available",QJsonValue(ssReading.mem_available));
-    systemReading.insert("mem_usage_server",QJsonValue(ssReading.mem_usage_server));
-    systemReading.insert("mem_usage_total",QJsonValue(ssReading.mem_usage_total));
-
-    QJsonObject arduinoReading;
-    QJsonArray arduinoReadingAcc;
-    QJsonArray arduinoReadingMag;
-    QJsonArray arduinoReadingAnalog;
-
-    arduinoReadingAcc.append(QJsonValue(arReadings.acc[0]));
-    arduinoReadingAcc.append(QJsonValue(arReadings.acc[1]));
-    arduinoReadingAcc.append(QJsonValue(arReadings.acc[2]));
-
-    arduinoReadingMag.append(QJsonValue(arReadings.mag[0]));
-    arduinoReadingMag.append(QJsonValue(arReadings.mag[1]));
-    arduinoReadingMag.append(QJsonValue(arReadings.mag[2]));
-
-    for(int i=0;i<10;i++)
-    {
-       if(!arReadings.isAnalogValue[i])
-           continue;
-
-       QJsonObject analogObj;
-       analogObj.insert("c", i);
-       analogObj.insert("v", arReadings.analogValue[i]);
-       arduinoReadingAnalog.append(analogObj);
-    }
-
-    arduinoReading.insert("acc",QJsonValue(arduinoReadingAcc));
-    arduinoReading.insert("mag",QJsonValue(arduinoReadingMag));
-    arduinoReading.insert("analog",QJsonValue(arduinoReadingAnalog));
-    arduinoReading.insert("us",QJsonValue(arReadings.us));
-
-
-    obj.insert("system",QJsonValue(systemReading));
-    obj.insert("sensors",QJsonValue(arduinoReading));
+    return "";
 }
 
 QString StatusStrategy::getStringToSend()

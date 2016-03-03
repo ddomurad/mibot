@@ -122,6 +122,7 @@ QJsonArray InfoStrategy::getSocketInfo()
         }
 
         QJsonObject json_socket;
+        json_socket.insert("name", QJsonValue(socketObj->alias->value));
         json_socket.insert("type", QJsonValue(socketObj->strategy->value));
         json_socket.insert("privileges", QJsonValue(socketPriv->level->value));
         json_socket.insert("port", QJsonValue(socketObj->port->value));

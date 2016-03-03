@@ -3,10 +3,10 @@
 
 #include <QMainWindow>
 #include <QWidget>
-#include <SettingsForm.h>
-#include <RouteEditorForm.h>
-#include <CtrlPanelForm.h>
-
+#include "SettingsForm.h"
+#include "RouteEditorForm.h"
+#include "CtrlPanelForm.h"
+#include "InfoServiceForm.h"
 namespace Ui {
 class MainWindow;
 }
@@ -22,6 +22,7 @@ public:
 private slots:
     void onShowSettings();
     void onShowEditor();
+    void onShowInfoServicePanel();
     void onShowCtrlPanel();
 
 private:
