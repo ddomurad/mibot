@@ -11,9 +11,16 @@ make
 make install
 cd ../..
 
-echo "Build Access ... "
-cd ./mibotAccess/build/
-qmake ../mibAccess/
+echo "Build SettingsClient ... "
+cd ./mibotSettingsClient/build/
+qmake ../mibSettingsClient/
+make
+make install
+cd ../..
+
+echo "Build Sesnors"
+cd ./mibotSensors/build
+qmake ../mibSensors
 make
 make install
 cd ../..
@@ -24,6 +31,14 @@ qmake ../mibGPIOInterface/
 make
 make install
 cd ../..
+
+echo "Build Server ... "
+cd ./mibotServer/build/
+qmake ../mibServer/
+make
+make install
+cd ../..
+
 
 echo "Build DriveStrategy ..."
 cd ./mibotDriveStrategy/build/
@@ -39,9 +54,16 @@ make
 make install
 cd ../..
 
-echo "Build Server ... "
-cd ./mibotServer/build/
-qmake ../mibServer/
+echo "Build InfoStrategy"
+cd ./mibotInfoStrategy/build/
+qmake ../mibInfoStrategy/
+make 
+make install
+cd ../..
+
+echo "Build VideoStrategy"
+cd ./mibotVideoStrategy/build/
+qmake ../mibVideoStrategy/
 make
 make install
 cd ../..
