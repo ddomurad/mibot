@@ -1,3 +1,4 @@
+#include <QStringBuilder>
 #include <mibLogger.h>
 #include <mibSettingsClient.h>
 #include "inc/mibStatusStrategy.h"
@@ -40,10 +41,12 @@ void StatusStrategy::onStrategyUpdate()
 
     if(_auto_send)
     {
-        QJsonObject obj;
-        readValuesToJsonObjec(obj);
-        QJsonDocument doc(obj);
-        _connection->TcpSocket->write( doc.toJson( QJsonDocument::Compact ) );
+//        QJsonObject obj;
+//        readValuesToJsonObjec(obj);
+//        QJsonDocument doc(obj);
+//        _connection->TcpSocket->write( doc.toJson( QJsonDocument::Compact ) );
+
+        _connection->TcpSocket->write( getStringToSend().toUtf8() );
     }
 }
 
@@ -187,6 +190,40 @@ void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
 
     obj.insert("system",QJsonValue(systemReading));
     obj.insert("sensors",QJsonValue(arduinoReading));
+}
+
+QString StatusStrategy::getStringToSend()
+{
+    SystemSensorsReading ssReading = _systemSensors->Readings();
+    ArduinoReadings arReadings = _arduinoSensorNode->Readings();
+
+    QString outStr = "{\"sensors\":{\"acc\":[";
+    outStr = outStr % QString::number(arReadings.acc[0]) % "," % QString::number(arReadings.acc[1]) % "," % QString::number(arReadings.acc[2]) % "]";
+    outStr = outStr % ",\"analog\":[";
+
+    bool addComa = false;
+    for(int i=0;i<10;i++)
+    {
+       if(!arReadings.isAnalogValue[i])
+           continue;
+
+       if(addComa)
+           outStr = outStr % ",";
+       addComa = true;
+       outStr = outStr % "{\"c\":" % QString::number(i) % ",\"v\":" + QString::number(arReadings.analogValue[i]) % "}";
+    }
+
+    outStr = outStr % "],\"mag\":[";
+    outStr = outStr % QString::number(arReadings.mag[0]) % "," % QString::number(arReadings.mag[1]) % "," % QString::number(arReadings.mag[2]) % "]";
+    outStr = outStr % ",\"us\":" % QString::number(arReadings.us) % "},\"system\":{";
+    outStr = outStr % "\"cpu_temp\":" % QString::number(ssReading.cpu_temp);
+    outStr = outStr % ",\"cpu_usage_server\":" % QString::number(ssReading.cpu_usage_server);
+    outStr = outStr % ",\"cpu_usage_total\":" % QString::number(ssReading.cpu_usage_total);
+    outStr = outStr % ",\"mem_available\":" % QString::number(ssReading.mem_available);
+    outStr = outStr % ",\"mem_usage_server\":" % QString::number(ssReading.mem_usage_server);
+    outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total) % "}}";
+
+    return outStr;
 }
 
 mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)

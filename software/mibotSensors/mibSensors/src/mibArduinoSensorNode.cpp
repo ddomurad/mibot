@@ -1,3 +1,4 @@
+#include <mibLogger.h>
 #include <mibSettingsClient.h>
 #include "inc/mibArduinoSensorNode.h"
 
@@ -44,6 +45,13 @@ bool ArduinoSensorNode::Initialize()
     {
         _isInitialized = true;
         return true;
+    }
+
+    _thread->quit();
+
+    if(!_thread->wait(3000))
+    {
+        LOG_WARNING("Can't join arduino read thread after init failure.");
     }
 
     return false;

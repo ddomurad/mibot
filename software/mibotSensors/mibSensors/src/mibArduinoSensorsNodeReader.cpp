@@ -120,15 +120,18 @@ void ArduinoSensorsNodeReader::onSerialPortRead()
 {
     QMutexLocker locker(&_readingMutex);
 
-    QByteArray readed = _serialPort->readAll();
-
-    _serialData += readed;
-    int index = _serialData.indexOf('\n');
-    if(index != -1)
+    while(_serialPort->canReadLine())
     {
-        QString line = _serialData.left(index - 1);
-        _serialData = _serialData.remove(0,index+1);
+    QByteArray line = _serialPort->readLine(256);//>readAll();
+
+    //_serialData += readed;
+    //int index = _serialData.indexOf('\n');
+    //if(index != -1)
+    //{
+      //  QString line = _serialData.left(index - 1);
+        //_serialData = _serialData.remove(0,index+1);
         processData( line );
+    //}
     }
 }
 

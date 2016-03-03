@@ -33,6 +33,7 @@ private:
     void fixIfJsonIsCorrupted();
     QJsonObject createRequest(QJsonObject & obj);
     void readValuesToJsonObjec(QJsonObject & obj);
+    QString getStringToSend();
 
     StatusSettings * _statusSettigns;
     SystemSensors *_systemSensors;
