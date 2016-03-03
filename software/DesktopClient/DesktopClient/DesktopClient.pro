@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     AppSettings.cpp \
     RouteEditorForm.cpp \
     VideoWidget.cpp \
-    VideoServer.cpp
+    VideoServer.cpp \
+    CtrlPanelForm.cpp
 
 HEADERS  += MainWindow.h \
     DoubleView.h \
@@ -33,11 +34,13 @@ HEADERS  += MainWindow.h \
     AppSettings.h \
     RouteEditorForm.h \
     VideoWidget.h \
-    VideoServer.h
+    VideoServer.h \
+    CtrlPanelForm.h
 
 FORMS    += MainWindow.ui \
     SettingsForm.ui \
-    RouteEditorForm.ui
+    RouteEditorForm.ui \
+    CtrlPanelForm.ui
 
 RESOURCES += \
     resources.qrc

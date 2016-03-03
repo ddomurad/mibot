@@ -4,16 +4,18 @@
 using namespace mibot;
 
 ArduinoSensorNode::ArduinoSensorNode()
-{}
-
-void ArduinoSensorNode::_updateReadsIfNeeded()
 {
-
+    _isInitialized = false;
 }
 
-QMap<QString, float> ArduinoSensorNode::getLastReads()
+ArduinoReadings ArduinoSensorNode::Readings()
 {
     return _reader->Readings();
+}
+
+void ArduinoSensorNode::SetPiezzo(bool state)
+{
+    _reader->SendCommand('P', state == true ? '1' : '0');
 }
 
 ArduinoSensorNode::~ArduinoSensorNode()
@@ -25,8 +27,13 @@ ArduinoSensorNode *ArduinoSensorNode::get()
     return &node;
 }
 
-bool ArduinoSensorNode::_intialize()
+bool ArduinoSensorNode::Initialize()
 {
+    QMutexLocker locket(&_initMutex);
+
+    if(_isInitialized == true)
+        return true;
+
     _thread = new QThread();
     _reader = new ArduinoSensorsNodeReader();
 
@@ -34,7 +41,10 @@ bool ArduinoSensorNode::_intialize()
     _thread->start();
 
     if(_reader->StartReader())
+    {
+        _isInitialized = true;
         return true;
+    }
 
     return false;
 }

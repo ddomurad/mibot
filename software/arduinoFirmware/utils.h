@@ -100,12 +100,4 @@ void SendData(const char * n,T val1, T val2, T val3)
 }
 
 
-// FLAGS
-
-
-#define CMD_WRITE '>'
-#define CMD_READ '<'
-#define CMD_SYNC '!'
-
-
 #endif

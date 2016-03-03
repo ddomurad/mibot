@@ -21,10 +21,8 @@ public:
     StringSettingsValue * arduinoNodeSerialPortName;
     IntSettingsValue * arduinoNodeSerialBaudRate;
 
-    IntSettingsValue * analog[5];
-    IntSettingsValue * enable_acc;
-    IntSettingsValue * enable_mag;
-    IntSettingsValue * enable_gps;
+    DoubleSettingsValue * analogFactor[10];
+    IntSettingsValue * analog[10];
 };
 
 }

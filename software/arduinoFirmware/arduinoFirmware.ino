@@ -9,12 +9,7 @@
 #include "lsm303.h"
 #include "us.h"
 #include "PiezzoSignal.h"
-
-char trig = 1;
-unsigned long timeA = 0;
-unsigned long timeB = 0;
-unsigned long timeC = 0;
-
+#include "cmdReader.h"
 
 void setup()
 {
@@ -23,16 +18,15 @@ void setup()
   InitAnalog();
   LSM_Init();
   InitPiezzo();
-  PiezzoState(true);
 }
 
 void loop()
 {
-
-  /*ReadAndSendAnalog();
+  ReadCommands();
+  ReadAndSendAnalog();
+  ReadAndSendUS();
   LSM_ReadAccAndSend();
   LSM_ReadMagAndSend();
-  ReadAndSendUS();*/
 }
 
 

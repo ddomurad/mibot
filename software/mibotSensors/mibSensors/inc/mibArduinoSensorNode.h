@@ -4,33 +4,28 @@
 #include <QThread>
 
 #include "mibSensorsSettings.h"
-#include "mibSensor.h"
 #include "mibArduinoSensorsNodeReader.h"
 
 namespace mibot
 {
 
-class ArduinoSensorNode : public Sensor<QString, float>
+class ArduinoSensorNode
 {
 public:
     ~ArduinoSensorNode();
 
     static ArduinoSensorNode * get();
-    // Sensor interface
-protected:
-    bool _intialize();
-    void _readAllSensors();
+    ArduinoReadings Readings();
+    void SetPiezzo(bool state);
+    bool Initialize();
 
 private:
     ArduinoSensorNode();
-
     ArduinoSensorsNodeReader * _reader;
     QThread * _thread;
 
-    // Sensor interface
-protected:
-    void _updateReadsIfNeeded();
-    QMap<QString, float> getLastReads();
+    bool _isInitialized;
+    QMutex _initMutex;
 };
 
 }

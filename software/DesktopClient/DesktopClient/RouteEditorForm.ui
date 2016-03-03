@@ -51,7 +51,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/add.png</normaloff>:/gui/incons/resources/add.png</iconset>
+          <normaloff>:/gui/icons/resources/add.png</normaloff>:/gui/icons/resources/add.png</iconset>
         </property>
        </widget>
       </item>
@@ -75,7 +75,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/edit.png</normaloff>:/gui/incons/resources/edit.png</iconset>
+          <normaloff>:/gui/icons/resources/edit.png</normaloff>:/gui/icons/resources/edit.png</iconset>
         </property>
        </widget>
       </item>
@@ -86,7 +86,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/remove.png</normaloff>:/gui/incons/resources/remove.png</iconset>
+          <normaloff>:/gui/icons/resources/remove.png</normaloff>:/gui/icons/resources/remove.png</iconset>
         </property>
        </widget>
       </item>
@@ -129,7 +129,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/remove.png</normaloff>:/gui/incons/resources/remove.png</iconset>
+          <normaloff>:/gui/icons/resources/remove.png</normaloff>:/gui/icons/resources/remove.png</iconset>
         </property>
        </widget>
       </item>
@@ -140,7 +140,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/add.png</normaloff>:/gui/incons/resources/add.png</iconset>
+          <normaloff>:/gui/icons/resources/add.png</normaloff>:/gui/icons/resources/add.png</iconset>
         </property>
        </widget>
       </item>
@@ -164,7 +164,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/save.png</normaloff>:/gui/incons/resources/save.png</iconset>
+          <normaloff>:/gui/icons/resources/save.png</normaloff>:/gui/icons/resources/save.png</iconset>
         </property>
        </widget>
       </item>
@@ -175,7 +175,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/gui/incons/resources/edit.png</normaloff>:/gui/incons/resources/edit.png</iconset>
+          <normaloff>:/gui/icons/resources/edit.png</normaloff>:/gui/icons/resources/edit.png</iconset>
         </property>
        </widget>
       </item>

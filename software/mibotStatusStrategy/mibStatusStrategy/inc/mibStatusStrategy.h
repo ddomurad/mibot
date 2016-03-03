@@ -40,7 +40,6 @@ private:
 
     QTimer * _update_timer;
     bool    _auto_send;
-    QList<QString> _read_values_filter;
 };
 
 }

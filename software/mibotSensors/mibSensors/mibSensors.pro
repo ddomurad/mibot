@@ -22,7 +22,6 @@ LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 
 
 SOURCES += \
-    src/mibSensor.cpp \
     src/mibSystemSensors.cpp \
     src/mibArduinoSensorNode.cpp \
     src/mibArduinoSensorsNodeReader.cpp \
@@ -31,7 +30,6 @@ SOURCES += \
 HEADERS += \
     inc/mibSensors.h \
     inc/mibSensorsGlobal.h \
-    inc/mibSensor.h \
     inc/mibSystemSensors.h \
     inc/mibArduinoSensorNode.h \
     inc/mibArduinoSensorsNodeReader.h \

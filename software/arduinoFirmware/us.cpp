@@ -13,9 +13,9 @@ int sonar_index = 0;
 bool ReadSonar(NewPing *sonar, int *d, int * sn)
 {
   *sn = sonar_index;
-  int uS = sonar->ping();
+  int uS = sonar->ping_cm();
   *d = uS;
-  sonar_index = sonar_index == 0 ? 1 : 0;
+  sonar_index = 0;//sonar_index == 0 ? 1 : 0;
 
   return uS != 0;
 }
