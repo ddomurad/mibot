@@ -13,6 +13,7 @@ void InitPiezzo()
 {
   Timer1.initialize(10000000);
   Timer1.attachInterrupt(callback); 
+  Timer1.stop();
   
   pinMode(PIEZZO_1_PIN, OUTPUT);
   pinMode(PIEZZO_2_PIN, OUTPUT);
@@ -22,14 +23,10 @@ void PiezzoState(bool s)
   if(s == true)
   {
     Timer1.setPeriod(PERIOD);
-    pinMode(PIEZZO_1_PIN, OUTPUT);
-    pinMode(PIEZZO_2_PIN, OUTPUT);
   }
   else
   {
-    Timer1.setPeriod(10000000);
-    pinMode(PIEZZO_1_PIN, INPUT);
-    pinMode(PIEZZO_2_PIN, INPUT);
+    Timer1.stop();
   }
 }
 

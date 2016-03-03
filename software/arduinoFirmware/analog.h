@@ -3,5 +3,5 @@
 
 void InitAnalog();
 void ReadAndSendAnalog();
-
+void SetAnalog(int channel, bool state);
 #endif

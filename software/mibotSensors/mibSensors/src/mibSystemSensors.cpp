@@ -18,6 +18,7 @@ using namespace mibot;
 SystemSensors::SystemSensors()
 {
     lastReadingElapsed.start();
+    _isInitialized = false;
 }
 
 SystemSensors::~SystemSensors()
@@ -29,8 +30,23 @@ SystemSensors *SystemSensors::get()
     return &sensor;
 }
 
-bool SystemSensors::_intialize()
+SystemSensorsReading SystemSensors::Readings()
 {
+    if(!_isInitialized)
+        return _readings;
+
+    QMutexLocker locket(&_mutex);
+    _updateReadsIfNeeded();
+
+    return _readings;
+}
+
+bool SystemSensors::Initialize()
+{
+    QMutexLocker locket(&_mutex);
+    if(_isInitialized)
+        return true;
+
     _settings = SensorsSettings::getGlobal();
     if(!_settings->Sync())
     {
@@ -56,7 +72,7 @@ bool SystemSensors::_intialize()
         return false;
     }
 
-
+    _isInitialized = true;
     return true;
 }
 
@@ -69,24 +85,18 @@ void SystemSensors::_updateReadsIfNeeded()
     }
 }
 
-QMap<QString, QVariant> SystemSensors::getLastReads()
-{
-    return _last_radings;
-}
-
 void SystemSensors::readAllSensors()
 {
-
     float val = readSystemStateValue( _cpu_temp_path , 64).toDouble() * 0.001;
-    _last_radings.insert( CpuTemperature , QVariant(val) );
+    _readings.cpu_temp = val;
 
     float cpu_total = 0.0f;
     float cpu_server = 0.0f;
 
     readCpuUtilization(&cpu_total, &cpu_server);
 
-    _last_radings.insert( CpuUsageTotal , QVariant( cpu_total ) );
-    _last_radings.insert( CpuUsageServer, QVariant( cpu_server ) );
+    _readings.cpu_usage_server = cpu_server;
+    _readings.cpu_usage_total = cpu_total;
 
     float avaiable = 0;
     float used_total = 0;
@@ -94,10 +104,9 @@ void SystemSensors::readAllSensors()
 
     readRamUtilization( &avaiable, &used_total, &used_process );
 
-    _last_radings.insert( MemAvailable, QVariant( avaiable ) );
-    _last_radings.insert( MemUsageTotal, QVariant( used_total ) );
-    _last_radings.insert( MemUsageServer, QVariant( used_process ) );
-
+    _readings.mem_available = avaiable;
+    _readings.mem_usage_total = used_total;
+    _readings.mem_usage_server = used_process;
 }
 
 QString SystemSensors::readSystemStateValue(QString path, int length)

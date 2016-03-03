@@ -1,39 +1,44 @@
 #ifndef SYSTEMSENSORS_H
 #define SYSTEMSENSORS_H
 
-#include "mibSensor.h"
+#include <QThread>
+#include "mibSensorsGlobal.h"
 #include "mibSensorsSettings.h"
 
 namespace mibot
 {
 
-class MIBSENSORSSHARED_EXPORT SystemSensors : public Sensor<QString, QVariant>
+class MIBSENSORSSHARED_EXPORT SystemSensorsReading
+{
+public:
+
+    float cpu_temp;
+    float cpu_usage_total;
+    float cpu_usage_server;
+    float mem_available;
+    float mem_usage_total;
+    float mem_usage_server;
+};
+
+class MIBSENSORSSHARED_EXPORT SystemSensors
 {
 public:
     ~SystemSensors();
 
     static SystemSensors * get();
-    const QString EnginesAccuVoltage = "accu_volt";
-    const QString CpuTemperature = "cpu_temp";
-    const QString CpuUsageTotal = "cpu_usage_total";
-    const QString CpuUsageServer = "cpu_usage_server";
-    const QString MemAvailable = "mem_available";
-    const QString MemUsageTotal = "mem_usage_total";
-    const QString MemUsageServer = "mem_usage_server";
-    // Sensor interface
-protected:
-    bool _intialize();
-    void _updateReadsIfNeeded();
-    QMap<QString, QVariant> getLastReads();
-
+    SystemSensorsReading Readings();
+    bool Initialize();
 private:
 
     SystemSensors();
+    void _updateReadsIfNeeded();
+    QMap<QString, QVariant> getLastReads();
 
     QElapsedTimer lastReadingElapsed;
     void readAllSensors();
     QString readSystemStateValue(QString path, int length);
     QString readSystemStateLine(QString path);
+
     void readCpuUtilization(float *cpu_total, float *cpu_server);
     void readRamUtilization(float *available, float *used_total, float *used_process);
     void calcCpuCount();
@@ -53,9 +58,11 @@ private:
     QString _cpu_process_cpu_path;
     QString _process_status_path;
 
-    QMap<QString, QVariant> _last_radings;
-
+    SystemSensorsReading _readings;
     SensorsSettings * _settings;
+    QMutex _mutex;
+
+    bool _isInitialized;
 };
 
 }

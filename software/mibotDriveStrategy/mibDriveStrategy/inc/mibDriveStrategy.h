@@ -14,25 +14,6 @@
 namespace mibot
 {
 
-/*class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegyConfig
-{
-public:
-    DriveStartegyConfig();
-    // pins
-    qint8 gpio_left_a;
-    qint8 gpio_left_b;
-    qint8 gpio_left_pwm;
-
-    qint8 gpio_right_a;
-    qint8 gpio_right_b;
-    qint8 gpio_right_pwm;
-
-    // system
-    qint16 gpio_update_ratio;
-    qint16 emergency_break_timeout;
-    qint8 fake_gpio;
-};*/
-
 class MIBDRIVESTRATEGYSHARED_EXPORT DriveStartegy : public AbstractSocketStrategy
 {
     Q_OBJECT

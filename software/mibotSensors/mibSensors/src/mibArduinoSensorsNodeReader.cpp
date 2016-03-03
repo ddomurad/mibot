@@ -13,18 +13,30 @@ ArduinoSensorsNodeReader::ArduinoSensorsNodeReader(QObject *parent) : QObject(pa
     _isReading = false;
     _settings_update_timer = new QTimer(this);
 
-    for(int i=0;i<5;i++)
-        _last_analog_states[i] = 0xFF;
-
-    _last_gps_state = 0;
-    _last_acc_state = 0;
-    _last_mag_state = 0;
-
     connect(this, SIGNAL(StartReaderSignal()), this, SLOT(startReader()));
     connect(this, SIGNAL(StopReaderSignal()), this, SLOT(stopReader()));
     connect(_settings_update_timer, SIGNAL(timeout()), this, SLOT(onSettingsUpdateTimer()));
 
+    _last_acc_state = 0;
+    _last_mag_state = 0;
+
+     for(int i=0;i<3;i++)
+     {
+         _readings.acc[i] = 0;
+         _readings.mag[i] = 0;
+     }
+
+     for(int i=0;i<10;i++)
+     {
+         _last_analog_states[i] = 0;
+         _readings.analogValue[i] = 0.0f;
+         _readings.isAnalogValue[i] = false;
+     }
+
+     _readings.us = 0;
+
     _settings_update_timer->start(1000);
+
 }
 
 ArduinoSensorsNodeReader::~ArduinoSensorsNodeReader()
@@ -52,11 +64,10 @@ void ArduinoSensorsNodeReader::StopReader()
     emit StopReaderSignal();
 }
 
-QMap<QString, float> ArduinoSensorsNodeReader::Readings()
+ArduinoReadings ArduinoSensorsNodeReader::Readings()
 {
     QMutexLocker locker(&_readingMutex);
-    QMap<QString, float> tmpReads = _readings;
-    return tmpReads;
+    return _readings;
 }
 
 void ArduinoSensorsNodeReader::startReader()
@@ -127,60 +138,13 @@ void ArduinoSensorsNodeReader::onSettingsUpdateTimer()
 
     if(!_isReading) return;
 
-    if(_settings->enable_acc->value != _last_acc_state)
-    {
-        _last_acc_state = _settings->enable_acc->value;
-        sendFlag(ACC_FLAG_ADDR, _last_acc_state);
-    }
-
-    if(_last_acc_state != 49)
-    {
-        _readings.remove(ACC_X_SENSOR_TAG);
-        _readings.remove(ACC_Y_SENSOR_TAG);
-        _readings.remove(ACC_Z_SENSOR_TAG);
-    }
-
-    if(_settings->enable_mag->value != _last_mag_state)
-    {
-        _last_mag_state = _settings->enable_mag->value;
-        sendFlag(MAG_FLAG_ADDR, _last_mag_state);
-    }
-
-    if(_last_mag_state != 49)
-    {
-        _readings.remove(MAG_X_SENSOR_TAG);
-        _readings.remove(MAG_Y_SENSOR_TAG);
-        _readings.remove(MAG_Z_SENSOR_TAG);
-    }
-
-    if(_settings->enable_gps->value != _last_gps_state)
-    {
-        _last_gps_state = _settings->enable_gps->value;
-        sendFlag(GPS_FLAG_ADDR, _last_gps_state);
-
-    }
-
-    if(_last_gps_state != 49)
-    {
-        _readings.remove(GPS_LAT_1_SENSOR_TAG);
-        _readings.remove(GPS_LAT_2_SENSOR_TAG);
-        _readings.remove(GPS_LON_1_SENSOR_TAG);
-        _readings.remove(GPS_LON_2_SENSOR_TAG);
-        _readings.remove(GPS_DIR_SENSOR_TAG);
-        _readings.remove(GPS_SPEED_SENSOR_TAG);
-    }
-
-    for(int i=0;i<5;i++)
+    for(int i=0;i<10;i++)
     {
         if(_settings->analog[i]->value != _last_analog_states[i])
         {
             _last_analog_states[i] = _settings->analog[i]->value;
-            sendFlag(ANALOG_BASE_FLAG_ADDR + i, _last_analog_states[i]);
-        }
-
-        if(_last_analog_states[i] == 0xFF)
-        {
-            _readings.remove(QString("a%1").arg(i + 1));
+            SendCommand(_last_analog_states[i] == 0 ? 'a' : 'A','0' + i);
+            _readings.isAnalogValue[i] = _last_analog_states[i] != 0;
         }
     }
 }
@@ -199,30 +163,49 @@ void ArduinoSensorsNodeReader::processData(QString str)
         return;
     }
 
-    if(splited[0] == "GPS")
-        processGPS(splited[1]);
+    else if(splited[0] == "US")
+        processUs(splited[1]);
     else if(splited[0] == "ACC")
         processAcc(splited[1]);
     else if(splited[0] == "MAG")
         processMag(splited[1]);
-    else if(splited[0] == "A1"
+    else if(splited[0] == "A0"
+            || splited[0] == "A1"
             || splited[0] == "A2"
             || splited[0] == "A3"
             || splited[0] == "A4"
-            || splited[0] == "A5")
-        processAnalog(splited[0], splited[1]);
+            || splited[0] == "A5"
+            || splited[0] == "A6"
+            || splited[0] == "A7"
+            || splited[0] == "A8"
+            || splited[0] == "A9")
+        processAnalog(splited[0][1], splited[1]);
     else
     {
         LOG_WARNING("Recived unknown value from arduino.");
     }
 }
 
+void ArduinoSensorsNodeReader::processUs(QString value)
+{
+    QStringList values = value.split(":");
+    if(values.count() != 2)
+    {
+        LOG_WARNING( QString("Can't split UltraSonar valued into 2 element vector. (data: '%1')").arg(value) );
+        return;
+    }
+
+    if(values[0] != "0")
+    {
+        LOG_WARNING( QString("Only 0 channel UltraSonar is supported. (data: '%1')").arg(values[0]) );
+        return;
+    }
+
+    _readings.us = values[1].toInt();
+}
+
 void ArduinoSensorsNodeReader::processAcc(QString value)
 {
-    updateKey(ACC_X_SENSOR_TAG);
-    updateKey(ACC_Y_SENSOR_TAG);
-    updateKey(ACC_Z_SENSOR_TAG);
-
     QStringList values = value.split(":");
 
     if(values.count() != 3)
@@ -231,9 +214,9 @@ void ArduinoSensorsNodeReader::processAcc(QString value)
         return;
     }
 
-    _readings[ACC_X_SENSOR_TAG] = values[0].toFloat();
-    _readings[ACC_Y_SENSOR_TAG] = values[1].toFloat();
-    _readings[ACC_Z_SENSOR_TAG] = values[2].toFloat();
+    _readings.acc[0] = values[0].toFloat();
+    _readings.acc[1] = values[1].toFloat();
+    _readings.acc[2] = values[2].toFloat();
 
     //    LOG_DEBUG(
     //                QString("ACC: {%1,%2,%3}")
@@ -244,10 +227,6 @@ void ArduinoSensorsNodeReader::processAcc(QString value)
 
 void ArduinoSensorsNodeReader::processMag(QString value)
 {
-    updateKey(MAG_X_SENSOR_TAG);
-    updateKey(MAG_Y_SENSOR_TAG);
-    updateKey(MAG_Z_SENSOR_TAG);
-
     QStringList values = value.split(":");
 
     if(values.count() != 3)
@@ -256,9 +235,9 @@ void ArduinoSensorsNodeReader::processMag(QString value)
         return;
     }
 
-    _readings[MAG_X_SENSOR_TAG] = values[0].toFloat();
-    _readings[MAG_Y_SENSOR_TAG] = values[1].toFloat();
-    _readings[MAG_Z_SENSOR_TAG] = values[2].toFloat();
+    _readings.mag[0] = values[0].toFloat();
+    _readings.mag[1] = values[1].toFloat();
+    _readings.mag[2] = values[2].toFloat();
 
     //    LOG_DEBUG(
     //                QString("MAG: {%1,%2,%3}")
@@ -267,22 +246,16 @@ void ArduinoSensorsNodeReader::processMag(QString value)
     //                .arg(_readings[MAG_Z_SENSOR_TAG]));
 }
 
-void ArduinoSensorsNodeReader::processAnalog(QString channel, QString value)
+void ArduinoSensorsNodeReader::processAnalog(QCharRef channel, QString value)
 {
-    if(channel != "A1"
-            && channel != "A2"
-            && channel != "A3"
-            && channel != "A4"
-            && channel != "A5")
-    {
-        LOG_WARNING(QString("Received channel name is ivalid: '%1'").arg(channel));
+    int cn = (int)(channel.toLatin1() - '0');
+    if(cn < 0 || cn > 9)
+     {
+        LOG_ERROR("Channel number invalid");
         return;
     }
 
-    channel = channel.toLower();
-
-    updateKey(channel);
-    _readings[channel] = value.toFloat();
+    _readings.analogValue[cn] = value.toFloat() * _settings->analogFactor[cn]->value;
 
     //    LOG_DEBUG(
     //                QString("%1: {%2}")
@@ -290,77 +263,14 @@ void ArduinoSensorsNodeReader::processAnalog(QString channel, QString value)
     //                .arg(_readings[channel]));
 }
 
-void ArduinoSensorsNodeReader::processGPS(QString value)
+void ArduinoSensorsNodeReader::SendCommand(char cmd, char value)
 {
-    if(value.length() == 0)
-    {
-        LOG_WARNING("Empty GPS data");
-        return;
-    }
-
-    QStringList valueList = value.split(',');
-    if(valueList.count() == 1)
-    {
-        //LOG_WARNING(QString("Invalid gps data: '%1'").arg(value));
-        return;
-    }
-
-    if(valueList[0] == "GPGGA")
-    {
-        if(valueList.count()!=15)
-        {
-            return;
-        }
-        else
-        {
-            QStringList lat_split = valueList[2].split('.');
-            QStringList lon_split = valueList[4].split('.');
-            _readings[GPS_LAT_1_SENSOR_TAG] = lat_split[0].toFloat();
-            _readings[GPS_LAT_2_SENSOR_TAG] = lat_split[1].toFloat();
-            _readings[GPS_LON_1_SENSOR_TAG] = lon_split[0].toFloat();
-            _readings[GPS_LON_2_SENSOR_TAG] = lon_split[1].toFloat();
-
-            return;
-        }
-    }
-    else if(valueList[0] == "GPVTG")
-    {
-        if(valueList.count()!=10)
-        {
-            //LOG_WARNING(QString("Invalid GPVTG gps data: '%1'").arg(value));
-            return;
-        }else
-        {
-            // LOG_DEBUG(QString("Valid GPVTG gps data: '%1'").arg(value));
-            _readings[GPS_SPEED_SENSOR_TAG] = valueList[7].toFloat();
-            _readings[GPS_DIR_SENSOR_TAG] = valueList[1].toFloat();
-
-            //            LOG_DEBUG(
-            //                        QString("GPS_SPEED: S:%1, D:%2")
-            //                        .arg(_readings[GPS_SPEED_SENSOR_TAG])
-            //                        .arg(_readings[GPS_DIR_SENSOR_TAG]));
-            return;
-        }
-    }
-    else
-    {
-        //LOG_WARNING(QString("Unsuported gps data: '%1'").arg(value));
-        return;
-    }
-}
-
-void ArduinoSensorsNodeReader::updateKey(QString key)
-{
-    if(!_readings.contains(key))
-        _readings.insert(key,0);
-}
-
-void ArduinoSensorsNodeReader::sendFlag(int addr, int value)
-{
+    QMutexLocker lockar(&_sendingMutex);
     QByteArray data;
+    data.push_back('!');
     data.push_back('>');
-    data.push_back( (unsigned char)(addr) + '0' );
-    data.push_back( (unsigned char)(value) );
+    data.push_back( cmd);
+    data.push_back( value);
 
     if(_serialPort->write( data ) == -1)
     {

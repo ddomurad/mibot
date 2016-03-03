@@ -96,12 +96,10 @@ void StatusStrategy::fixIfJsonIsCorrupted()
 /*
 {
   "send_trigger":"auto",
-  "interested":["cpu_temp","accu_volt"]
 }
 
 {
   "send_trigger":"manual",
-  "interested":[]
 }
 
 {
@@ -111,7 +109,6 @@ void StatusStrategy::fixIfJsonIsCorrupted()
 {
  "action":"send",
   "send_trigger":"manual",
-  "interested":[]
 }
 
 */
@@ -132,19 +129,6 @@ QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
         }
     }
 
-    if(obj["interested"].isArray())
-    {
-        _read_values_filter.clear();
-        QJsonArray arr = obj["interested"].toArray();
-        for(int i=-0; i<arr.count(); i++)
-        {
-            if(arr.at(i).isString())
-            {
-                _read_values_filter.append( arr.at(i).toString() );
-            }
-        }
-    }
-
     if(obj["action"].isString())
     {
         if(obj["action"].toString() == "send")
@@ -160,62 +144,49 @@ QJsonObject StatusStrategy::createRequest(QJsonObject &obj)
 void StatusStrategy::readValuesToJsonObjec(QJsonObject &obj)
 {
     QJsonArray arr;
-    QMap<QString,QVariant> systemSensorValues = _systemSensors->ReadAllSensors();
-    QMap<QString, float>   arduinoNodeValues = _arduinoSensorNode->ReadAllSensors();
+    SystemSensorsReading ssReading = _systemSensors->Readings();
+    ArduinoReadings arReadings = _arduinoSensorNode->Readings();
 
-    if(_read_values_filter.empty())
+    QJsonObject systemReading;
+    systemReading.insert("cpu_temp",QJsonValue(ssReading.cpu_temp));
+    systemReading.insert("cpu_usage_server",QJsonValue(ssReading.cpu_usage_server));
+    systemReading.insert("cpu_usage_total",QJsonValue(ssReading.cpu_usage_total));
+    systemReading.insert("mem_available",QJsonValue(ssReading.mem_available));
+    systemReading.insert("mem_usage_server",QJsonValue(ssReading.mem_usage_server));
+    systemReading.insert("mem_usage_total",QJsonValue(ssReading.mem_usage_total));
+
+    QJsonObject arduinoReading;
+    QJsonArray arduinoReadingAcc;
+    QJsonArray arduinoReadingMag;
+    QJsonArray arduinoReadingAnalog;
+
+    arduinoReadingAcc.append(QJsonValue(arReadings.acc[0]));
+    arduinoReadingAcc.append(QJsonValue(arReadings.acc[1]));
+    arduinoReadingAcc.append(QJsonValue(arReadings.acc[2]));
+
+    arduinoReadingMag.append(QJsonValue(arReadings.mag[0]));
+    arduinoReadingMag.append(QJsonValue(arReadings.mag[1]));
+    arduinoReadingMag.append(QJsonValue(arReadings.mag[2]));
+
+    for(int i=0;i<10;i++)
     {
-        for(QString k : systemSensorValues.keys())
-        {
-            QJsonObject obj;
-            obj.insert(k,QJsonValue(systemSensorValues[k].toDouble()));
-            arr.append( QJsonValue(obj) );
-        }
+       if(!arReadings.isAnalogValue[i])
+           continue;
 
-        for(QString k : arduinoNodeValues.keys())
-        {
-            QJsonObject obj;
-            obj.insert(k,QJsonValue(arduinoNodeValues[k]));
-            arr.append( QJsonValue(obj) );
-        }
-    }
-    else
-    {
-        for(QString k : _read_values_filter)
-        {
-//            if(k == "accu_volt")
-//            {
-//                QJsonObject obj;
-//                obj.insert(k,accValue);
-//                arr.append( QJsonValue(obj) );
-//                continue;
-//            }
-
-//            if(k == "gps_pos")
-//            {
-//                QJsonObject obj2;
-//                obj2.insert("gps_pos_x", QJsonValue(gpsPos.x()));
-//                obj2.insert("gps_pos_y", QJsonValue(gpsPos.y()));
-//                arr.append( QJsonValue(obj2) );
-//                continue;
-//            }
-
-            if(!systemSensorValues.contains(k))
-            {
-                QJsonObject obj;
-                obj.insert(k,QJsonValue( "" ));
-                arr.append( QJsonValue(obj) );
-            }
-            else
-            {
-                QJsonObject obj;
-                obj.insert(k,QJsonValue(systemSensorValues[k].toString() ));
-                arr.append( QJsonValue(obj) );
-            }
-        }
+       QJsonObject analogObj;
+       analogObj.insert("c", i);
+       analogObj.insert("v", arReadings.analogValue[i]);
+       arduinoReadingAnalog.append(analogObj);
     }
 
-    obj.insert("reading",QJsonValue(arr));
+    arduinoReading.insert("acc",QJsonValue(arduinoReadingAcc));
+    arduinoReading.insert("mag",QJsonValue(arduinoReadingMag));
+    arduinoReading.insert("analog",QJsonValue(arduinoReadingAnalog));
+    arduinoReading.insert("us",QJsonValue(arReadings.us));
+
+
+    obj.insert("system",QJsonValue(systemReading));
+    obj.insert("sensors",QJsonValue(arduinoReading));
 }
 
 mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)
