@@ -16,13 +16,9 @@ CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
-INCLUDEPATH += ../../mibotServer/mibServer/inc
-INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
-LIBS += /usr/local/lib/mi_bot/libmibServer.so
-LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 
 
 SOURCES += \
