@@ -2,6 +2,7 @@
 #include "cmdReader.h"
 #include "PiezzoSignal.h"
 #include "analog.h"
+#include "MotorsLock.h"
 
 #define RCS_WAIT_FOR_INIT 0x00
 #define RCS_WAIT_FOR_W_CMD 0x01
@@ -45,6 +46,12 @@ void ReadCommands()
   {
     TRACE_PRT("sync");
     rcState = RCS_WAIT_FOR_INIT;
+    return;
+  }
+
+  if(r == CMD_MLOCK)
+  {
+    ResetMotorstLock();
     return;
   }
   

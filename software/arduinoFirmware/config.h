@@ -49,5 +49,7 @@
 
 #define PIEZZO_1_PIN 31
 #define PIEZZO_2_PIN 30
+
+#define MOTORS_LOCK_PIN 42
 #endif
 

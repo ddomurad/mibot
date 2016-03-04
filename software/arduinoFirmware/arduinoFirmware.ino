@@ -1,3 +1,5 @@
+#include <TimerThree.h>
+
 #include <TimerOne.h>
 
 #include <NewPing.h>
@@ -10,11 +12,12 @@
 #include "us.h"
 #include "PiezzoSignal.h"
 #include "cmdReader.h"
+#include "MotorsLock.h"
 
 void setup()
 {
   InitGSerial(GSERIAL, GSERIAL_BAUD);
-
+  InitMotorsLock();
   InitAnalog();
   LSM_Init();
   InitPiezzo();

@@ -13,10 +13,12 @@ ArduinoSensorsNodeReader::ArduinoSensorsNodeReader(QObject *parent) : QObject(pa
     _settings = nullptr;
     _isReading = false;
     _settings_update_timer = new QTimer(this);
+    _motor_lock_timer = new QTimer(this);
 
     connect(this, SIGNAL(StartReaderSignal()), this, SLOT(startReader()));
     connect(this, SIGNAL(StopReaderSignal()), this, SLOT(stopReader()));
     connect(_settings_update_timer, SIGNAL(timeout()), this, SLOT(onSettingsUpdateTimer()));
+    connect(_motor_lock_timer, SIGNAL(timeout()), this, SLOT(onResetMotorLock()));
     connect(this, SIGNAL(SetPiezo(bool)),this,SLOT(onSetPiezo(bool)));
 
     _last_acc_state = 0;
@@ -38,6 +40,7 @@ ArduinoSensorsNodeReader::ArduinoSensorsNodeReader(QObject *parent) : QObject(pa
      _readings.us = 0;
 
     _settings_update_timer->start(1000);
+    _motor_lock_timer->start(220);
 
 }
 
@@ -120,6 +123,8 @@ void ArduinoSensorsNodeReader::stopReader()
 
 void ArduinoSensorsNodeReader::onSerialPortRead()
 {
+    if(!_isReading)
+        return;
     QMutexLocker locker(&_readingMutex);
 
     while(_serialPort->canReadLine())
@@ -144,6 +149,16 @@ void ArduinoSensorsNodeReader::onSettingsUpdateTimer()
             _readings.isAnalogValue[i] = _last_analog_states[i] != 0;
         }
     }
+}
+
+void ArduinoSensorsNodeReader::onResetMotorLock()
+{
+    QMutexLocker lockar(&_sendingMutex);
+    QByteArray data;
+    data.push_back('*');
+
+    if(_serialPort->write( data ) == -1)
+        LOG_ERROR("Can't write MotorlLockReset to arduino node!");
 }
 
 void ArduinoSensorsNodeReader::processData(QString str)

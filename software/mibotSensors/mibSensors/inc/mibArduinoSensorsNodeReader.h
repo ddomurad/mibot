@@ -51,6 +51,8 @@ private slots:
 
     void onSerialPortRead();
     void onSettingsUpdateTimer();
+    void onResetMotorLock();
+
 private:
     SensorsSettings * _settings;
     AutoOpenAsyncWaitEvent _startEvent;
@@ -74,6 +76,7 @@ private:
     int _last_mag_state;
 
     QTimer *_settings_update_timer;
+    QTimer *_motor_lock_timer;
 };
 }
 
