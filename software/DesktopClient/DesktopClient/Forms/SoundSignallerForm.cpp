@@ -8,6 +8,7 @@ SoundSignallerForm::SoundSignallerForm(QWidget *parent) :
     ui(new Ui::SoundSignallerForm)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Sound signaller");
 }
 
 SoundSignallerForm::~SoundSignallerForm()
@@ -44,8 +45,5 @@ void SoundSignallerForm::SetPiezoState(bool state)
         return;
     }
 
-    if(state)
-        client->SendData("{\"piezo\":true}");
-    else
-        client->SendData("{\"piezo\":false}");
+    client->SetSoundSignal(state);
 }

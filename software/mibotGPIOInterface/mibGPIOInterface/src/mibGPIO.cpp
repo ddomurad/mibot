@@ -23,9 +23,9 @@ void pinMode( int pin, int mode)
     qDebug() << "(GPIO DISABLED) pinMode" << pin << mode;
 }
 
-void digitalWrite( int , int )
+void digitalWrite( int pin, int value)
 {
-    //qDebug() << "digitalWrite" << pin << value;
+    qDebug() << "digitalWrite" << pin << value;
 }
 
 int softPwmCreate( int pin, int initialValue, int pwmRange)
@@ -35,9 +35,9 @@ int softPwmCreate( int pin, int initialValue, int pwmRange)
     return 0;
 }
 
-void softPwmWrite( int , int )
+void softPwmWrite( int pin, int value)
 {
-    //qDebug() << "softPwmWrite" << pin << value;
+    qDebug() << "softPwmWrite" << pin << value;
 }
 
 void softPwmStop(int pin)

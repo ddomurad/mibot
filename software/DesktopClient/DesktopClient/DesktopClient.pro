@@ -36,7 +36,10 @@ SOURCES += main.cpp\
     ./Clients/RoverClient.cpp \
     ./Clients/RoverClientsProvider.cpp \
     Forms/SoundSignallerForm.cpp \
-    Forms/ReferenceCounter.cpp
+    Forms/ReferenceCounter.cpp \
+    Other/JsInput.cpp \
+    Clients/RoverDriveClient.cpp \
+    Forms/RoverDriveForm.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -59,7 +62,10 @@ HEADERS  += ./Forms/MainWindow.h \
     ./Clients/RoverClient.h \
     ./Clients/RoverClientsProvider.h \
     Forms/SoundSignallerForm.h \
-    Forms/ReferenceCounter.h
+    Forms/ReferenceCounter.h \
+    Other/JsInput.h \
+    Clients/RoverDriveClient.h \
+    Forms/RoverDriveForm.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
@@ -68,7 +74,8 @@ FORMS    += ./Forms/MainWindow.ui \
     ./Forms/InfoServiceForm.ui \
     ./Forms/SensorsReaderForm.ui \
     ./Forms/RoverConnectionForm.ui \
-    Forms/SoundSignallerForm.ui
+    Forms/SoundSignallerForm.ui \
+    Forms/RoverDriveForm.ui
 
 RESOURCES += \
     resources.qrc
