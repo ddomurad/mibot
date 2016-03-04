@@ -132,7 +132,7 @@ QString StatusStrategy::createResponse(QJsonObject &obj)
     if(obj["piezo"].isBool())
     {
         bool piezoState = obj["piezo"].toBool();
-        emit _arduinoSensorNode->SetPiezzo(piezoState);
+        _arduinoSensorNode->SetPiezo(piezoState);
     }
 
     return "";

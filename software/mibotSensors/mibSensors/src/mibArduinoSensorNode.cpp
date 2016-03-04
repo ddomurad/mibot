@@ -14,9 +14,9 @@ ArduinoReadings ArduinoSensorNode::Readings()
     return _reader->Readings();
 }
 
-void ArduinoSensorNode::SetPiezzo(bool state)
+void ArduinoSensorNode::SetPiezo(bool state)
 {
-    _reader->SendCommand('P', state == true ? '1' : '0');
+    emit _reader->SetPiezo(state);
 }
 
 ArduinoSensorNode::~ArduinoSensorNode()

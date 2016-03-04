@@ -38,11 +38,14 @@ public:
     ArduinoReadings Readings();
 
     void SendCommand(char cmd, char value);
+
 signals:
     void StartReaderSignal();
     void StopReaderSignal();
+    void SetPiezo(bool state);
 
 private slots:
+    void onSetPiezo(bool state);
     void startReader();
     void stopReader();
 

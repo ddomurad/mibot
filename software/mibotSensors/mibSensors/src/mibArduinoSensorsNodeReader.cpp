@@ -9,6 +9,7 @@ using namespace mibot;
 
 ArduinoSensorsNodeReader::ArduinoSensorsNodeReader(QObject *parent) : QObject(parent)
 {
+
     _settings = nullptr;
     _isReading = false;
     _settings_update_timer = new QTimer(this);
@@ -16,6 +17,7 @@ ArduinoSensorsNodeReader::ArduinoSensorsNodeReader(QObject *parent) : QObject(pa
     connect(this, SIGNAL(StartReaderSignal()), this, SLOT(startReader()));
     connect(this, SIGNAL(StopReaderSignal()), this, SLOT(stopReader()));
     connect(_settings_update_timer, SIGNAL(timeout()), this, SLOT(onSettingsUpdateTimer()));
+    connect(this, SIGNAL(SetPiezo(bool)),this,SLOT(onSetPiezo(bool)));
 
     _last_acc_state = 0;
     _last_mag_state = 0;
@@ -271,5 +273,10 @@ void ArduinoSensorsNodeReader::SendCommand(char cmd, char value)
     {
         LOG_ERROR("Can't write flags to arduino node!");
     }
+}
+
+void ArduinoSensorsNodeReader::onSetPiezo(bool state)
+{
+    SendCommand('P', state == true ? '1' : '0');
 }
 

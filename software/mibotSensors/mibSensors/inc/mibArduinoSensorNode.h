@@ -18,8 +18,7 @@ public:
     ArduinoReadings Readings();
 
     bool Initialize();
-public slots:
-    void SetPiezzo(bool state);
+    void SetPiezo(bool state);
 
 private:
     ArduinoSensorNode();
