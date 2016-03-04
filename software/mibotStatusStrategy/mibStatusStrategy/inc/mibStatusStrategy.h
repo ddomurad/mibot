@@ -31,7 +31,7 @@ private:
     JSONProtocol    _json_protocol;
 
     void fixIfJsonIsCorrupted();
-    QString createRequest(QJsonObject & obj);
+    QString createResponse(QJsonObject & obj);
     QString getStringToSend();
 
     StatusSettings * _statusSettigns;

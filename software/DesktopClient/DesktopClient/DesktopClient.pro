@@ -15,55 +15,60 @@ CONFIG += c++11
 #DEFINES += SHOW_SPLASH
 
 SOURCES += main.cpp\
-        MainWindow.cpp \
-    DoubleView.cpp \
-    OSMWidget.cpp \
-    VideoStreamClient.cpp \
-    SettingsForm.cpp \
-    AppSettings.cpp \
-    RouteEditorForm.cpp \
-    VideoWidget.cpp \
-    VideoServer.cpp \
-    CtrlPanelForm.cpp \
-    GlobalPasswordProvider.cpp \
-    InfoServiceForm.cpp \
-    Socket.cpp \
-    LoggerDialog.cpp \
-    mibJSONProtocol.cpp \
-    InfoServiceClient.cpp \
-    SensorsReaderForm.cpp \
-    RoverConnectionForm.cpp \
-    RoverSensorClient.cpp \
-    RoverClient.cpp
+        ./Forms/MainWindow.cpp \
+    ./Forms/OSMWidget.cpp \
+    ./Clients/VideoStreamClient.cpp \
+    ./Forms/SettingsForm.cpp \
+    ./Settings/AppSettings.cpp \
+    ./Forms/RouteEditorForm.cpp \
+    ./Forms/VideoWidget.cpp \
+    ./VideoServer/VideoServer.cpp \
+    ./Forms/CtrlPanelForm.cpp \
+    ./Clients/GlobalPasswordProvider.cpp \
+    ./Forms/InfoServiceForm.cpp \
+    ./Clients/Socket.cpp \
+    ./Forms/LoggerDialog.cpp \
+    ./Clients/mibJSONProtocol.cpp \
+    ./Clients/InfoServiceClient.cpp \
+    ./Forms/SensorsReaderForm.cpp \
+    ./Forms/RoverConnectionForm.cpp \
+    ./Clients/RoverSensorClient.cpp \
+    ./Clients/RoverClient.cpp \
+    ./Clients/RoverClientsProvider.cpp \
+    Forms/SoundSignallerForm.cpp \
+    Forms/ReferenceCounter.cpp
 
-HEADERS  += MainWindow.h \
-    DoubleView.h \
-    OSMWidget.h \
-    VideoStreamClient.h \
-    SettingsForm.h \
-    AppSettings.h \
-    RouteEditorForm.h \
-    VideoWidget.h \
-    VideoServer.h \
-    CtrlPanelForm.h \
-    GlobalPasswordProvider.h \
-    InfoServiceForm.h \
-    Socket.h \
-    LoggerDialog.h \
-    mibJSONProtocol.h \
-    InfoServiceClient.h \
-    SensorsReaderForm.h \
-    RoverConnectionForm.h \
-    RoverSensorClient.h \
-    RoverClient.h
+HEADERS  += ./Forms/MainWindow.h \
+    ./Forms/OSMWidget.h \
+    ./Clients/VideoStreamClient.h \
+    ./Forms/SettingsForm.h \
+    ./Settings/AppSettings.h \
+    ./Forms/RouteEditorForm.h \
+    ./Forms/VideoWidget.h \
+    ./VideoServer/VideoServer.h \
+    ./Forms/CtrlPanelForm.h \
+    ./Clients/GlobalPasswordProvider.h \
+    ./Forms/InfoServiceForm.h \
+    ./Clients/Socket.h \
+    ./Forms/LoggerDialog.h \
+    ./Clients/mibJSONProtocol.h \
+    ./Clients/InfoServiceClient.h \
+    ./Forms/SensorsReaderForm.h \
+    ./Forms/RoverConnectionForm.h \
+    ./Clients/RoverSensorClient.h \
+    ./Clients/RoverClient.h \
+    ./Clients/RoverClientsProvider.h \
+    Forms/SoundSignallerForm.h \
+    Forms/ReferenceCounter.h
 
-FORMS    += MainWindow.ui \
-    SettingsForm.ui \
-    RouteEditorForm.ui \
-    CtrlPanelForm.ui \
-    InfoServiceForm.ui \
-    SensorsReaderForm.ui \
-    RoverConnectionForm.ui
+FORMS    += ./Forms/MainWindow.ui \
+    ./Forms/SettingsForm.ui \
+    ./Forms/RouteEditorForm.ui \
+    ./Forms/CtrlPanelForm.ui \
+    ./Forms/InfoServiceForm.ui \
+    ./Forms/SensorsReaderForm.ui \
+    ./Forms/RoverConnectionForm.ui \
+    Forms/SoundSignallerForm.ui
 
 RESOURCES += \
     resources.qrc

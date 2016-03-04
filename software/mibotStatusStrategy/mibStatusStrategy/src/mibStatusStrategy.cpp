@@ -31,7 +31,7 @@ void StatusStrategy::onStrategyUpdate()
         QJsonObject object = _json_protocol.GetPendingObject();
         fixIfJsonIsCorrupted();
 
-        QString dataToSend  = createRequest(object);
+        QString dataToSend  = createResponse(object);
         if(!dataToSend.isEmpty())
             _connection->TcpSocket->write( dataToSend.toUtf8() );
     }
@@ -106,7 +106,7 @@ void StatusStrategy::fixIfJsonIsCorrupted()
 
 */
 
-QString StatusStrategy::createRequest(QJsonObject &obj)
+QString StatusStrategy::createResponse(QJsonObject &obj)
 {
     if(obj["send_trigger"].isString())
     {
@@ -127,6 +127,12 @@ QString StatusStrategy::createRequest(QJsonObject &obj)
             if(!_auto_send)
                 getStringToSend();
         }
+    }
+
+    if(obj["piezo"].isBool())
+    {
+        bool piezoState = obj["piezo"].toBool();
+        _arduinoSensorNode->SetPiezzo(piezoState);
     }
 
     return "";
