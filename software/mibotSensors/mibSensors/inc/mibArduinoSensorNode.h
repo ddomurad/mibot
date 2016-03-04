@@ -16,8 +16,10 @@ public:
 
     static ArduinoSensorNode * get();
     ArduinoReadings Readings();
-    void SetPiezzo(bool state);
+
     bool Initialize();
+public slots:
+    void SetPiezzo(bool state);
 
 private:
     ArduinoSensorNode();

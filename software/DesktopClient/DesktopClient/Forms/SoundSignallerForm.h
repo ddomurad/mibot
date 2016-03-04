@@ -1,14 +1,15 @@
 #ifndef SOUNDSIGNALLERFORM_H
 #define SOUNDSIGNALLERFORM_H
 
-#include <QWidget>
 #include "ReferenceCounter.h"
+#include <QWidget>
+
 
 namespace Ui {
 class SoundSignallerForm;
 }
 
-class SoundSignallerForm : public QWidget, public ReferenceCounter
+class SoundSignallerForm : public QWidget, public ReferenceCounter<SoundSignallerForm>
 {
     Q_OBJECT
 

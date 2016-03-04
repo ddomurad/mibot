@@ -45,7 +45,7 @@ void SoundSignallerForm::SetPiezoState(bool state)
     }
 
     if(state)
-        client->SendData("{\"piezo\":1}");
+        client->SendData("{\"piezo\":true}");
     else
-        client->SendData("{\"piezo\":0}");
+        client->SendData("{\"piezo\":false}");
 }
