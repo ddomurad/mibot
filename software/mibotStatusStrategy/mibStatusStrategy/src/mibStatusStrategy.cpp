@@ -180,8 +180,6 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % ",\"gps\":{";
     outStr = outStr % "\"gps_latitude\":" % QString::number(gpsData.position.latitude) ;
     outStr = outStr % ",\"gps_lognitude\":" % QString::number(gpsData.position.lognitude) ;
-    outStr = outStr % ",\"gps_ew\":\"" % QString(gpsData.position.eastWast) % "\"";
-    outStr = outStr % ",\"gps_ns\":\"" % QString(gpsData.position.northSouth) % "\"";
     outStr = outStr % ",\"gps_speed_kmh\":" % QString::number(gpsData.movement.speedKmh) ;
     outStr = outStr % ",\"gps_cource\":" % QString::number(gpsData.movement.course) ;
     outStr = outStr % "}}";

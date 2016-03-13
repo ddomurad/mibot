@@ -11,18 +11,19 @@ $GPGGA,115952.000,0000.0000,N,00000.0000,E,0,00,0.0,0.0,M,0.0,M,,0000*66
 */
 
 GPSPosition::GPSPosition():
-    latitude(0.0f), lognitude(0.0f),
-    northSouth('?'), eastWast('?')
+    latitude(0.0f), lognitude(0.0f)
 {}
 
 GPSMovement::GPSMovement():
-    speedKnot(0.0f), speedKmh(0.0f),
-    speedMs(0.0f), course(0.0f)
+    speedKmh(0.0f), course(0.0f)
+{}
+
+GPSData::GPSData() :
+    isValid(false)
 {}
 
 
-GPSPositionDataParser::GPSPositionDataParser() :
-    _isValid(false)
+GPSPositionDataParser::GPSPositionDataParser()
 {}
 
 bool GPSPositionDataParser::CanParse(QString line)
@@ -40,33 +41,19 @@ bool GPSPositionDataParser::Parse(QString line)
     QStringList splited = line.split(',');
     if(splited.count() != 13) return false;
 
-    QString date_time_string = splited[9] + splited[1];
-    _dateTimeStamp = QDateTime::fromString(date_time_string, "ddMMyyHHmmss.zzz").addYears(100);;
+//    QString date_time_string = splited[9] + splited[1];
+//    _dateTimeStamp = QDateTime::fromString(date_time_string, "ddMMyyHHmmss.zzz").addYears(100);
 
-    _isValid = splited[2] == "A";
+    _gpsData.isValid = splited[2] == "A";
     bool ok = true;
 
-    _gpsData.position.latitude = splited[3].toDouble(&ok);
-    if(!ok) return false;
+    _gpsData.position.latitude = _gpsCoordToDouble(splited[3]);
+    _gpsData.position.latitude *= splited[4] == "N" ? 1.0 : -1.0;
 
-    if(splited[4].length() != 1)
-        _gpsData.position.northSouth = '?';
-    else
-        _gpsData.position.northSouth = splited[4][0];
+    _gpsData.position.lognitude = _gpsCoordToDouble(splited[5]);
+    _gpsData.position.lognitude *= splited[6] == "E" ? 1.0 : -1.0;
 
-    _gpsData.position.lognitude = splited[5].toDouble(&ok);
-    if(!ok) return false;
-
-    if(splited[6].length() != 1)
-        _gpsData.position.eastWast = '?';
-    else
-        _gpsData.position.eastWast = splited[6][0];
-
-    _gpsData.movement.speedKnot = splited[7].toDouble(&ok);
-    if(!ok) return false;
-
-    _gpsData.movement.speedKmh = _gpsData.movement.speedKnot * 1.852f;
-    _gpsData.movement.speedMs = _gpsData.movement.speedKnot * 0.514444f;
+    _gpsData.movement.speedKmh = splited[7].toDouble(&ok) * 1.852f;
 
     if(!ok) return false;
     _gpsData.movement.course = splited[8].toDouble(&ok);
@@ -74,17 +61,24 @@ bool GPSPositionDataParser::Parse(QString line)
     return true;
 }
 
-QDateTime GPSPositionDataParser::DateTimeStamp()
-{
-    return _dateTimeStamp;
-}
-
-bool GPSPositionDataParser::IsValid()
-{
-    return _isValid;
-}
+//QDateTime GPSPositionDataParser::DateTimeStamp()
+//{
+//    return _dateTimeStamp;
+//}
 
 GPSData GPSPositionDataParser::GpsData()
 {
     return _gpsData;
+}
+
+double GPSPositionDataParser::_gpsCoordToDouble(QString str)
+{
+    int dotIndex = str.indexOf('.');
+    if(dotIndex == -1)
+        return 0;
+
+    QString deg = str.left( dotIndex - 2);
+    QString m = str.right( str.length() - dotIndex + 2);
+
+    return deg.toDouble() + m.toDouble() / 60.0;
 }

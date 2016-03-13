@@ -14,8 +14,6 @@ public:
 
     double latitude;
     double lognitude;
-    QChar northSouth;
-    QChar eastWast;
 };
 
 class MIBGPSSHARED_EXPORT GPSMovement
@@ -23,15 +21,15 @@ class MIBGPSSHARED_EXPORT GPSMovement
 public:
     GPSMovement();
 
-    double speedKnot;
     double speedKmh;
-    double speedMs;
     double course;
 };
 
 class MIBGPSSHARED_EXPORT GPSData
 {
 public:
+    GPSData();
+    bool isValid;
     GPSPosition position;
     GPSMovement movement;
 };
@@ -43,14 +41,12 @@ public:
     bool CanParse(QString line);
     bool Parse(QString line);
 
-    QDateTime DateTimeStamp();
-    bool IsValid();
     GPSData GpsData();
 
 private:
-    QDateTime _dateTimeStamp;
-    bool _isValid;
     GPSData _gpsData;
+
+    double _gpsCoordToDouble(QString str);
 };
 
 }
