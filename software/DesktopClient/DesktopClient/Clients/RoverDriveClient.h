@@ -14,13 +14,8 @@ public:
 
     void SendDriveCommand(int da, int ta, bool brake, bool turbo);
 
-//signals:
-//    void SendDriveData(uchar *data);
-//private slots:
-//    void onSendDriveData(uchar *data);
-
 protected:
-    void onData(QByteArray data);
+    void onData(QByteArray);
     void onConnection();
 
     // RoverClient interface

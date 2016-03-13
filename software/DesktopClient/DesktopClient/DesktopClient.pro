@@ -17,7 +17,6 @@ CONFIG += c++11
 SOURCES += main.cpp\
         ./Forms/MainWindow.cpp \
     ./Forms/OSMWidget.cpp \
-    ./Clients/VideoStreamClient.cpp \
     ./Forms/SettingsForm.cpp \
     ./Settings/AppSettings.cpp \
     ./Forms/RouteEditorForm.cpp \
@@ -39,11 +38,18 @@ SOURCES += main.cpp\
     Forms/ReferenceCounter.cpp \
     Other/JsInput.cpp \
     Clients/RoverDriveClient.cpp \
-    Forms/RoverDriveForm.cpp
+    Forms/RoverDriveForm.cpp \
+    Forms/PlotFactoryForm.cpp \
+    Forms/DataSourceProvider.cpp \
+    Forms/Plots/DataSource.cpp \
+    Forms/Plots/LinePlot2Form.cpp \
+    Forms/Plots/LinePlotForm.cpp \
+    Forms/VideoStreamerCtrlForm.cpp \
+    Clients/VideoServiceClient.cpp \
+    Forms/VideoReceiverForm.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
-    ./Clients/VideoStreamClient.h \
     ./Forms/SettingsForm.h \
     ./Settings/AppSettings.h \
     ./Forms/RouteEditorForm.h \
@@ -65,7 +71,15 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/ReferenceCounter.h \
     Other/JsInput.h \
     Clients/RoverDriveClient.h \
-    Forms/RoverDriveForm.h
+    Forms/RoverDriveForm.h \
+    Forms/PlotFactoryForm.h \
+    Forms/DataSourceProvider.h \
+    Forms/Plots/DataSource.h \
+    Forms/Plots/LinePlot2Form.h \
+    Forms/Plots/LinePlotForm.h \
+    Forms/VideoStreamerCtrlForm.h \
+    Clients/VideoServiceClient.h \
+    Forms/VideoReceiverForm.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
@@ -75,7 +89,13 @@ FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SensorsReaderForm.ui \
     ./Forms/RoverConnectionForm.ui \
     Forms/SoundSignallerForm.ui \
-    Forms/RoverDriveForm.ui
+    Forms/RoverDriveForm.ui \
+    Forms/PlotFactoryForm.ui \
+    Forms/VideoStreamerCtrlForm.ui \
+    Forms/VideoReceiverForm.ui
 
 RESOURCES += \
     resources.qrc
+
+LIBS += -lavcodec
+LIBS += -lavutil

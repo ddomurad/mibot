@@ -1,7 +1,5 @@
 #include <TimerThree.h>
-
 #include <TimerOne.h>
-
 #include <NewPing.h>
 #include <Wire.h>
 

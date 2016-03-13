@@ -10,10 +10,9 @@ $GPVTG,000.0,T,,M,000.0,N,000.0,K,N*02
 $GPGGA,115952.000,0000.0000,N,00000.0000,E,0,00,0.0,0.0,M,0.0,M,,0000*66
 */
 
-
 GPSPosition::GPSPosition():
     latitude(0.0f), lognitude(0.0f),
-    northSouth(0), eastWast(0)
+    northSouth('?'), eastWast('?')
 {}
 
 GPSMovement::GPSMovement():
@@ -47,30 +46,30 @@ bool GPSPositionDataParser::Parse(QString line)
     _isValid = splited[2] == "A";
     bool ok = true;
 
-    _position.latitude = splited[3].toDouble(&ok);
+    _gpsData.position.latitude = splited[3].toDouble(&ok);
     if(!ok) return false;
 
     if(splited[4].length() != 1)
-        _position.northSouth = 0;
+        _gpsData.position.northSouth = '?';
     else
-        _position.northSouth = splited[4][0];
+        _gpsData.position.northSouth = splited[4][0];
 
-    _position.lognitude = splited[5].toDouble(&ok);
+    _gpsData.position.lognitude = splited[5].toDouble(&ok);
     if(!ok) return false;
 
     if(splited[6].length() != 1)
-        _position.eastWast = 0;
+        _gpsData.position.eastWast = '?';
     else
-        _position.eastWast = splited[6][0];
+        _gpsData.position.eastWast = splited[6][0];
 
-    _movement.speedKnot = splited[7].toDouble(&ok);
+    _gpsData.movement.speedKnot = splited[7].toDouble(&ok);
     if(!ok) return false;
 
-    _movement.speedKmh = _movement.speedKnot * 1.852f;
-    _movement.speedMs = _movement.speedKnot * 0.514444f;
+    _gpsData.movement.speedKmh = _gpsData.movement.speedKnot * 1.852f;
+    _gpsData.movement.speedMs = _gpsData.movement.speedKnot * 0.514444f;
 
     if(!ok) return false;
-    _movement.course = splited[8].toDouble(&ok);
+    _gpsData.movement.course = splited[8].toDouble(&ok);
 
     return true;
 }
@@ -85,12 +84,7 @@ bool GPSPositionDataParser::IsValid()
     return _isValid;
 }
 
-GPSPosition GPSPositionDataParser::Position()
+GPSData GPSPositionDataParser::GpsData()
 {
-    return _position;
-}
-
-GPSMovement GPSPositionDataParser::Movement()
-{
-    return _movement;
+    return _gpsData;
 }

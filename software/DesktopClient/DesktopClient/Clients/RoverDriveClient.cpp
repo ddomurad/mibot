@@ -3,9 +3,7 @@
 
 RoverDriveClient::RoverDriveClient(QObject *parent)
     :RoverClient(parent)
-{
-    connect(this, SIGNAL(SendDriveData(uchar*)), this, SLOT(onSendDriveData(uchar*)));
-}
+{}
 
 RoverDriveClient::~RoverDriveClient()
 {
@@ -27,11 +25,10 @@ void RoverDriveClient::SendDriveCommand(int da, int ta, bool brake, bool turbo)
         (uchar)right
     };
 
-    //emit SendDriveData(data);
     SendData(data, 6);
 }
 
-void RoverDriveClient::onData(QByteArray data)
+void RoverDriveClient::onData(QByteArray)
 {}
 
 void RoverDriveClient::onConnection()
@@ -41,8 +38,3 @@ bool RoverDriveClient::Connect()
 {
     return _startConnecting(AppSettings::GetKey(AppSettings::Connection_Driver_Service).toString());
 }
-
-//void RoverDriveClient::onSendDriveData(uchar *data)
-//{
-//    SendData(data, 6);
-//}

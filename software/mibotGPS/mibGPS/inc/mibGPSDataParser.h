@@ -7,12 +7,6 @@
 namespace mibot
 {
 
-class MIBGPSSHARED_EXPORT IGPSDataParser
-{
-    virtual bool CanParse(QString line);
-    virtual bool Parse(QString line);
-};
-
 class MIBGPSSHARED_EXPORT GPSPosition
 {
 public:
@@ -35,6 +29,13 @@ public:
     double course;
 };
 
+class MIBGPSSHARED_EXPORT GPSData
+{
+public:
+    GPSPosition position;
+    GPSMovement movement;
+};
+
 class MIBGPSSHARED_EXPORT GPSPositionDataParser
 {
 public:
@@ -44,14 +45,12 @@ public:
 
     QDateTime DateTimeStamp();
     bool IsValid();
-    GPSPosition Position();
-    GPSMovement Movement();
+    GPSData GpsData();
 
 private:
     QDateTime _dateTimeStamp;
     bool _isValid;
-    GPSPosition _position;
-    GPSMovement _movement;
+    GPSData _gpsData;
 };
 
 }

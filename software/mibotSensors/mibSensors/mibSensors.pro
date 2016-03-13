@@ -16,16 +16,18 @@ CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc
 INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
+INCLUDEPATH += ../../mibotGPS/mibGPS/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
-
+LIBS += /usr/local/lib/mi_bot/libmibGPS.so
 
 SOURCES += \
     src/mibSystemSensors.cpp \
     src/mibArduinoSensorNode.cpp \
     src/mibArduinoSensorsNodeReader.cpp \
-    src/mibSensorsSettings.cpp
+    src/mibSensorsSettings.cpp \
+    src/mibotGPSSensor.cpp
 
 HEADERS += \
     inc/mibSensors.h \
@@ -33,7 +35,8 @@ HEADERS += \
     inc/mibSystemSensors.h \
     inc/mibArduinoSensorNode.h \
     inc/mibArduinoSensorsNodeReader.h \
-    inc/mibSensorsSettings.h
+    inc/mibSensorsSettings.h \
+    inc/mibotGPSSensor.h
 
 unix {
     target.path = /usr/local/lib/mi_bot

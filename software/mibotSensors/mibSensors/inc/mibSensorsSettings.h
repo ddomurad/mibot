@@ -23,6 +23,9 @@ public:
 
     DoubleSettingsValue * analogFactor[10];
     IntSettingsValue * analog[10];
+
+    StringSettingsValue * gpsSerialPortName;
+    IntSettingsValue * gpsSerialBaudRate;
 };
 
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network sql
+QT       += network sql serialport
 QT       -= gui
 
 TARGET = mibStatusStrategy
@@ -19,12 +19,14 @@ INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
 INCLUDEPATH += ../../mibotServer/mibServer/inc
 INCLUDEPATH += ../../mibotGPIOInterface/mibGPIOInterface/inc
 INCLUDEPATH += ../../mibotSensors/mibSensors/inc
+INCLUDEPATH += ../../mibotGPS/mibGPS/inc
 
 LIBS += /usr/local/lib/mi_bot/libmibUtils.so
 LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
 LIBS += /usr/local/lib/mi_bot/libmibServer.so
 LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 LIBS += /usr/local/lib/mi_bot/libmibSensors.so
+LIBS += /usr/local/lib/mi_bot/libmibGPS.so
 
 
 SOURCES += \

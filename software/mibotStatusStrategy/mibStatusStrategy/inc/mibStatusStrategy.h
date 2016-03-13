@@ -37,6 +37,7 @@ private:
     StatusSettings * _statusSettigns;
     SystemSensors *_systemSensors;
     ArduinoSensorNode * _arduinoSensorNode;
+    GPSSensor * _gpsSensor;
 
     QTimer * _update_timer;
     bool    _auto_send;

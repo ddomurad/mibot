@@ -15,6 +15,9 @@ SensorsSettings::SensorsSettings(QString res) :
     arduinoNodeSerialPortName = new StringSettingsValue("arduino_node_serial_port_name");
     arduinoNodeSerialBaudRate = new IntSettingsValue("arduino_node_serial_baud_rate");
 
+    gpsSerialPortName = new StringSettingsValue("gps_serial_port_name");
+    gpsSerialBaudRate = new IntSettingsValue("gps_serial_baud_rate");
+
     analogFactor[0] = new DoubleSettingsValue("analog_0_m");
     analogFactor[1] = new DoubleSettingsValue("analog_1_m");
     analogFactor[2] = new DoubleSettingsValue("analog_2_m");
@@ -41,6 +44,8 @@ SensorsSettings::SensorsSettings(QString res) :
 
     AddValue( arduinoNodeSerialPortName );
     AddValue( arduinoNodeSerialBaudRate );
+    AddValue( gpsSerialPortName );
+    AddValue( gpsSerialBaudRate );
 
     AddValue(analog[0]);
     AddValue(analog[1]);

@@ -10,6 +10,7 @@ StatusStrategy::StatusStrategy(Connection *connection) :
     _statusSettigns(nullptr),
     _systemSensors(nullptr),
     _arduinoSensorNode (nullptr),
+    _gpsSensor(nullptr),
     _auto_send(false)
 {
     _update_timer = new QTimer(this);
@@ -68,8 +69,15 @@ bool StatusStrategy::init()
         return false;
     }
 
+    if(!GPSSensor::get()->Start())
+    {
+        LOG_ERROR("Can't initialzie GPSSensor");
+        return false;
+    }
+
     _systemSensors = SystemSensors::get();
     _arduinoSensorNode = ArduinoSensorNode::get();
+    _gpsSensor = GPSSensor::get();
 
     _update_timer->setInterval( _statusSettigns->internalDelay->value );
     _update_timer->start();
@@ -142,6 +150,7 @@ QString StatusStrategy::getStringToSend()
 {
     SystemSensorsReading ssReading = _systemSensors->Readings();
     ArduinoReadings arReadings = _arduinoSensorNode->Readings();
+    GPSData gpsData = _gpsSensor->Readings();
 
     QString outStr = "{\"sensors\":{\"acc\":[";
     outStr = outStr % QString::number(arReadings.acc[0]) % "," % QString::number(arReadings.acc[1]) % "," % QString::number(arReadings.acc[2]) % "]";
@@ -167,7 +176,15 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % ",\"cpu_usage_total\":" % QString::number(ssReading.cpu_usage_total);
     outStr = outStr % ",\"mem_available\":" % QString::number(ssReading.mem_available);
     outStr = outStr % ",\"mem_usage_server\":" % QString::number(ssReading.mem_usage_server);
-    outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total) % "}}";
+    outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total) % "}";
+    outStr = outStr % ",\"gps\":{";
+    outStr = outStr % "\"gps_latitude\":" % QString::number(gpsData.position.latitude) ;
+    outStr = outStr % ",\"gps_lognitude\":" % QString::number(gpsData.position.lognitude) ;
+    outStr = outStr % ",\"gps_ew\":\"" % QString(gpsData.position.eastWast) % "\"";
+    outStr = outStr % ",\"gps_ns\":\"" % QString(gpsData.position.northSouth) % "\"";
+    outStr = outStr % ",\"gps_speed_kmh\":" % QString::number(gpsData.movement.speedKmh) ;
+    outStr = outStr % ",\"gps_cource\":" % QString::number(gpsData.movement.course) ;
+    outStr = outStr % "}}";
 
     return outStr;
 }
