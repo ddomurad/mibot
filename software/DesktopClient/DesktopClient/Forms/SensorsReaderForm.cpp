@@ -68,6 +68,8 @@ void SensorsReaderForm::onSensorData(RoverSensors sensors)
                                                        .arg(sensors.systemSensors.mem_usage_total)
                                                        .arg(sensors.systemSensors.mem_available)));
 
+    ui->tableWidget->setItem(6,0, new QTableWidgetItem("GPS_FIX"));
+    ui->tableWidget->setItem(6,1, new QTableWidgetItem(sensors.gpsSensors.fix ? "YES" : "NO"));
     ui->tableWidget->setItem(6,0, new QTableWidgetItem("GPS_POSITION"));
     ui->tableWidget->setItem(6,1, new QTableWidgetItem(QString("Lat: %1[%2], Lot: %2[%3]")
                                                        .arg(sensors.gpsSensors.latitude)

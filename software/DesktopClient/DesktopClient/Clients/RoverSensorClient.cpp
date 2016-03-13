@@ -64,10 +64,11 @@ void RoverSensorClient::processObj(QJsonObject &obj)
     sensors.systemSensors.mem_usage_server = systemObj["mem_usage_server"].toDouble();
     sensors.systemSensors.mem_usage_total= systemObj["mem_usage_total"].toDouble();
 
-    sensors.gpsSensors.latitude = gpsObj["gps_latitude"].toDouble();
-    sensors.gpsSensors.lognitude = gpsObj["gps_lognitude"].toDouble();
-    sensors.gpsSensors.course = gpsObj["gps_cource"].toDouble();
-    sensors.gpsSensors.speedKmh = gpsObj["gps_speed_kmh"].toDouble();
+    sensors.gpsSensors.fix = gpsObj["fix"].toInt() != 0;
+    sensors.gpsSensors.latitude = gpsObj["latitude"].toDouble();
+    sensors.gpsSensors.lognitude = gpsObj["lognitude"].toDouble();
+    sensors.gpsSensors.course = gpsObj["cource"].toDouble();
+    sensors.gpsSensors.speedKmh = gpsObj["speed_kmh"].toDouble();
 
      QJsonArray accArray = sensorsObj["acc"].toArray();
      QJsonArray magArray = sensorsObj["mag"].toArray();

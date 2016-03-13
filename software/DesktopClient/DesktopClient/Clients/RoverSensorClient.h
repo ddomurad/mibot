@@ -32,6 +32,7 @@ class ArduinoSensors
 class GPSSensors
 {
 public:
+    bool fix;
     double latitude;
     double lognitude;
 

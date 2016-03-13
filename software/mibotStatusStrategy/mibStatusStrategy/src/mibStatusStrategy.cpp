@@ -178,10 +178,11 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % ",\"mem_usage_server\":" % QString::number(ssReading.mem_usage_server);
     outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total) % "}";
     outStr = outStr % ",\"gps\":{";
-    outStr = outStr % "\"gps_latitude\":" % QString::number(gpsData.position.latitude) ;
-    outStr = outStr % ",\"gps_lognitude\":" % QString::number(gpsData.position.lognitude) ;
-    outStr = outStr % ",\"gps_speed_kmh\":" % QString::number(gpsData.movement.speedKmh) ;
-    outStr = outStr % ",\"gps_cource\":" % QString::number(gpsData.movement.course) ;
+    outStr = outStr % "\"fix\":" % QString::number(gpsData.isValid ? 1 : 0) ;
+    outStr = outStr % "\"latitude\":" % QString::number(gpsData.position.latitude) ;
+    outStr = outStr % ",\"lognitude\":" % QString::number(gpsData.position.lognitude) ;
+    outStr = outStr % ",\"speed_kmh\":" % QString::number(gpsData.movement.speedKmh) ;
+    outStr = outStr % ",\"cource\":" % QString::number(gpsData.movement.course) ;
     outStr = outStr % "}}";
 
     return outStr;
