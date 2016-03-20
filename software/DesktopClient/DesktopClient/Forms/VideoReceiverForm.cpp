@@ -2,6 +2,7 @@
 #include "ui_VideoReceiverForm.h"
 #include <QHostAddress>
 #include <QScrollBar>
+#include <QFileDialog>
 
 #define SHC if(!_shall_run) return;
 #define DATA_MAX_SIZE 4096
@@ -30,6 +31,7 @@ VideoReceiverForm::VideoReceiverForm(QWidget *parent) :
     _fps_frames = 0;
     _is_decoder_started = false;
 
+    _store_frames = false;
 }
 
 VideoReceiverForm::~VideoReceiverForm()
@@ -84,7 +86,7 @@ void VideoReceiverForm::onConnection()
 
 void VideoReceiverForm::onDisconnection()
 {
-
+    _shutdown_timer->start(10);
 }
 
 void VideoReceiverForm::onSocketError(QAbstractSocket::SocketError)
@@ -96,6 +98,8 @@ void VideoReceiverForm::onSocketError(QAbstractSocket::SocketError)
         _tcp_client->close();
         _tcp_client->deleteLater();
         _tcp_client = nullptr;
+
+        _shutdown_timer->start(1);
     }else
     {
         ELog("Socket error");
@@ -111,7 +115,10 @@ void VideoReceiverForm::onData()
         return;
     }
 
-    _video_data_buffer.append( _tcp_client->readAll() );
+    QByteArray data = _tcp_client->readAll();
+    storeFrames(&data);
+
+    _video_data_buffer.append(data);
     if(!_is_decoder_started)
         startDecoder();
 
@@ -167,7 +174,7 @@ void VideoReceiverForm::startDecoder()
 
     SHC;
     avcodec_register_all();
-    codec = avcodec_find_decoder( AV_CODEC_ID_H264 );
+    codec = avcodec_find_decoder( AV_CODEC_ID_H264);
     CHECK(codec);
 
     context = avcodec_alloc_context3(codec);
@@ -267,7 +274,12 @@ void VideoReceiverForm::updateFrame(AVPacket *packet)
 
 void VideoReceiverForm::displayPicture()
 {
+//    static int iss=0;
+//    iss++;
+//    if(iss % 3 != 0) return;
+
     QImage image = QImage(picture->width, picture->height, QImage::Format_RGB32);
+
 
     for (int y = 0; y < picture->height; y++)
     {
@@ -287,4 +299,30 @@ void VideoReceiverForm::displayPicture()
     }
 
     ui->label_image->setPixmap(QPixmap::fromImage(image));
+}
+
+void VideoReceiverForm::storeFrames(QByteArray * data)
+{
+    if(!_store_frames)
+        return;
+
+    QFile of(ui->lineEdit_store_file_name->text());
+    if(!of.open(QIODevice::Append))
+    {
+        ELog(QString("Cam't open file to append: '%1'").arg(ui->lineEdit_store_file_name->text()));
+        ui->checkBox_store->setChecked(false);
+        _store_frames = false;
+    }
+    of.write(*data);
+    of.close();
+}
+
+void VideoReceiverForm::on_pushButton_select_store_file_clicked()
+{
+    ui->lineEdit_store_file_name->setText( QFileDialog::getSaveFileName(this, "Save video", QDir::currentPath()) );
+}
+
+void VideoReceiverForm::on_checkBox_store_toggled(bool checked)
+{
+    _store_frames = checked;
 }

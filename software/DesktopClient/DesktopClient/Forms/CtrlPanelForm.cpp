@@ -10,7 +10,8 @@ CtrlPanelForm::CtrlPanelForm(QWidget *parent) :
     _sensorReaderForm(nullptr),
     _soundSignallerForm(nullptr),
     _videoStreamerCtrlForm(nullptr),
-    _videoReceiverForm(nullptr)
+    _videoReceiverForm(nullptr),
+    _gpsPreview(nullptr)
 {
     ui->setupUi(this);
 }
@@ -88,5 +89,17 @@ void CtrlPanelForm::on_toolButton_clicked()
         _videoReceiverForm = new VideoReceiverForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_videoReceiverForm);
         _videoReceiverForm->show();
+    }
+}
+
+
+
+void CtrlPanelForm::on_toolButton_2_clicked()
+{
+    if(GpsPreviewForm::GetRefCount() == 0)
+    {
+        _gpsPreview = new GpsPreviewForm(ui->mdiArea);
+        ui->mdiArea->addSubWindow(_gpsPreview);
+        _gpsPreview ->show();
     }
 }

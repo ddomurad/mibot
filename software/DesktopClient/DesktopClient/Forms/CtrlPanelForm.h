@@ -9,6 +9,7 @@
 #include "PlotFactoryForm.h"
 #include "VideoStreamerCtrlForm.h"
 #include "VideoReceiverForm.h"
+#include "GpsPreviewForm.h"
 
 namespace Ui {
 class CtrlPanelForm;
@@ -37,6 +38,8 @@ private slots:
 
     void on_toolButton_clicked();
 
+    void on_toolButton_2_clicked();
+
 private:
     Ui::CtrlPanelForm *ui;
 
@@ -47,6 +50,7 @@ private:
     PlotFactoryForm * _plotFormFactory;
     VideoStreamerCtrlForm * _videoStreamerCtrlForm;
     VideoReceiverForm *_videoReceiverForm;
+    GpsPreviewForm *_gpsPreview;
 };
 
 #endif // CTRLPANELFORM_H

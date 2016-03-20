@@ -25,7 +25,7 @@ void SensorsReaderForm::onSensorData(RoverSensors sensors)
     headers << "Name" << "Value";
 
 
-    ui->tableWidget->setRowCount(7);
+    ui->tableWidget->setRowCount(10);
     ui->tableWidget->setColumnCount(2);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -68,16 +68,17 @@ void SensorsReaderForm::onSensorData(RoverSensors sensors)
                                                        .arg(sensors.systemSensors.mem_usage_total)
                                                        .arg(sensors.systemSensors.mem_available)));
 
-    ui->tableWidget->setItem(6,0, new QTableWidgetItem("GPS_FIX"));
-    ui->tableWidget->setItem(6,1, new QTableWidgetItem(sensors.gpsSensors.fix ? "YES" : "NO"));
-    ui->tableWidget->setItem(6,0, new QTableWidgetItem("GPS_POSITION"));
-    ui->tableWidget->setItem(6,1, new QTableWidgetItem(QString("Lat: %1[%2], Lot: %2[%3]")
+    ui->tableWidget->setItem(7,0, new QTableWidgetItem("GPS_FIX"));
+    ui->tableWidget->setItem(7,1, new QTableWidgetItem(sensors.gpsSensors.fix ? "YES" : "NO"));
+
+    ui->tableWidget->setItem(8,0, new QTableWidgetItem("GPS_POSITION"));
+    ui->tableWidget->setItem(8,1, new QTableWidgetItem(QString("Lat: %1, Lot: %2")
                                                        .arg(sensors.gpsSensors.latitude)
                                                        .arg(sensors.gpsSensors.lognitude)));
 
-    ui->tableWidget->setItem(6,0, new QTableWidgetItem("GPS_MOVEMENT"));
-    ui->tableWidget->setItem(6,1, new QTableWidgetItem(QString("Speed: %1[m/s], Course: %2")
-                                                       .arg(sensors.gpsSensors.speedKmh*1000.0)
+    ui->tableWidget->setItem(9,0, new QTableWidgetItem("GPS_MOVEMENT"));
+    ui->tableWidget->setItem(9,1, new QTableWidgetItem(QString("Speed: %1[m/s], Course: %2")
+                                                       .arg(sensors.gpsSensors.speedKmh*1000.0/60.0)
                                                        .arg(sensors.gpsSensors.course)));
 
 }

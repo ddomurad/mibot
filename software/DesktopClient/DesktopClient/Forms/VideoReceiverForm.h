@@ -36,6 +36,8 @@ private slots:
     void onData();
     void onShutdownTimer();
     void onFpsTimer();
+    void on_pushButton_select_store_file_clicked();
+    void on_checkBox_store_toggled(bool checked);
 
 private:
     Ui::VideoReceiverForm *ui;
@@ -67,6 +69,9 @@ private:
     void procDecoder(u_int8_t * data, int size);
     void updateFrame(AVPacket *packet);
     void displayPicture();
+
+    void storeFrames(QByteArray *data);
+    bool _store_frames;
 };
 
 #endif // VIDEORECEIVERFORM_H

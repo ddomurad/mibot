@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     Forms/Plots/LinePlotForm.cpp \
     Forms/VideoStreamerCtrlForm.cpp \
     Clients/VideoServiceClient.cpp \
-    Forms/VideoReceiverForm.cpp
+    Forms/VideoReceiverForm.cpp \
+    Forms/GpsPreviewForm.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -79,7 +80,8 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/Plots/LinePlotForm.h \
     Forms/VideoStreamerCtrlForm.h \
     Clients/VideoServiceClient.h \
-    Forms/VideoReceiverForm.h
+    Forms/VideoReceiverForm.h \
+    Forms/GpsPreviewForm.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
