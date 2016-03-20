@@ -77,6 +77,7 @@ void JsInput::run()
     shall_run = true;
     while(shall_run)
     {
+        QThread::msleep(1);
         int rsize = read( js_dev , (char*)&event, struct_size);
 
         if(rsize == -1)

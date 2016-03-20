@@ -174,7 +174,7 @@ void VideoReceiverForm::startDecoder()
 
     SHC;
     avcodec_register_all();
-    codec = avcodec_find_decoder( AV_CODEC_ID_H264);
+    codec = avcodec_find_decoder( CODEC_ID_H264 );
     CHECK(codec);
 
     context = avcodec_alloc_context3(codec);
@@ -187,8 +187,9 @@ void VideoReceiverForm::startDecoder()
 
     SHC;
 
-    picture = av_frame_alloc();
-    parser = av_parser_init(AV_CODEC_ID_H264);
+    picture = //av_frame_alloc();
+        avcodec_alloc_frame();
+    parser = av_parser_init(CODEC_ID_H264);
 
     CHECK(parser);
 
