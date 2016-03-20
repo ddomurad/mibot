@@ -274,9 +274,10 @@ void VideoReceiverForm::updateFrame(AVPacket *packet)
 
 void VideoReceiverForm::displayPicture()
 {
-//    static int iss=0;
-//    iss++;
-//    if(iss % 3 != 0) return;
+    static int iss=0;
+    iss++;
+    int skipN = ui->spinBox_skip->value();
+    if(skipN != 0 && iss % skipN != 0) return;
 
     QImage image = QImage(picture->width, picture->height, QImage::Format_RGB32);
 
