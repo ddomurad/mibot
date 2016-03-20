@@ -225,7 +225,7 @@
   <customwidget>
    <class>OSMWidget</class>
    <extends>QWidget</extends>
-   <header>OSMWidget.h</header>
+   <header location="global">Forms/OSMWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

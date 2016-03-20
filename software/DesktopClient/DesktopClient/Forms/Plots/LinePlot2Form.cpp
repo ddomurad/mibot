@@ -1,5 +1,4 @@
 #include "LinePlot2Form.h"
-#include "ui_LinePlot2Form.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTimer>
