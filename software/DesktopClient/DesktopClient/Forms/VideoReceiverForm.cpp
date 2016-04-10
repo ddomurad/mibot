@@ -101,6 +101,7 @@ void VideoReceiverForm::on_pushButton_server_stop_clicked()
 
 void VideoReceiverForm::onConnection()
 {
+    _shall_run = true;
     if(_tcp_client != nullptr)
     {
         WLog("Old connection closed.");
@@ -161,6 +162,7 @@ void VideoReceiverForm::onShutdownTimer()
              last_b_size == _video_data_buffer.size()))
     {
         stopDecoder();
+        _shutdown_timer->stop();
     }
     else
     {
@@ -290,10 +292,13 @@ void VideoReceiverForm::updateDecoder()
     if(size == 0 && len >= 0)
         return;
 
-    procDecoder((u_int8_t*) _video_data_buffer.constData(), size );
-    _video_data_buffer = _video_data_buffer.remove(0, size);
+    if(data != 0)
+    {
+        procDecoder((u_int8_t*) _video_data_buffer.constData(), size );
+        ui->label_resolution->setText( QString("%1x%2").arg(picture->width).arg(picture->height) );
+    }
 
-    ui->label_resolution->setText( QString("%1x%2").arg(picture->width).arg(picture->height) );
+    _video_data_buffer = _video_data_buffer.remove(0, size);
 }
 
 void VideoReceiverForm::procDecoder(u_int8_t *data, int size)

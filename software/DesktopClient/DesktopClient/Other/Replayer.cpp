@@ -74,10 +74,20 @@ void Replayer::Deinitialize()
     }
 
     _tracks.clear();
+    _is_inited = false;
 }
 
 bool Replayer::StartReplay()
 {
+    qint64 nt=0;
+    for(TrackReplayer * track : _tracks)
+    {
+        track->UpdateReplay();
+        if(track->NextDataChunkTime() < nt || nt == 0)
+            nt = track->NextDataChunkTime();
+    }
+
+    _replay_start_time = QDateTime::currentMSecsSinceEpoch() - nt;
     _is_replay = true;
     return true;
 }
@@ -92,7 +102,7 @@ bool Replayer::UpdateReplay()
     if(!_is_replay)
         return false;
 
-    qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+    qint64 currentTime = QDateTime::currentMSecsSinceEpoch() - _replay_start_time;
 
     for(TrackReplayer * track : _tracks)
         if(track->NextDataChunkTime() <= currentTime)
@@ -142,7 +152,8 @@ ReplayerClientInterface *Replayer::GetRoverClientByName(QString clientName)
 
 TrackReplayer::TrackReplayer(QString track_path, ReplayerClientInterface *interface) :
     _track_path(track_path),
-    _interface(interface)
+    _interface(interface),
+    _eof(true)
 {}
 
 TrackReplayer::~TrackReplayer()
@@ -153,6 +164,9 @@ TrackReplayer::~TrackReplayer()
 
 bool TrackReplayer::UpdateReplay()
 {
+    if(_eof)
+        return false;
+
     sendData();
     unsigned int dataSize;
     QByteArray data;
@@ -163,17 +177,26 @@ bool TrackReplayer::UpdateReplay()
         return false;
     }
 
+    if(_eof)
+        return false;
+
     if(!readDataSize(&dataSize))
     {
         LoggerDialog::get()->Error("TracReplay::UpdateReplay","Can't read data size");
         return false;
     }
 
+    if(_eof)
+        return false;
+
     if(!readData(&data, dataSize))
     {
         LoggerDialog::get()->Error("TracReplay::UpdateReplay","Can't read chunk data");
         return false;
     }
+
+    if(_eof)
+        return false;
 
     _data_chunk = data;
     return true;
@@ -193,11 +216,14 @@ bool TrackReplayer::Open()
         return false;
     }
 
+    _eof = false;
+
     return true;
 }
 
 void TrackReplayer::Close()
 {
+    _eof = true;
     _track_file.close();
 }
 
@@ -212,8 +238,14 @@ void TrackReplayer::sendData()
 bool TrackReplayer::readDateTime(qint64 *dateTime)
 {
     qint64 ms = 0;
-    if(_track_file.read((char*)&ms,sizeof(qint64)) == -1)
+    qint64 s = _track_file.read((char*)&ms,sizeof(qint64));
+    if(s == -1)
         return false;
+    if(s == 0)
+    {
+        _eof = false;
+        return true;
+    }
 
     *dateTime = ms;
     return true;
@@ -221,8 +253,12 @@ bool TrackReplayer::readDateTime(qint64 *dateTime)
 
 bool TrackReplayer::readDataSize(unsigned int *size)
 {
-    if(_track_file.read((char*)size, sizeof(unsigned int)) == -1)
+    qint64 s = _track_file.read((char*)size, sizeof(unsigned int));
+    if(s == -1)
         return false;
+
+    if(s == 0)
+        _eof = true;
 
     return true;
 }
@@ -230,6 +266,12 @@ bool TrackReplayer::readDataSize(unsigned int *size)
 bool TrackReplayer::readData(QByteArray *data, unsigned int dataSize)
 {
     *data = _track_file.read(dataSize);
+    if(data->size() == 0)
+    {
+        _eof = true;
+        return true;
+    }
+
     return data->size() == (int)dataSize;
 }
 

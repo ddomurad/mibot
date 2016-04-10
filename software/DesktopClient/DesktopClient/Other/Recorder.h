@@ -37,6 +37,7 @@ private:
 
     bool writeDateTime(QFile &file);
     bool writeChunkSize(QFile &file, unsigned int length);
+    qint64 _rec_start_time;
 };
 
 #endif // RECORDER_H

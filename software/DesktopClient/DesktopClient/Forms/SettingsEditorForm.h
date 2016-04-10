@@ -1,23 +1,23 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef SETTINGSEDITORFORM_H
+#define SETTINGSEDITORFORM_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include <QSslSocket>
 #include <QSslCertificate>
-#include <mibJSONProtocol.h>
+#include "Clients/mibJSONProtocol.h"
 #include <QTreeWidgetItem>
 
 namespace Ui {
-class MainWindow;
+class SettingsEditorForm;
 }
 
-class MainWindow : public QMainWindow
+class SettingsEditorForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit SettingsEditorForm(QWidget *parent = 0);
+    ~SettingsEditorForm();
 
 private slots:
     void onSocketError(QAbstractSocket::SocketError);
@@ -26,22 +26,20 @@ private slots:
     void onConnected();
     void onReadyRead();
 
-    void on_pushButton_connect_to_server_clicked();
-    void on_pushButton_refreshdir_list_clicked();
-    void on_pushButton_explode_clicked();
-    void on_pushButton_colapse_clicked();
-    void on_treeWidget_doubleClicked(const QModelIndex &index);
-    void on_pushButton_load_json_clicked();
-    void on_pushButton_save_json_clicked();
-    void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void on_pushButton_connect_clicked();
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
+    void on_pushButton_3_clicked();
+    void on_pushButton_load_clicked();
+    void on_pushButton_save_clicked();
     void on_pushButton_remove_clicked();
 
+    void on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
 private:
-    Ui::MainWindow *ui;
+    Ui::SettingsEditorForm *ui;
 
     QSslSocket *_socket;
-
-    void Log(QString typ, QString message);
 
     void connectToHost(QString addr, int port);
     void disonnectFromHost();
@@ -67,4 +65,4 @@ private:
     void reloadTreeList();
 };
 
-#endif // MAINWINDOW_H
+#endif // SETTINGSEDITORFORM_H

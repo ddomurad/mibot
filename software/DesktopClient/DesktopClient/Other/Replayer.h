@@ -51,6 +51,7 @@ private:
     bool readData(QByteArray *data, unsigned int dataSize);
 
     ReplayerClientInterface * _interface;
+    bool _eof;
 };
 
 class Replayer
@@ -69,7 +70,6 @@ public:
     bool IsInitialized();
 
     qint64 NextDataChunkTime();
-
 private:
     Replayer();
     bool _is_replay;
@@ -79,6 +79,7 @@ private:
     QList<TrackReplayer*> _tracks;
 
     ReplayerClientInterface * GetRoverClientByName(QString clientName);
+    qint64 _replay_start_time;
 };
 
 #endif // REPLAYER_H

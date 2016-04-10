@@ -27,6 +27,8 @@ bool Recorder::StartRecording(QString record_name)
     dir.mkdir(recDir);
     _is_recording = true;
     _rec_path = recDir + "/";
+    _rec_start_time = QDateTime::currentMSecsSinceEpoch();
+
     return true;
 }
 
@@ -81,7 +83,7 @@ void Recorder::WriteData(QString track_name, QByteArray &data)
 
 bool Recorder::writeDateTime(QFile &file)
 {
-    qint64 date = QDateTime::currentMSecsSinceEpoch();
+    qint64 date = QDateTime::currentMSecsSinceEpoch() - _rec_start_time;
     char * data = (char *)&date;
     return file.write(data, sizeof(qint64)) != -1;
 }

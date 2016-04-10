@@ -7,6 +7,7 @@
 #include "./Forms/RouteEditorForm.h"
 #include "./Forms/CtrlPanelForm.h"
 #include "./Forms/InfoServiceForm.h"
+#include "./Forms/SettingsEditorForm.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,7 @@ private slots:
     void onShowSettings();
     void onShowEditor();
     void onShowInfoServicePanel();
+    void onShowSettingsPanel();
     void onShowCtrlPanel();
 
 private:

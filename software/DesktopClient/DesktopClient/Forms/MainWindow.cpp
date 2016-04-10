@@ -14,11 +14,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction * showSettings = ui->toolBar->addAction(QAction::tr("Settings"));
     QAction * showRouteEditor = ui->toolBar->addAction(QAction::tr("RouteEditor"));
     QAction * showInfoService = ui->toolBar->addAction(QAction::tr("InfoService"));
+    QAction * showSettingsPanel = ui->toolBar->addAction(QAction::tr("SettingsManager"));
     QAction * showCtrlPanel = ui->toolBar->addAction(QAction::tr("CtrlPanel"));
 
     connect(showSettings, SIGNAL(triggered()), this, SLOT(onShowSettings()));
     connect(showRouteEditor, SIGNAL(triggered()), this, SLOT(onShowEditor()));
     connect(showInfoService, SIGNAL(triggered()), this, SLOT(onShowInfoServicePanel()));
+    connect(showSettingsPanel, SIGNAL(triggered()), this, SLOT(onShowSettingsPanel()));
     connect(showCtrlPanel, SIGNAL(triggered()), this, SLOT(onShowCtrlPanel()));
 
 }
@@ -49,6 +51,14 @@ void MainWindow::onShowInfoServicePanel()
     closeCurrentWidget();
 
     currentWidget = new InfoServiceForm(ui->widget);
+    ui->widget->layout()->addWidget(currentWidget);
+}
+
+void MainWindow::onShowSettingsPanel()
+{
+    closeCurrentWidget();
+
+    currentWidget = new SettingsEditorForm(ui->widget);
     ui->widget->layout()->addWidget(currentWidget);
 }
 

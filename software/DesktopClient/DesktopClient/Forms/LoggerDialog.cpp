@@ -47,5 +47,10 @@ void LoggerDialog::Error(QString operation, QString message)
     _list->addItem( QString("[ERR] %1:%2").arg(operation, message) );
 }
 
+void LoggerDialog::Write(QString message)
+{
+    _list->addItem(message);
+}
+
 
 LoggerDialog *LoggerDialog::_dialog = nullptr;

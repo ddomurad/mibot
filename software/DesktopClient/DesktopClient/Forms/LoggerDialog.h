@@ -14,6 +14,7 @@ public:
     void Info(QString operation, QString msg);
     void Warning(QString operation, QString message);
     void Error(QString opeartion, QString msg);
+    void Write(QString message);
 signals:
 
 public slots:

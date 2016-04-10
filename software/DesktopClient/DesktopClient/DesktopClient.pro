@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     Forms/GpsPreviewForm.cpp \
     Forms/RecordingForm.cpp \
     Other/Recorder.cpp \
-    Other/Replayer.cpp
+    Other/Replayer.cpp \
+    Forms/SettingsEditorForm.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -85,7 +86,8 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/GpsPreviewForm.h \
     Forms/RecordingForm.h \
     Other/Recorder.h \
-    Other/Replayer.h
+    Other/Replayer.h \
+    Forms/SettingsEditorForm.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
@@ -99,7 +101,8 @@ FORMS    += ./Forms/MainWindow.ui \
     Forms/PlotFactoryForm.ui \
     Forms/VideoStreamerCtrlForm.ui \
     Forms/VideoReceiverForm.ui \
-    Forms/RecordingForm.ui
+    Forms/RecordingForm.ui \
+    Forms/SettingsEditorForm.ui
 
 RESOURCES += \
     resources.qrc
