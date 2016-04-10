@@ -20,6 +20,7 @@ public:
     bool SendData(QString data);
     bool SendData(uchar * data, int size);
     virtual bool Connect() = 0;
+    virtual void onData(QByteArray data) = 0;
 signals:
 
 private slots:
@@ -28,9 +29,8 @@ private slots:
 
 protected:    
     bool _startConnecting(QString _serviceName);
-
-    virtual void onData(QByteArray data) = 0;
     virtual void onConnection() = 0;
+    virtual QString clientName() = 0;
 
     Socket * _socket;
     InfoServiceClient* _infoClient;

@@ -6,8 +6,10 @@
 class VideoServer
 {
 public:
-    VideoServer();
     ~VideoServer();
+    VideoServer * get();
+private:
+    VideoServer();
 };
 
 #endif // VIDEOSERVER_H

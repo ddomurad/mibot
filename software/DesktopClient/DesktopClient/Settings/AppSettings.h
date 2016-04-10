@@ -50,6 +50,8 @@ public:
     static QString JS_Swap_Drive;
     static QString JS_Swap_Trun;
 
+    static QString Recording_Store_Dir;
+
     ~AppSettings();
     static AppSettings * get();
 

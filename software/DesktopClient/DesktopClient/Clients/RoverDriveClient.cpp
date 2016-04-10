@@ -34,6 +34,11 @@ void RoverDriveClient::onData(QByteArray)
 void RoverDriveClient::onConnection()
 {}
 
+QString RoverDriveClient::clientName()
+{
+    return "RoverDriveClient";
+}
+
 bool RoverDriveClient::Connect()
 {
     return _startConnecting(AppSettings::GetKey(AppSettings::Connection_Driver_Service).toString());

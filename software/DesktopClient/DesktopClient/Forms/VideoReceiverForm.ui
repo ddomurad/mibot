@@ -269,26 +269,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="2">
-       <widget class="QSpinBox" name="spinBox_skip"/>
-      </item>
       <item row="1" column="3" colspan="6">
        <widget class="QSlider" name="horizontalSlider_buffer">
         <property name="maximum">
-         <number>5000</number>
+         <number>50000</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -298,7 +282,7 @@
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBox_buffer">
         <property name="maximum">
-         <number>5000</number>
+         <number>50000</number>
         </property>
        </widget>
       </item>
@@ -312,7 +296,14 @@
       <item row="2" column="1">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Skip:</string>
+         <string>Buff:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_act_buffer_size">
+        <property name="text">
+         <string>TextLabel</string>
         </property>
        </widget>
       </item>

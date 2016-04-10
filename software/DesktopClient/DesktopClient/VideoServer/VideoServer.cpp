@@ -10,3 +10,7 @@ VideoServer::~VideoServer()
 
 }
 
+VideoServer *VideoServer::get()
+{
+    static
+}

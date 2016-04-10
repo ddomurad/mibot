@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     ./Settings/AppSettings.cpp \
     ./Forms/RouteEditorForm.cpp \
     ./Forms/VideoWidget.cpp \
-    ./VideoServer/VideoServer.cpp \
     ./Forms/CtrlPanelForm.cpp \
     ./Clients/GlobalPasswordProvider.cpp \
     ./Forms/InfoServiceForm.cpp \
@@ -47,7 +46,10 @@ SOURCES += main.cpp\
     Forms/VideoStreamerCtrlForm.cpp \
     Clients/VideoServiceClient.cpp \
     Forms/VideoReceiverForm.cpp \
-    Forms/GpsPreviewForm.cpp
+    Forms/GpsPreviewForm.cpp \
+    Forms/RecordingForm.cpp \
+    Other/Recorder.cpp \
+    Other/Replayer.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -55,7 +57,6 @@ HEADERS  += ./Forms/MainWindow.h \
     ./Settings/AppSettings.h \
     ./Forms/RouteEditorForm.h \
     ./Forms/VideoWidget.h \
-    ./VideoServer/VideoServer.h \
     ./Forms/CtrlPanelForm.h \
     ./Clients/GlobalPasswordProvider.h \
     ./Forms/InfoServiceForm.h \
@@ -81,7 +82,10 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/VideoStreamerCtrlForm.h \
     Clients/VideoServiceClient.h \
     Forms/VideoReceiverForm.h \
-    Forms/GpsPreviewForm.h
+    Forms/GpsPreviewForm.h \
+    Forms/RecordingForm.h \
+    Other/Recorder.h \
+    Other/Replayer.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
@@ -94,10 +98,12 @@ FORMS    += ./Forms/MainWindow.ui \
     Forms/RoverDriveForm.ui \
     Forms/PlotFactoryForm.ui \
     Forms/VideoStreamerCtrlForm.ui \
-    Forms/VideoReceiverForm.ui
+    Forms/VideoReceiverForm.ui \
+    Forms/RecordingForm.ui
 
 RESOURCES += \
     resources.qrc
 
 LIBS += -lavcodec
 LIBS += -lavutil
+LIBS += -lswscale

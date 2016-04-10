@@ -13,14 +13,16 @@ public:
     ~RoverDriveClient();
 
     void SendDriveCommand(int da, int ta, bool brake, bool turbo);
+    void onData(QByteArray);
 
 protected:
-    void onData(QByteArray);
     void onConnection();
-
+    QString clientName();
     // RoverClient interface
 public:
     bool Connect();
+
+
 };
 
 #endif // ROVERDRIVECLIENT_H

@@ -108,3 +108,5 @@ QString AppSettings::JS_Device_Path = "JS_Device_Path";
 QString AppSettings::JS_Send_Ms = "JS_Send_Ms";
 QString AppSettings::JS_Swap_Drive = "JS_Swap_Drive";
 QString AppSettings::JS_Swap_Trun = "JS_Swap_Turn";
+
+QString AppSettings::Recording_Store_Dir = "Recording_Store_Dir";

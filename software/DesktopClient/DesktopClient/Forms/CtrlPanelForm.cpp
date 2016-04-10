@@ -11,7 +11,8 @@ CtrlPanelForm::CtrlPanelForm(QWidget *parent) :
     _soundSignallerForm(nullptr),
     _videoStreamerCtrlForm(nullptr),
     _videoReceiverForm(nullptr),
-    _gpsPreview(nullptr)
+    _gpsPreview(nullptr),
+    _recorderForm(nullptr)
 {
     ui->setupUi(this);
 }
@@ -28,6 +29,7 @@ void CtrlPanelForm::on_toolButton_sensors_clicked()
         _sensorReaderForm = new SensorsReaderForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_sensorReaderForm);
         _sensorReaderForm->show();
+        _sensorReaderForm->setWindowTitle("Sensor readings");
     }
 }
 
@@ -38,6 +40,7 @@ void CtrlPanelForm::on_toolButton_connection_clicked()
         _roverConnectionForm = new RoverConnectionForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_roverConnectionForm);
         _roverConnectionForm->show();
+        _roverConnectionForm->setWindowTitle("Connections");
     }
 }
 
@@ -48,6 +51,7 @@ void CtrlPanelForm::on_toolButton_sound_clicked()
         _soundSignallerForm = new SoundSignallerForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_soundSignallerForm);
         _soundSignallerForm->show();
+        _soundSignallerForm->setWindowTitle("Sound signal");
     }
 }
 
@@ -59,6 +63,7 @@ void CtrlPanelForm::on_toolButton_drive_clicked()
         _roverDriveForm = new RoverDriveForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_roverDriveForm);
         _roverDriveForm->show();
+        _roverDriveForm->setWindowTitle("Drive");
     }
 }
 
@@ -69,6 +74,7 @@ void CtrlPanelForm::on_toolButton_plots_clicked()
         _plotFormFactory = new PlotFactoryForm(ui->mdiArea, ui->mdiArea);
         ui->mdiArea->addSubWindow(_plotFormFactory);
         _plotFormFactory->show();
+        _plotFormFactory->setWindowTitle("Ploting");
     }
 }
 
@@ -79,6 +85,7 @@ void CtrlPanelForm::on_toolButton_video_controll_clicked()
         _videoStreamerCtrlForm = new VideoStreamerCtrlForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_videoStreamerCtrlForm);
         _videoStreamerCtrlForm->show();
+        _videoStreamerCtrlForm->setWindowTitle("Video streamer");
     }
 }
 
@@ -89,6 +96,7 @@ void CtrlPanelForm::on_toolButton_clicked()
         _videoReceiverForm = new VideoReceiverForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_videoReceiverForm);
         _videoReceiverForm->show();
+        _videoReceiverForm->setWindowTitle("Video receiver");
     }
 }
 
@@ -101,5 +109,17 @@ void CtrlPanelForm::on_toolButton_2_clicked()
         _gpsPreview = new GpsPreviewForm(ui->mdiArea);
         ui->mdiArea->addSubWindow(_gpsPreview);
         _gpsPreview ->show();
+        _gpsPreview->setWindowTitle("GPS Preview");
+    }
+}
+
+void CtrlPanelForm::on_toolButton_recorder_clicked()
+{
+    if(RecordingForm::GetRefCount() == 0)
+    {
+        _recorderForm = new RecordingForm(ui->mdiArea);
+        ui->mdiArea->addSubWindow(_recorderForm);
+        _recorderForm->show();
+        _recorderForm->setWindowTitle("Recorder");
     }
 }

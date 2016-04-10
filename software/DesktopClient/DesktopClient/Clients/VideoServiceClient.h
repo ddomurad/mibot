@@ -17,16 +17,18 @@ public:
 
     void StartStreamer(int w, int h, QString device, QString serverAddr, int serverPort, QString format, int buffer);
     void StopStreamer();
-private slots:
+    void onData(QByteArray data);
 
 protected:
-    void onData(QByteArray data);
     void onConnection();
+    QString clientName();
+
 private:
     void processObj(QJsonObject & obj);
     mibot::JSONProtocol protocol;
 
     void fixIfJsonIsCorrupted();
+
 };
 
 #endif // VIDEOSERVICECLIENT_H

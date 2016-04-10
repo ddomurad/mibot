@@ -66,6 +66,8 @@ void SettingsForm::restore()
     ui->spinBox_send_ms->setValue(AppSettings::GetKey(AppSettings::JS_Send_Ms).toInt());
     ui->checkBox_swap_drive->setChecked(AppSettings::GetKey(AppSettings::JS_Swap_Drive).toBool());
     ui->checkBox_swap_turn->setChecked(AppSettings::GetKey(AppSettings::JS_Swap_Trun).toBool());
+
+    ui->lineEdit_record_Storage_dir->setText(AppSettings::GetKey(AppSettings::Recording_Store_Dir).toString());
 }
 
 void SettingsForm::setBtnColor(QToolButton *btn, QString propName)
@@ -428,4 +430,18 @@ void SettingsForm::on_js_update()
     ui->label_turbo_btn->setText( tbv ? "1" : "0");
     ui->label_break_btn->setText( bbv ? "1" : "0");
     ui->label_horn_bnt->setText( hbv ? "1" : "0");
+}
+
+void SettingsForm::on_toolButton_get_recotd_Storage_dir_clicked()
+{
+    QString fname = QFileDialog::getExistingDirectory(this, QFileDialog::tr("Get Record Directory"),QDir::currentPath());
+    if(!fname.isEmpty())
+    {
+        ui->lineEdit_record_Storage_dir->setText( fname );
+    }
+}
+
+void SettingsForm::on_lineEdit_record_Storage_dir_textChanged(const QString &arg1)
+{
+    AppSettings::SetKey(AppSettings::Recording_Store_Dir, arg1);
 }

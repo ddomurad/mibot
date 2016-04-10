@@ -10,8 +10,8 @@ extern "C"
 {
     #include <libavcodec/avcodec.h>
     #include <libavutil/avutil.h>
+    #include <libswscale/swscale.h>
 }
-
 
 namespace Ui {
 class VideoReceiverForm;
@@ -25,10 +25,12 @@ public:
     explicit VideoReceiverForm(QWidget *parent = 0);
     ~VideoReceiverForm();
 
+    static void onStaticData(QByteArray &data);
+    void onData(QByteArray data);
+
 private slots:
     void on_pushButton_server_Start_clicked();
     void on_pushButton_server_stop_clicked();
-    void on_spinBox_buffer_valueChanged(int arg1);
 
     void onConnection();
     void onDisconnection();
@@ -61,8 +63,13 @@ private:
     AVCodec * codec;
     AVCodecContext * context;
     AVFrame * picture;
+    AVFrame * pictureRGB;
+    unsigned char * rgbBuffer;
     AVCodecParserContext * parser;
 
+    SwsContext *swsContext;
+
+    void createSwsContext();
     void startDecoder();
     void stopDecoder();
     void updateDecoder();
@@ -72,6 +79,8 @@ private:
 
     void storeFrames(QByteArray *data);
     bool _store_frames;
+
+    static VideoReceiverForm * _self;
 };
 
 #endif // VIDEORECEIVERFORM_H

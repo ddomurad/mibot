@@ -10,6 +10,7 @@
 #include "VideoStreamerCtrlForm.h"
 #include "VideoReceiverForm.h"
 #include "GpsPreviewForm.h"
+#include "RecordingForm.h"
 
 namespace Ui {
 class CtrlPanelForm;
@@ -40,6 +41,8 @@ private slots:
 
     void on_toolButton_2_clicked();
 
+    void on_toolButton_recorder_clicked();
+
 private:
     Ui::CtrlPanelForm *ui;
 
@@ -51,6 +54,7 @@ private:
     VideoStreamerCtrlForm * _videoStreamerCtrlForm;
     VideoReceiverForm *_videoReceiverForm;
     GpsPreviewForm *_gpsPreview;
+    RecordingForm * _recorderForm;
 };
 
 #endif // CTRLPANELFORM_H

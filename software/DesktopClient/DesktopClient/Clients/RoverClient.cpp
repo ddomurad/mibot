@@ -1,6 +1,7 @@
 #include "./Settings/AppSettings.h"
 #include "./Clients/RoverClient.h"
 #include "./Forms/LoggerDialog.h"
+#include "./Other/Recorder.h"
 
 RoverClient::RoverClient(QObject *parent) :
     QObject(parent),
@@ -111,7 +112,9 @@ void RoverClient::on_service_info()
 
 void RoverClient::on_socket_data()
 {
-    onData(_socket->readAll());
+    QByteArray data = _socket->readAll();
+    Recorder::get()->WriteData(clientName(), data);
+    onData(data);
 }
 
 

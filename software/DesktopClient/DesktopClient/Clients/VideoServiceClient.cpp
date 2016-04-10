@@ -34,6 +34,11 @@ void VideoServiceClient::onConnection()
 
 }
 
+QString VideoServiceClient::clientName()
+{
+    return "VideoServiceClient";
+}
+
 void VideoServiceClient::StartStreamer(int w, int h, QString device, QString serverAddr, int serverPort, QString format, int buffer)
 {
     QString data = QString("{ \

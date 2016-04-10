@@ -112,6 +112,10 @@ private slots:
 
     void on_js_update();
 
+    void on_toolButton_get_recotd_Storage_dir_clicked();
+
+    void on_lineEdit_record_Storage_dir_textChanged(const QString &arg1);
+
 private:
     Ui::SettingsForm *ui;
 

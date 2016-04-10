@@ -57,20 +57,20 @@ public:
 
     bool Connect();
     void SetSoundSignal(bool state);
+    void onData(QByteArray data);
+
 signals:
     void newData(RoverSensors readings);
-public slots:
-
-private:
-
 protected:
-    void onData(QByteArray data);
     void onConnection();
+    QString clientName();
+
 private:
     void processObj(QJsonObject & obj);
     mibot::JSONProtocol protocol;
 
     void fixIfJsonIsCorrupted();
+
 };
 
 #endif // ROVERSENSORCLIENT_H

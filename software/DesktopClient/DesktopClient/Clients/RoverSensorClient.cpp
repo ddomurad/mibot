@@ -44,6 +44,11 @@ void RoverSensorClient::onConnection()
     _socket->write(data.toUtf8());
 }
 
+QString RoverSensorClient::clientName()
+{
+    return "RoverSensorClient";
+}
+
 void RoverSensorClient::processObj(QJsonObject &obj)
 {
     if(obj["sensors"].isUndefined() || obj["system"].isUndefined())
