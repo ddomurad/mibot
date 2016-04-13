@@ -194,13 +194,15 @@ void VideoReceiverForm::ELog(QString msg) { Log("ERROR", msg); _shall_run = fals
 
 void VideoReceiverForm::createSwsContext()
 {
-    pictureRGB = avcodec_alloc_frame();
-    int rgbPictureBytes = avpicture_get_size(PIX_FMT_RGB32, context->width, context->height);
+    pictureRGB = av_frame_alloc();
+            //avcodec_alloc_frame();
+
+    int rgbPictureBytes = avpicture_get_size(AV_PIX_FMT_RGB32, context->width, context->height);
     rgbBuffer = new unsigned char[rgbPictureBytes];
-    avpicture_fill( (AVPicture*) pictureRGB, rgbBuffer, PIX_FMT_RGB32, context->width, context->height);
+    avpicture_fill( (AVPicture*) pictureRGB, rgbBuffer, AV_PIX_FMT_RGB32, context->width, context->height);
 
     swsContext = sws_getContext(context->width, context->height, context->pix_fmt,
-                                context->width, context->height,PIX_FMT_RGB32, SWS_BILINEAR,
+                                context->width, context->height,AV_PIX_FMT_RGB32, SWS_BILINEAR,
                                 NULL,NULL, NULL);
 }
 
@@ -210,7 +212,9 @@ void VideoReceiverForm::startDecoder()
 
     SHC;
     avcodec_register_all();
-    codec = avcodec_find_decoder( CODEC_ID_H264 );
+    //codec = avcodec_find_decoder( CODEC_ID_H264 );
+    codec = avcodec_find_decoder( AV_CODEC_ID_H264 );
+
     CHECK(codec);
 
     context = avcodec_alloc_context3(codec);
@@ -223,10 +227,10 @@ void VideoReceiverForm::startDecoder()
 
     SHC;
 
-    picture = //av_frame_alloc();
-        avcodec_alloc_frame();
+    picture = av_frame_alloc();
+        //avcodec_alloc_frame();
 
-    parser = av_parser_init(CODEC_ID_H264);
+    parser = av_parser_init(AV_CODEC_ID_H264);
 
     CHECK(parser);
 
