@@ -202,7 +202,7 @@ QString StatusStrategy::_calibrateAcc()
     double r = 0.0;
     for(int i=0;i<100;i++)
     {
-        r += _arduinoSensorNode->Readings().acc[3];
+        r += _arduinoSensorNode->Readings().acc[2];
         QThread::msleep(50);
     }
 
