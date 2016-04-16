@@ -133,7 +133,7 @@ QString StatusStrategy::createResponse(QJsonObject &obj)
         if(obj["action"].toString() == "send")
         {
             if(!_auto_send)
-                getStringToSend();
+                return getStringToSend();
         }
     }
 
