@@ -68,6 +68,7 @@ void RoverSensorClient::processObj(QJsonObject &obj)
     sensors.systemSensors.mem_available = systemObj["mem_available"].toDouble();
     sensors.systemSensors.mem_usage_server = systemObj["mem_usage_server"].toDouble();
     sensors.systemSensors.mem_usage_total= systemObj["mem_usage_total"].toDouble();
+    sensors.systemSensors.datetime = QDateTime::fromMSecsSinceEpoch((qint64) systemObj["datetime"].toDouble());
 
     sensors.gpsSensors.fix = gpsObj["fix"].toInt() != 0;
     sensors.gpsSensors.latitude = gpsObj["latitude"].toDouble();

@@ -15,6 +15,7 @@ public:
     float mem_available;
     float mem_usage_total;
     float mem_usage_server;
+    QDateTime datetime;
 };
 
 class ArduinoSensors

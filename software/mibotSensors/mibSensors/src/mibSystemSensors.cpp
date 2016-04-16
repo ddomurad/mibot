@@ -107,7 +107,7 @@ void SystemSensors::readAllSensors()
     _readings.mem_available = avaiable;
     _readings.mem_usage_total = used_total;
     _readings.mem_usage_server = used_process;
-    _readings.datetime = QDateTime::currentMSecsSinceEpoch();
+    _readings.datetime = QDateTime::currentDateTime().currentMSecsSinceEpoch();
 }
 
 QString SystemSensors::readSystemStateValue(QString path, int length)
