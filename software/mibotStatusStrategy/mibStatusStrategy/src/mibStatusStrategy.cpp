@@ -208,7 +208,7 @@ QString StatusStrategy::_calibrateAcc()
 
     double m = r/100.0;
 
-    _arduinoSensorNode->AccCalibration(9.8 / m);
+    _arduinoSensorNode->AccCalibration(-9.8 / m);
 
     return "";
 }

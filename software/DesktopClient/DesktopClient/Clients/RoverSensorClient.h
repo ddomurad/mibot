@@ -21,8 +21,8 @@ public:
 class ArduinoSensors
 {
    public:
-    int acc[3];
-    int mag[3];
+    double acc[3];
+    double mag[3];
 
     float analogValue[10];
     bool hasAnalogValue[10];
