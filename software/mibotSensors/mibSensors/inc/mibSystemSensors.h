@@ -18,6 +18,7 @@ public:
     float mem_available;
     float mem_usage_total;
     float mem_usage_server;
+    long int datetime;
 };
 
 class MIBSENSORSSHARED_EXPORT SystemSensors

@@ -14,10 +14,12 @@ bool ReadSonar(NewPing *sonar, int *d, int * sn)
 {
   *sn = sonar_index;
   int uS = sonar->ping_cm();
+  if(uS == 0)
+  uS = 201;
   *d = uS;
   sonar_index = 0;//sonar_index == 0 ? 1 : 0;
 
-  return uS != 0;
+  return true;
 }
 
 bool ReadUS(int *d, int *sn)
