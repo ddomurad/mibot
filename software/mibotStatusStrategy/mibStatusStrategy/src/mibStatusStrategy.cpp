@@ -176,7 +176,8 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % ",\"cpu_usage_total\":" % QString::number(ssReading.cpu_usage_total);
     outStr = outStr % ",\"mem_available\":" % QString::number(ssReading.mem_available);
     outStr = outStr % ",\"mem_usage_server\":" % QString::number(ssReading.mem_usage_server);
-    outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total) % "}";
+    outStr = outStr % ",\"mem_usage_total\":" % QString::number(ssReading.mem_usage_total);
+    outStr = outStr % ",\"datetime\":" % QString::number(ssReading.datetime) % "}";
     outStr = outStr % ",\"gps\":{";
     outStr = outStr % "\"fix\":" % QString::number(gpsData.isValid ? 1 : 0) ;
     outStr = outStr % ",\"latitude\":" % QString::number(gpsData.position.latitude) ;
