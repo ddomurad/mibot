@@ -14,8 +14,8 @@ namespace mibot
 class ArduinoReadings
 {
    public:
-    int acc[3];
-    int mag[3];
+    double acc[3];
+    double mag[3];
 
     float analogValue[10];
     bool isAnalogValue[10];
@@ -38,7 +38,7 @@ public:
     ArduinoReadings Readings();
 
     void SendCommand(char cmd, char value);
-
+    bool CalibrateAcc(double new_acc_scale);
 signals:
     void StartReaderSignal();
     void StopReaderSignal();

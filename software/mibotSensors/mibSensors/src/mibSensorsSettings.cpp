@@ -40,6 +40,16 @@ SensorsSettings::SensorsSettings(QString res) :
     analog[8] = new IntSettingsValue("analog_8");
     analog[9] = new IntSettingsValue("analog_9");
 
+    accXAxisIndex = new IntSettingsValue("acc_x_axis_index");
+    accYAxisIndex = new IntSettingsValue("acc_y_axis_index");
+    accZAxisIndex = new IntSettingsValue("acc_z_axis_index");
+
+    magXAxisIndex = new IntSettingsValue("mag_x_axis_index");
+    magYAxisIndex = new IntSettingsValue("mag_y_axis_index");
+    magZAxisIndex = new IntSettingsValue("mag_z_axis_index");
+
+    accScale = new DoubleSettingsValue("acc_scale");
+
     AddValue( systemSensorsUpdateTime );
 
     AddValue( arduinoNodeSerialPortName );
@@ -68,6 +78,16 @@ SensorsSettings::SensorsSettings(QString res) :
     AddValue(analogFactor[7]);
     AddValue(analogFactor[8]);
     AddValue(analogFactor[9]);
+
+    AddValue(accXAxisIndex);
+    AddValue(accYAxisIndex);
+    AddValue(accZAxisIndex);
+
+    AddValue(magXAxisIndex);
+    AddValue(magYAxisIndex);
+    AddValue(magZAxisIndex);
+
+    AddValue(accScale);
 }
 
 SensorsSettings::~SensorsSettings()

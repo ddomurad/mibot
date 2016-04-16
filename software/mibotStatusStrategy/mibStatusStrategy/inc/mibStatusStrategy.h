@@ -41,6 +41,8 @@ private:
 
     QTimer * _update_timer;
     bool    _auto_send;
+
+    QString _calibrateAcc();
 };
 
 }

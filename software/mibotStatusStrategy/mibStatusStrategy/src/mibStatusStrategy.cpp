@@ -143,6 +143,13 @@ QString StatusStrategy::createResponse(QJsonObject &obj)
         _arduinoSensorNode->SetPiezo(piezoState);
     }
 
+    if(obj["acc_calibration"].isBool())
+    {
+        bool state = obj["acc_calibration"].toBool();
+        if(state)
+            return _calibrateAcc();
+    }
+
     return "";
 }
 
@@ -187,6 +194,23 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % "}}";
 
     return outStr;
+}
+
+QString StatusStrategy::_calibrateAcc()
+{
+    _arduinoSensorNode->AccCalibration(1.0);
+    double r = 0.0;
+    for(int i=0;i<100;i++)
+    {
+        r += _arduinoSensorNode->Readings().acc[3];
+        QThread::msleep(50);
+    }
+
+    double m = r/100.0;
+
+    _arduinoSensorNode->AccCalibration(9.8 / m);
+
+    return "";
 }
 
 mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)

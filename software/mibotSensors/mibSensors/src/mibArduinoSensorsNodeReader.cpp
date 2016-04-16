@@ -226,15 +226,21 @@ void ArduinoSensorsNodeReader::processAcc(QString value)
         return;
     }
 
-    _readings.acc[0] = values[0].toFloat();
-    _readings.acc[1] = values[1].toFloat();
-    _readings.acc[2] = values[2].toFloat();
+    int x_index = _settings->accXAxisIndex->value;
+    int y_index = _settings->accYAxisIndex->value;
+    int z_index = _settings->accZAxisIndex->value;
+    if(x_index < 0 || y_index < 0 || z_index < 0
+            || x_index > 2 || y_index > 2 || z_index > 2)
+    {
+        LOG_WARNING("Invalid acc axis indices");
+        return;
+    }
 
-    //    LOG_DEBUG(
-    //                QString("ACC: {%1,%2,%3}")
-    //                .arg(_readings[ACC_X_SENSOR_TAG])
-    //                .arg(_readings[ACC_Y_SENSOR_TAG])
-    //                .arg(_readings[ACC_Z_SENSOR_TAG]));
+    double scale = _settings->accScale->value;
+
+    _readings.acc[0] = values[x_index].toDouble() * scale;
+    _readings.acc[2] = values[z_index].toDouble() * scale;
+    _readings.acc[1] = values[y_index].toDouble() * scale;
 }
 
 void ArduinoSensorsNodeReader::processMag(QString value)
@@ -247,15 +253,19 @@ void ArduinoSensorsNodeReader::processMag(QString value)
         return;
     }
 
-    _readings.mag[0] = values[0].toFloat();
-    _readings.mag[1] = values[1].toFloat();
-    _readings.mag[2] = values[2].toFloat();
+    int x_index = _settings->magXAxisIndex->value;
+    int y_index = _settings->magYAxisIndex->value;
+    int z_index = _settings->magZAxisIndex->value;
+    if(x_index < 0 || y_index < 0 || z_index < 0
+            || x_index > 2 || y_index > 2 || z_index > 2)
+    {
+        LOG_WARNING("Invalid mag axis indices");
+        return;
+    }
 
-    //    LOG_DEBUG(
-    //                QString("MAG: {%1,%2,%3}")
-    //                .arg(_readings[MAG_X_SENSOR_TAG])
-    //                .arg(_readings[MAG_Y_SENSOR_TAG])
-    //                .arg(_readings[MAG_Z_SENSOR_TAG]));
+    _readings.mag[0] = values[x_index].toFloat();
+    _readings.mag[1] = values[z_index].toFloat();
+    _readings.mag[2] = values[y_index].toFloat();
 }
 
 void ArduinoSensorsNodeReader::processAnalog(QCharRef channel, QString value)
@@ -288,6 +298,19 @@ void ArduinoSensorsNodeReader::SendCommand(char cmd, char value)
     {
         LOG_ERROR("Can't write flags to arduino node!");
     }
+}
+
+bool ArduinoSensorsNodeReader::CalibrateAcc(double new_acc_scale)
+{
+    _settings->accScale->value = new_acc_scale;
+
+    if(!_settings->Upload(SO_DEF_SYNC_TIME))
+    {
+        LOG_ERROR("Can't upload sensor setting");
+        return false;
+    }
+
+    return true;
 }
 
 void ArduinoSensorsNodeReader::onSetPiezo(bool state)

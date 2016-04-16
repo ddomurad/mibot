@@ -26,6 +26,16 @@ public:
 
     StringSettingsValue * gpsSerialPortName;
     IntSettingsValue * gpsSerialBaudRate;
+
+    IntSettingsValue * accXAxisIndex;
+    IntSettingsValue * accYAxisIndex;
+    IntSettingsValue * accZAxisIndex;
+
+    IntSettingsValue * magXAxisIndex;
+    IntSettingsValue * magYAxisIndex;
+    IntSettingsValue * magZAxisIndex;
+
+    DoubleSettingsValue * accScale;
 };
 
 }

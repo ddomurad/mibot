@@ -19,6 +19,11 @@ void ArduinoSensorNode::SetPiezo(bool state)
     emit _reader->SetPiezo(state);
 }
 
+bool ArduinoSensorNode::AccCalibration(double new_acc_scale)
+{
+    return _reader->CalibrateAcc(new_acc_scale);
+}
+
 ArduinoSensorNode::~ArduinoSensorNode()
 {}
 

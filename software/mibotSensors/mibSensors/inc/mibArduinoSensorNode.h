@@ -20,6 +20,7 @@ public:
     bool Initialize();
     void SetPiezo(bool state);
 
+    bool AccCalibration(double new_acc_scale);
 private:
     ArduinoSensorNode();
     ArduinoSensorsNodeReader * _reader;
