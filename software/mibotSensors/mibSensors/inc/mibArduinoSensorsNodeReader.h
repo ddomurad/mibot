@@ -7,6 +7,7 @@
 #include <mibAsyncWaitEvent.h>
 
 #include "mibSensorsSettings.h"
+#include "mibIIRFilter.h"
 
 namespace mibot
 {
@@ -77,6 +78,8 @@ private:
 
     QTimer *_settings_update_timer;
     QTimer *_motor_lock_timer;
+
+    IIRFilter _accFilter[3];
 };
 }
 

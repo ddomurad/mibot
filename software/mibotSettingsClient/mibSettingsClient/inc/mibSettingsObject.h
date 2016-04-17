@@ -35,6 +35,7 @@ public:
     void RemoverRefCounter();
     bool SubscribeNotification();
     bool IsSubscribed();
+    uint SyncCounter();
 
     QJsonObject GetAsJson();
     bool Exists();
@@ -60,6 +61,8 @@ private:
     bool _isRegistred;
 
     bool _exists;
+
+    uint _sync_sounter;
 };
 
 }

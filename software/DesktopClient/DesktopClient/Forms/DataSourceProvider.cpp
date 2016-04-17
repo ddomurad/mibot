@@ -9,9 +9,9 @@ DataSourceProvider::DataSourceProvider() :
     connect(_timer,SIGNAL(timeout()), this, SLOT(fakeTimer()));
     _timer->start(50);
 
-    dataSources.append(new DataSource("acc_x", 250, -17000, 17000));
-    dataSources.append(new DataSource("acc_y", 250, -17000, 17000));
-    dataSources.append(new DataSource("acc_z", 250, -17000, 17000));
+    dataSources.append(new DataSource("acc_x", 250, -20, 20));
+    dataSources.append(new DataSource("acc_y", 250, -20, 20));
+    dataSources.append(new DataSource("acc_z", 250, -20, 20));
     dataSources.append(new DataSource("mag_x", 250, -17000, 17000));
     dataSources.append(new DataSource("mag_y", 250, -17000, 17000));
     dataSources.append(new DataSource("mag_z", 250, -17000, 17000));

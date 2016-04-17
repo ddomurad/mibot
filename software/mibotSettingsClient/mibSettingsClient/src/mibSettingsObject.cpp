@@ -10,7 +10,8 @@ SettingsObject::SettingsObject(QString resource, bool registerForNotification) :
     _synchronized(false),
     _refCounter(1),
     _registerForNotification(registerForNotification),
-    _exists(false)
+    _exists(false),
+    _sync_sounter(0)
 {}
 
 SettingsObject::~SettingsObject()
@@ -52,6 +53,7 @@ void SettingsObject::SetSyncFromJson(QJsonObject &obj)
 
     _exists = true;
     _synchronized = true;
+    _sync_sounter++;
     _syncEvent.Open();
 }
 
@@ -59,6 +61,7 @@ void SettingsObject::SetSyncNotExists()
 {
     _exists = false;
     _synchronized = true;
+    _sync_sounter++;
     _syncEvent.Open();
 }
 
@@ -134,6 +137,11 @@ bool SettingsObject::Exists()
 void SettingsObject::Release()
 {
     SettingsClient::ReleaseResource( this );
+}
+
+uint SettingsObject::SyncCounter()
+{
+    return _sync_sounter;
 }
 
 QString SettingsObject::Dump()

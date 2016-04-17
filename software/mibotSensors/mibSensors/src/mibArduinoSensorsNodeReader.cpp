@@ -238,9 +238,9 @@ void ArduinoSensorsNodeReader::processAcc(QString value)
 
     double scale = _settings->accScale->value;
 
-    _readings.acc[0] = values[x_index].toDouble() * scale;
-    _readings.acc[2] = values[z_index].toDouble() * scale;
-    _readings.acc[1] = values[y_index].toDouble() * scale;
+    _readings.acc[0] = _accFilter[0].Filter(values[x_index].toDouble()) * scale;
+    _readings.acc[2] = _accFilter[1].Filter(values[z_index].toDouble()) * scale;
+    _readings.acc[1] = _accFilter[2].Filter(values[y_index].toDouble()) * scale;
 }
 
 void ArduinoSensorsNodeReader::processMag(QString value)

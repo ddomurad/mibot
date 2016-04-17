@@ -27,7 +27,8 @@ SOURCES += \
     src/mibArduinoSensorNode.cpp \
     src/mibArduinoSensorsNodeReader.cpp \
     src/mibSensorsSettings.cpp \
-    src/mibotGPSSensor.cpp
+    src/mibotGPSSensor.cpp \
+    src/mibIIRFilter.cpp
 
 HEADERS += \
     inc/mibSensors.h \
@@ -36,7 +37,8 @@ HEADERS += \
     inc/mibArduinoSensorNode.h \
     inc/mibArduinoSensorsNodeReader.h \
     inc/mibSensorsSettings.h \
-    inc/mibotGPSSensor.h
+    inc/mibotGPSSensor.h \
+    inc/mibIIRFilter.h
 
 unix {
     target.path = /usr/local/lib/mi_bot
