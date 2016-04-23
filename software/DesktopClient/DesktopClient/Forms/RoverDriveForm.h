@@ -66,6 +66,8 @@ private:
 
     void updateManual();
     void updateAutopilot();
+
+    bool _run_on_autopilot;
 };
 
 #endif // ROVERDRIVEFORM_H

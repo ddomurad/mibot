@@ -24,6 +24,8 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
 
     auto sensorClient = RoverClientsProvider::GetRoverSensorClient();
     connect(sensorClient, SIGNAL(newData(RoverSensors)), this, SLOT(onSensorsUpdate(RoverSensors)));
+
+    _run_on_autopilot = false;
 }
 
 RoverDriveForm::~RoverDriveForm()
@@ -35,9 +37,16 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
 {
     if(checked)
     {
+        _run_on_autopilot = ui->comboBox_drive_type->currentText() != "Manual";
         UpdateSettings();
-        _timer->start(_update_ms);
-        _js->Start(_device_path);
+        if(_run_on_autopilot)
+        {
+            _timer->start(400);
+        }else
+        {
+            _timer->start(_update_ms);
+            _js->Start(_device_path);
+        }
     }else
     {
         _timer->stop();
@@ -47,10 +56,14 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
 
 void RoverDriveForm::onUpdateDrive()
 {
-    if(ui->comboBox_drive_type->currentText() == "Manual")
+    if(_run_on_autopilot)
+    {
         updateManual();
+    }
     else
+    {
         updateAutopilot();
+    }
 }
 
 void RoverDriveForm::UpdateSettings()
@@ -151,12 +164,7 @@ void RoverDriveForm::on_spinBox_active_point_valueChanged(int arg1)
 }
 
 void RoverDriveForm::on_comboBox_drive_type_currentIndexChanged(const QString &arg1)
-{
-    if(arg1 == "Manual")
-        _timer->setInterval(_update_ms);
-    else
-        _timer->setInterval(400);
-}
+{}
 
 void RoverDriveForm::onAutopilotUpdate(AutopilotState state)
 {
