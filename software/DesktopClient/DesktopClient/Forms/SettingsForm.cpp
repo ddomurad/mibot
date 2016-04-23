@@ -331,6 +331,11 @@ void SettingsForm::on_lineEdit_video_service_textChanged(const QString &arg1)
     AppSettings::SetKey(AppSettings::Connection_Video_Service, QVariant(arg1));
 }
 
+void SettingsForm::on_lineEdit_autopilot_textChanged(const QString &arg1)
+{
+    AppSettings::SetKey(AppSettings::Connection_Autopilot_Service, QVariant(arg1));
+}
+
 void SettingsForm::on_pushButton_test_device_clicked()
 {
     QString js_file = ui->lineEdit_device_path->text();
@@ -445,3 +450,4 @@ void SettingsForm::on_lineEdit_record_Storage_dir_textChanged(const QString &arg
 {
     AppSettings::SetKey(AppSettings::Recording_Store_Dir, arg1);
 }
+

@@ -34,6 +34,7 @@ public:
     static QString Connection_Status_Service;
     static QString Connection_Driver_Service;
     static QString Connection_Video_Service;
+    static QString Connection_Autopilot_Service;
 
     static QString VServer_Listen_Port;
     static QString VServer_Forward_Addr;

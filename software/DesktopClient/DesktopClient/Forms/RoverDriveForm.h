@@ -21,7 +21,25 @@ public:
 
 private slots:
     void on_checkBox_toggled(bool checked);
+
     void onUpdateDrive();
+
+    void on_pushButton_next_point_clicked();
+
+    void on_pushButton_prev_point_clicked();
+
+    void on_pushButton_auto_clicked();
+
+    void on_comboBox_drive_type_currentTextChanged(const QString &arg1);
+
+    void on_comboBox_track_currentIndexChanged(const QString &arg1);
+
+    void on_spinBox_active_point_valueChanged(int arg1);
+
+    void on_comboBox_drive_type_currentIndexChanged(const QString &arg1);
+
+    void onAutopilotUpdate(AutopilotState state);
+    void onSensorsUpdate(class RoverSensors readings);
 private:
     void UpdateSettings();
     Ui::RoverDriveForm *ui;
@@ -43,6 +61,11 @@ private:
     JsInput * _js;
 
     bool _last_horn_state;
+
+    void updateStats();
+
+    void updateManual();
+    void updateAutopilot();
 };
 
 #endif // ROVERDRIVEFORM_H

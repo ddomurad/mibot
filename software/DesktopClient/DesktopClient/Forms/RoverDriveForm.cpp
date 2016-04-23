@@ -2,6 +2,7 @@
 #include "Settings/AppSettings.h"
 #include "RoverDriveForm.h"
 #include "ui_RoverDriveForm.h"
+#include "Other/TrackProvider.h"
 
 RoverDriveForm::RoverDriveForm(QWidget *parent) :
     QWidget(parent),
@@ -13,6 +14,16 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
     _timer = new QTimer(this);
     _js = new JsInput(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(onUpdateDrive()));
+
+    TrackProvider::LoadRoutesFromFile();
+    ui->comboBox_track->addItems(TrackProvider::GetTracks());
+
+    connect(RoverClientsProvider::GetRoverAutopilotClient()
+            ,SIGNAL(StateUpdate(AutopilotState))
+            ,this,SLOT(onAutopilotUpdate(AutopilotState)));
+
+    auto sensorClient = RoverClientsProvider::GetRoverSensorClient();
+    connect(sensorClient, SIGNAL(newData(RoverSensors)), this, SLOT(onSensorsUpdate(RoverSensors)));
 }
 
 RoverDriveForm::~RoverDriveForm()
@@ -36,10 +47,48 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
 
 void RoverDriveForm::onUpdateDrive()
 {
+    if(ui->comboBox_drive_type->currentText() == "Manual")
+        updateManual();
+    else
+        updateAutopilot();
+}
+
+void RoverDriveForm::UpdateSettings()
+{
+    _update_ms = AppSettings::GetKey(AppSettings::JS_Send_Ms).toInt();
+
+    _device_path = AppSettings::GetKey(AppSettings::JS_Device_Path).toString();
+
+    _swap_drive = AppSettings::GetKey(AppSettings::JS_Swap_Drive).toBool();
+    _swap_turn = AppSettings::GetKey(AppSettings::JS_Swap_Trun).toBool();
+
+    _drive_axis = AppSettings::GetKey(AppSettings::JS_Drive_Axis).toInt();
+    _turn_axis = AppSettings::GetKey(AppSettings::JS_Turn_Axis).toInt();
+
+    _turbo_btn = AppSettings::GetKey(AppSettings::JS_Turbo_Btn).toInt();
+    _brake_btn = AppSettings::GetKey(AppSettings::JS_Brake_Btn).toInt();
+    _horn_btn = AppSettings::GetKey(AppSettings::JS_Horn_Btn).toInt();
+}
+
+void RoverDriveForm::updateStats()
+{
+    OSMMarker * am = TrackProvider::ActivePoint();
+    if(am == nullptr)
+    {
+        ui->lineEdit_tpos->setText("none");
+        return;
+    }
+
+    ui->lineEdit_tpos->setText(QString("%1 %2").arg(am->possition.x()).arg(am->possition.y()));
+    ui->spinBox_active_point->setValue(TrackProvider::ActivePointId());
+}
+
+void RoverDriveForm::updateManual()
+{
     if(!RoverClientsProvider::GetRoverDriveClient()->IsConnected())
     {
         LoggerDialog::get()->Warning("Send drive command", "Drive client not connected.");
-        ui->checkBox->setChecked(false);
+        ui->checkBox_drive->setChecked(false);
         return;
     }
 
@@ -59,19 +108,67 @@ void RoverDriveForm::onUpdateDrive()
     }
 }
 
-void RoverDriveForm::UpdateSettings()
+void RoverDriveForm::updateAutopilot()
 {
-    _update_ms = AppSettings::GetKey(AppSettings::JS_Send_Ms).toInt();
 
-    _device_path = AppSettings::GetKey(AppSettings::JS_Device_Path).toString();
+}
 
-    _swap_drive = AppSettings::GetKey(AppSettings::JS_Swap_Drive).toBool();
-    _swap_turn = AppSettings::GetKey(AppSettings::JS_Swap_Trun).toBool();
+void RoverDriveForm::on_pushButton_next_point_clicked()
+{
+    TrackProvider::NextPoint();
+    updateStats();
+}
 
-    _drive_axis = AppSettings::GetKey(AppSettings::JS_Drive_Axis).toInt();
-    _turn_axis = AppSettings::GetKey(AppSettings::JS_Turn_Axis).toInt();
+void RoverDriveForm::on_pushButton_prev_point_clicked()
+{
+    TrackProvider::PrevPoint();
+    updateStats();
+}
 
-    _turbo_btn = AppSettings::GetKey(AppSettings::JS_Turbo_Btn).toInt();
-    _brake_btn = AppSettings::GetKey(AppSettings::JS_Brake_Btn).toInt();
-    _horn_btn = AppSettings::GetKey(AppSettings::JS_Horn_Btn).toInt();
+void RoverDriveForm::on_pushButton_auto_clicked()
+{
+}
+
+void RoverDriveForm::on_comboBox_drive_type_currentTextChanged(const QString &arg1)
+{
+
+}
+
+void RoverDriveForm::on_comboBox_track_currentIndexChanged(const QString &arg1)
+{
+    TrackProvider::SelectRoute(arg1);
+    updateStats();
+}
+
+void RoverDriveForm::on_spinBox_active_point_valueChanged(int arg1)
+{
+    if(TrackProvider::ActivePointId() == arg1)
+        return;
+
+    TrackProvider::SetActivePoint(arg1);
+    ui->spinBox_active_point->setValue(TrackProvider::ActivePointId());
+    updateStats();
+}
+
+void RoverDriveForm::on_comboBox_drive_type_currentIndexChanged(const QString &arg1)
+{
+    if(arg1 == "Manual")
+        _timer->setInterval(_update_ms);
+    else
+        _timer->setInterval(400);
+}
+
+void RoverDriveForm::onAutopilotUpdate(AutopilotState state)
+{
+    ui->lineEdit_cd->setText(QString::number(state.angle));
+    ui->lineEdit_dist->setText(QString::number(state.dist));
+}
+
+void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
+{
+    ui->lineEdit_cpos->setText(QString("%1 %2")
+                                .arg(readings.gpsSensors.lognitude)
+                                .arg(readings.gpsSensors.latitude));
+
+    ui->lineEdit_cc->setText(QString::number(readings.gpsSensors.course));
 }

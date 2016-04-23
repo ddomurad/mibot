@@ -116,6 +116,8 @@ private slots:
 
     void on_lineEdit_record_Storage_dir_textChanged(const QString &arg1);
 
+    void on_lineEdit_autopilot_textChanged(const QString &arg1);
+
 private:
     Ui::SettingsForm *ui;
 

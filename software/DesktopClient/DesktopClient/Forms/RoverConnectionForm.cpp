@@ -25,10 +25,12 @@ void RoverConnectionForm::on_update()
     bool sensorsConnected = RoverClientsProvider::GetRoverSensorClient()->IsConnected();
     bool driveConnected = RoverClientsProvider::GetRoverDriveClient()->IsConnected();
     bool videoConnected = RoverClientsProvider::GetVideoServiceClient()->IsConnected();
+    bool autopilotConnected = RoverClientsProvider::GetRoverAutopilotClient()->IsConnected();
 
     ui->label_sensors_state->setText( sensorsConnected ? "connected" : "disconnected");
     ui->label_drive_state->setText( driveConnected ? "connected" : "disconnected");
     ui->label_video_state->setText( videoConnected ? "connected" : "disconnected");
+    ui->label_autopilot_state->setText( autopilotConnected ? "connected" : "disconnected");
 }
 
 
@@ -37,6 +39,7 @@ void RoverConnectionForm::on_pushButton_disconnect_all_clicked()
     RoverClientsProvider::GetRoverSensorClient()->Disconnect();
     RoverClientsProvider::GetRoverDriveClient()->Disconnect();
     RoverClientsProvider::GetVideoServiceClient()->Disconnect();
+    RoverClientsProvider::GetRoverAutopilotClient()->Disconnect();
 }
 
 void RoverConnectionForm::on_pushButton_connect_all_clicked()
@@ -44,6 +47,7 @@ void RoverConnectionForm::on_pushButton_connect_all_clicked()
     RoverClientsProvider::GetRoverSensorClient()->Connect();
     RoverClientsProvider::GetRoverDriveClient()->Connect();
     RoverClientsProvider::GetVideoServiceClient()->Connect();
+    RoverClientsProvider::GetRoverAutopilotClient()->Connect();
 }
 
 void RoverConnectionForm::on_pushButton_disconnect_video_clicked()
@@ -74,4 +78,14 @@ void RoverConnectionForm::on_pushButton_con_sensors_clicked()
 void RoverConnectionForm::on_pushButton_disconnect_sensors_clicked()
 {
     RoverClientsProvider::GetRoverSensorClient()->Disconnect();
+}
+
+void RoverConnectionForm::on_pushButton_connect_autopilot_clicked()
+{
+    RoverClientsProvider::GetRoverAutopilotClient()->Connect();
+}
+
+void RoverConnectionForm::on_pushButton_disconnect_autopilot_clicked()
+{
+    RoverClientsProvider::GetRoverAutopilotClient()->Disconnect();
 }

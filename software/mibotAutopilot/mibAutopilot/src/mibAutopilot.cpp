@@ -191,11 +191,11 @@ void Autopilot::processCommand(QJsonObject &obj)
  {
    "point_id":123,
    "gps_point":[123.12, 123.12],
-   "autopilot_enabled":1
+   "autopilot_enabled":true
  }
  // for update
  {
-    "autopilot_enabled":1
+    "autopilot_enabled":true
  }
 
  //out
@@ -273,7 +273,11 @@ void Autopilot::updateAutopilot()
 
 void Autopilot::setTarget(QPointF p, int id)
 {
-    LOG_INFO(QString("New target set: (%1,%2), id: %3").arg(p.x(),p.y()).arg(id));
+    LOG_INFO(QString("New target set: (%1,%2), id: %3")
+             .arg(p.x())
+             .arg(p.y())
+             .arg(id));
+
     _finished = false;
     _target_location = p;
     _target_id = id;
@@ -330,17 +334,23 @@ void Autopilot::driveFinished()
 void Autopilot::sendStatusMessage()
 {
     QString msg;
-    if(_finished)
+    if(_gpsSensor->Readings().isValid)
     {
-        msg = QString("{\"distance\":%1,\"angle\":%2,\"arrived_at\":%3}")
-            .arg(getDistace())
-            .arg(getRelativeAngle())
-            .arg(_target_id);
+        if(_finished)
+        {
+            msg = QString("{\"distance\":%1,\"angle\":%2,\"arrived_at\":%3}")
+                    .arg(getDistace())
+                    .arg(getRelativeAngle())
+                    .arg(_target_id);
+        }else
+        {
+            msg = QString("{\"distance\":%1,\"angle\":%2}")
+                    .arg(getDistace())
+                    .arg(getRelativeAngle());
+        }
     }else
     {
-        msg = QString("{\"distance\":%1,\"angle\":%2}")
-            .arg(getDistace())
-            .arg(getRelativeAngle());
+        msg = QString("{\"no_gps\":1}");
     }
 
     _connection->TcpSocket->write(msg.toUtf8());

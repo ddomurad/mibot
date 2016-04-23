@@ -50,7 +50,9 @@ SOURCES += main.cpp\
     Forms/RecordingForm.cpp \
     Other/Recorder.cpp \
     Other/Replayer.cpp \
-    Forms/SettingsEditorForm.cpp
+    Forms/SettingsEditorForm.cpp \
+    Other/TrackProvider.cpp \
+    Clients/RoverAutopilotClient.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -87,7 +89,9 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/RecordingForm.h \
     Other/Recorder.h \
     Other/Replayer.h \
-    Forms/SettingsEditorForm.h
+    Forms/SettingsEditorForm.h \
+    Other/TrackProvider.h \
+    Clients/RoverAutopilotClient.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \

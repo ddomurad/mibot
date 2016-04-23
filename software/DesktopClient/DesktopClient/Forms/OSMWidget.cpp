@@ -458,12 +458,12 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
 
     if(m->type == OSMMarkerType::Circle)
     {
-        painter.drawEllipse(mpos, marker_size, marker_size );
+        painter.drawEllipse(QPointF(0,0), marker_size, marker_size );
     }
     else if(m->type == OSMMarkerType::Square)
     {
-        painter.drawRect(mpos.x() - marker_size/2.0,
-                         mpos.y() - marker_size/2.0,
+        painter.drawRect(- marker_size/2.0,
+                         - marker_size/2.0,
                          marker_size,    marker_size);
     }else if(m->type == OSMMarkerType::Triangle
              || m->type == OSMMarkerType::Triangle2
@@ -478,14 +478,14 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
 
         if(m->type == OSMMarkerType::Triangle)
         {
-            pol.append(QPointF(mpos.x(), mpos.y() - h23).toPoint());
-            pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() + h23*cos60).toPoint());
-            pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() + h23*cos60).toPoint());
+            pol.append(QPointF(0.0, - h23).toPoint());
+            pol.append(QPointF(h23*sin60, h23*cos60).toPoint());
+            pol.append(QPointF(h23*sin60, h23*cos60).toPoint());
         }else if(m->type == OSMMarkerType::Triangle2)
         {
-            pol.append(QPointF(mpos.x(), mpos.y() + h23).toPoint());
-            pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() - h23*cos60).toPoint());
-            pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() - h23*cos60).toPoint());
+            pol.append(QPointF(0.0, h23).toPoint());
+            pol.append(QPointF(h23*sin60, - h23*cos60).toPoint());
+            pol.append(QPointF(-h23*sin60,- h23*cos60).toPoint());
         }else if(m->type == OSMMarkerType::Triangle3)
         {
             pol.append(QPointF(0, -h23).toPoint());

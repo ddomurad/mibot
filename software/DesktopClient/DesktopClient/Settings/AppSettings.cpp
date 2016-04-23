@@ -98,6 +98,7 @@ QString AppSettings::Connection_CA_Path = "Connection_ca_path";
 QString AppSettings::Connection_Status_Service = "Connection_status_service";
 QString AppSettings::Connection_Driver_Service = "Connection_driver_service";
 QString AppSettings::Connection_Video_Service = "Connection_video_service";
+QString AppSettings::Connection_Autopilot_Service = "Connection_Autopilot_Service";
 
 QString AppSettings::JS_Drive_Axis = "JS_Drive_Axis";
 QString AppSettings::JS_Turn_Axis = "JS_Turn_Axis";
