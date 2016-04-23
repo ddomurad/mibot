@@ -40,6 +40,8 @@ private slots:
 
     void onAutopilotUpdate(AutopilotState state);
     void onSensorsUpdate(class RoverSensors readings);
+    void on_checkBox_drive_toggled(bool checked);
+
 private:
     void UpdateSettings();
     Ui::RoverDriveForm *ui;

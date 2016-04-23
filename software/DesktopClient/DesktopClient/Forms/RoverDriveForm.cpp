@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "LoggerDialog.h"
 #include "Settings/AppSettings.h"
 #include "RoverDriveForm.h"
@@ -41,7 +42,7 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
         UpdateSettings();
         if(_run_on_autopilot)
         {
-            _timer->start(400);
+            _timer->start(200);
         }else
         {
             _timer->start(_update_ms);
@@ -56,7 +57,7 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
 
 void RoverDriveForm::onUpdateDrive()
 {
-    if(_run_on_autopilot)
+    if(!_run_on_autopilot)
     {
         updateManual();
     }
@@ -123,7 +124,17 @@ void RoverDriveForm::updateManual()
 
 void RoverDriveForm::updateAutopilot()
 {
+    OSMMarker * p = TrackProvider::ActivePoint();
+    if(p == nullptr)
+    {
+        RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(false);
+        return;
+    }
 
+    RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(
+                p->possition,
+                TrackProvider::ActivePointId(),
+                true);
 }
 
 void RoverDriveForm::on_pushButton_next_point_clicked()
@@ -179,4 +190,26 @@ void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
                                 .arg(readings.gpsSensors.latitude));
 
     ui->lineEdit_cc->setText(QString::number(readings.gpsSensors.course));
+}
+
+void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
+{
+    if(checked)
+    {
+        _run_on_autopilot = ui->comboBox_drive_type->currentText() != "Manual";
+        UpdateSettings();
+        if(_run_on_autopilot)
+        {
+            _timer->start(400);
+        }else
+        {
+
+            _timer->start(_update_ms);
+            _js->Start(_device_path);
+        }
+    }else
+    {
+        _timer->stop();
+        _js->Stop();
+    }
 }
