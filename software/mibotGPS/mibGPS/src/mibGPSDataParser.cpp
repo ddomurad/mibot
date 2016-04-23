@@ -11,7 +11,7 @@ $GPGGA,115952.000,0000.0000,N,00000.0000,E,0,00,0.0,0.0,M,0.0,M,,0000*66
 */
 
 GPSPosition::GPSPosition():
-    latitude(0.0f), lognitude(0.0f)
+    latitude(0.0f), longitude(0.0f)
 {}
 
 GPSMovement::GPSMovement():
@@ -50,8 +50,8 @@ bool GPSPositionDataParser::Parse(QString line)
     _gpsData.position.latitude = _gpsCoordToDouble(splited[3]);
     _gpsData.position.latitude *= splited[4] == "N" ? 1.0 : -1.0;
 
-    _gpsData.position.lognitude = _gpsCoordToDouble(splited[5]);
-    _gpsData.position.lognitude *= splited[6] == "E" ? 1.0 : -1.0;
+    _gpsData.position.longitude = _gpsCoordToDouble(splited[5]);
+    _gpsData.position.longitude *= splited[6] == "E" ? 1.0 : -1.0;
 
     _gpsData.movement.speedKmh = splited[7].toDouble(&ok) * 1.852f;
 

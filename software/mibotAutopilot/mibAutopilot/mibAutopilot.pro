@@ -7,7 +7,7 @@
 QT       += network sql serialport
 QT       -= gui
 
-TARGET = mibAutopilot
+TARGET = mibAutopilotStrategy
 TEMPLATE = lib
 
 CONFIG += c++11
