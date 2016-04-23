@@ -13,7 +13,7 @@ public:
     GPSPosition();
 
     double latitude;
-    double lognitude;
+    double longitude;
 };
 
 class MIBGPSSHARED_EXPORT GPSMovement

@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += network sql
-
 QT       -= gui
 
 TARGET = mibVideoStrategy

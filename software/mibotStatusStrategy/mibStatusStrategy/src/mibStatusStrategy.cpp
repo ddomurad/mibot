@@ -60,18 +60,21 @@ bool StatusStrategy::init()
     if(!SystemSensors::get()->Initialize())
     {
         LOG_ERROR("Can't initialize SystemSensors!");
+        _statusSettigns->Release();
         return false;
     }
 
     if(!ArduinoSensorNode::get()->Initialize())
     {
         LOG_ERROR("Can't initialize ArduinoSensorNode");
+        _statusSettigns->Release();
         return false;
     }
 
     if(!GPSSensor::get()->Start())
     {
         LOG_ERROR("Can't initialzie GPSSensor");
+        _statusSettigns->Release();
         return false;
     }
 
@@ -188,7 +191,7 @@ QString StatusStrategy::getStringToSend()
     outStr = outStr % ",\"gps\":{";
     outStr = outStr % "\"fix\":" % QString::number(gpsData.isValid ? 1 : 0) ;
     outStr = outStr % ",\"latitude\":" % QString::number(gpsData.position.latitude) ;
-    outStr = outStr % ",\"lognitude\":" % QString::number(gpsData.position.lognitude) ;
+    outStr = outStr % ",\"lognitude\":" % QString::number(gpsData.position.longitude) ;
     outStr = outStr % ",\"speed_kmh\":" % QString::number(gpsData.movement.speedKmh) ;
     outStr = outStr % ",\"cource\":" % QString::number(gpsData.movement.course) ;
     outStr = outStr % "}}";

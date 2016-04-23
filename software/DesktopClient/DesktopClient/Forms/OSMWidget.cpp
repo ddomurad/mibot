@@ -439,6 +439,11 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
 
     QPointF mpos = getPointFromGPS(m->possition);
 
+    painter.save();
+
+    painter.translate(mpos.x(), mpos.y());
+    painter.rotate(m->rotate);
+
     qreal marker_size = m->size;
     if(m == _selectedMarker)
     {
@@ -461,7 +466,8 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
                          mpos.y() - marker_size/2.0,
                          marker_size,    marker_size);
     }else if(m->type == OSMMarkerType::Triangle
-             || m->type == OSMMarkerType::Triangle2)
+             || m->type == OSMMarkerType::Triangle2
+             || m->type == OSMMarkerType::Triangle3)
     {
         qreal q23 = (2.0/3.0);
         qreal h23 = marker_size*q23;
@@ -475,15 +481,63 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
             pol.append(QPointF(mpos.x(), mpos.y() - h23).toPoint());
             pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() + h23*cos60).toPoint());
             pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() + h23*cos60).toPoint());
-        }else
+        }else if(m->type == OSMMarkerType::Triangle2)
         {
             pol.append(QPointF(mpos.x(), mpos.y() + h23).toPoint());
             pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() - h23*cos60).toPoint());
             pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() - h23*cos60).toPoint());
+        }else if(m->type == OSMMarkerType::Triangle3)
+        {
+            pol.append(QPointF(0, -h23).toPoint());
+            pol.append(QPointF(h23*sin60/2.0,h23*cos60).toPoint());
+            pol.append(QPointF(-h23*sin60/2.0, h23*cos60).toPoint());
         }
+
         painter.drawPolygon(pol);
     }
+    /*
+     if(m->type == OSMMarkerType::Circle)
+    {
+        painter.drawEllipse(mpos, marker_size, marker_size );
+    }
+    else if(m->type == OSMMarkerType::Square)
+    {
+        painter.drawRect(mpos.x() - marker_size/2.0,
+                         mpos.y() - marker_size/2.0,
+                         marker_size,    marker_size);
+    }else if(m->type == OSMMarkerType::Triangle
+             || m->type == OSMMarkerType::Triangle2
+             || m->type == OSMMarkerType::Triangle3)
+    {
+        qreal q23 = (2.0/3.0);
+        qreal h23 = marker_size*q23;
+        qreal sin60 = sin( 1.570796327 * q23 );
+        qreal cos60 = cos( 1.570796327 * q23 );
 
+        QPolygon pol;
+
+        if(m->type == OSMMarkerType::Triangle)
+        {
+            pol.append(QPointF(mpos.x(), mpos.y() - h23).toPoint());
+            pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() + h23*cos60).toPoint());
+            pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() + h23*cos60).toPoint());
+        }else if(m->type == OSMMarkerType::Triangle2)
+        {
+            pol.append(QPointF(mpos.x(), mpos.y() + h23).toPoint());
+            pol.append(QPointF(mpos.x() + h23*sin60, mpos.y() - h23*cos60).toPoint());
+            pol.append(QPointF(mpos.x() - h23*sin60, mpos.y() - h23*cos60).toPoint());
+        }else if(m->type == OSMMarkerType::Triangle3)
+        {
+            pol.append(QPointF(mpos.x(), mpos.y() - h23).toPoint());
+            pol.append(QPointF(mpos.x() + h23*sin60/2.0, mpos.y() + h23*cos60).toPoint());
+            pol.append(QPointF(mpos.x() - h23*sin60/2.0, mpos.y() + h23*cos60).toPoint());
+        }
+
+        painter.drawPolygon(pol);
+    }
+    */
+
+    painter.restore();
     painter.setPen( last_pen );
     painter.setBrush( last_brush );
 }
@@ -925,6 +979,8 @@ OSMMarker::OSMMarker()
 
     QColor ycolor = AppSettings::GetKey( AppSettings::MapEdit_Active_Marker_Color ).value<QColor>();
     bgBrushWhenSelected = QBrush(ycolor);
+
+    rotate = 0;
 }
 
 

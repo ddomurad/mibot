@@ -17,7 +17,7 @@ public:
     QPixmap pixmap;
 };
 
-enum class OSMMarkerType { Circle, Square, Triangle, Triangle2};
+enum class OSMMarkerType { Circle, Square, Triangle, Triangle2, Triangle3};
 
 class OSMRoute;
 
@@ -34,6 +34,7 @@ public:
     QBrush  bgBrushWhenSelected;
     qreal   size;
     qreal   sizeWhenSelected;
+    qreal   rotate;
     OSMMarkerType type;    
 };
 

@@ -100,7 +100,8 @@ void GPSSensor::Stop()
 GPSData GPSSensor::Readings()
 {
     QMutexLocker locker(&_mutex);
-    return _gps_data;
+    GPSData return_data = _gps_data;
+    return return_data;
 }
 
 void GPSSensor::onSerialData()

@@ -126,27 +126,14 @@ void DriveStartegy::onUpdate()
     {
         if(_state->brake != 0x01)
         {
-            qDebug() << "emergency brakte: " << _emergency_brake_timer.elapsed();
+            LOG_WARNING("emergency brake");
+            qDebug() << "emergency brake: " << _emergency_brake_timer.elapsed();
         }
             _state->brake = 0x01;
     }
 
     _model->Update( float(_driveSettings->updateRatio->value)/1000.0f );
 }
-
-//template <typename T>
-//bool DriveStartegy::getValue(T *val, GlobalConfigRes *res)
-//{
-//    bool ok;
-//    *val = (T)res->Value().toInt(&ok);
-//    if(!ok)
-//    {
-//        LOG_ERROR( QString("Can't translate config '%1' to int.").arg( res->Key()));
-//        return false;
-//    }
-
-//    return true;
-//}
 
 GPIO *DriveStartegy::gpio()
 {

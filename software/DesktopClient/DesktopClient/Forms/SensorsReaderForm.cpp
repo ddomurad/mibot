@@ -25,7 +25,7 @@ void SensorsReaderForm::onSensorData(RoverSensors sensors)
     headers << "Name" << "Value";
 
 
-    ui->tableWidget->setRowCount(10);
+    ui->tableWidget->setRowCount(11);
     ui->tableWidget->setColumnCount(2);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 

@@ -9,7 +9,6 @@ StatusSettings::StatusSettings(QString res) :
     updateRatio         = new IntSettingsValue("values_update_ratio");
     internalDelay       = new IntSettingsValue("internal_delay_value");
 
-
     AddValue(alias);
     AddValue(updateRatio);
     AddValue(internalDelay);
