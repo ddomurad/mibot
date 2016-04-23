@@ -56,7 +56,7 @@ void SettingsForm::restore()
     ui->lineEdit_sensors_service->setText(AppSettings::GetKey(AppSettings::Connection_Status_Service).toString());
     ui->lineEdit_driver_service->setText(AppSettings::GetKey(AppSettings::Connection_Driver_Service).toString());
     ui->lineEdit_video_service->setText(AppSettings::GetKey(AppSettings::Connection_Video_Service).toString());
-    ui->lineEdit_video_service->setText(AppSettings::GetKey(AppSettings::Connection_Autopilot_Service).toString());
+    ui->lineEdit_autopilot->setText(AppSettings::GetKey(AppSettings::Connection_Autopilot_Service).toString());
 
     ui->lineEdit_device_path->setText(AppSettings::GetKey(AppSettings::JS_Device_Path).toString());
     ui->spinBox_drive->setValue(AppSettings::GetKey(AppSettings::JS_Drive_Axis).toInt());
