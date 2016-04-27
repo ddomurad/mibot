@@ -21,6 +21,10 @@ public:
     void Stop();
 
     GPSData Readings();
+
+signals:
+    void onNewGpsData(GPSData);
+
 private slots:
     void onSerialData();
 

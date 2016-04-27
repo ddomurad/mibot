@@ -68,6 +68,13 @@ make
 make install
 cd ../..
 
+echo "Build AutopilotStrategy"
+cd ./mibotAutopilot/build/
+qmake ../mibAutopilot/
+make
+make install
+cd ../..
+
 echo "Build Server Starter ... "
 cd ./ServerLauncher/build/
 qmake ../ServerLauncher/

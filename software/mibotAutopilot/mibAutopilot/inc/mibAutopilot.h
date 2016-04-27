@@ -33,6 +33,8 @@ private slots:
     void onDriverTimer();
     void onStateTimer();
 
+    void onGpsData(GPSData);
+
 private:
     JSONProtocol protocol;
     void tryRemoveCoruptedJSONProtocolData();
@@ -41,7 +43,7 @@ private:
     GPSSensor * _gpsSensor;
     QTimer *_watch_dog_timer;
     QTimer *_driver_update_timer;
-    QTimer *_state_timer;
+    QTimer *_state_update_timer;
     bool _watchdog_state;
 
     AutopilotSettings * _autopilotSettings;
@@ -51,32 +53,42 @@ private:
     AbstractDriveModel * _model;
     DrivingState * _state;
 
-    QElapsedTimer _driver_update_stopwatch;
-
-    qreal getDistace();
-    qreal getRelativeAngle();
-    QPointF gpsPosition();
-    qreal gpsCource();
-
     QPointF _target_location;
     int _target_id;
+
     void updateAutopilot();
 
     void setTarget(QPointF p, int id);
 
-    bool _autopilot_enabled;
-    void enableAutopilot();
-    void disableAutopilot();
-
-    void driveForward();
-    void driveLeft();
-    void driveRight();
-    void stopDrive();
-    void driveFinished();
-
     void sendStatusMessage();
     bool isGpsSignalValid();
     bool _finished;
+
+    QList<GPSData> _gps_data;
+
+    enum AP_STATE {DISABLED = 0, DRIVE_FORWARD = 1, DRIVE_LEFT = 2, DRIVE_RIGHT = 3, WAIT_FOR_GPS_DATA = 4};
+    AP_STATE _ap_state;
+    bool _gps_data_recived;
+
+    void enableAutopilot();
+    void disableAutopilot();
+    void updateMotors();
+    void updateAutoPilotState();
+    void updateTargetState();
+
+    void setWaitForGpsState();
+    void setTurningState();
+    void setForwardState();
+
+    qreal getDistace();
+    qreal calcTurnData();
+    qreal getRelativeAngleTo(qreal ar, QPointF gp);
+
+    void setMotors(bool left, bool right);
+
+    qreal _time_factor;
+    qreal _angleToTurn;
+    QElapsedTimer _state_timer;
 };
 
 }

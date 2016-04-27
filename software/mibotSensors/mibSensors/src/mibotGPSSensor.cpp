@@ -117,5 +117,8 @@ void GPSSensor::parseData(QString line)
 {
     QMutexLocker locker(&_mutex);
     if(_gps_data_parser.Parse(line))
+    {
         _gps_data = _gps_data_parser.GpsData();
+        emit onNewGpsData(_gps_data);
+    }
 }
