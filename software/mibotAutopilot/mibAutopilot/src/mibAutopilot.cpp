@@ -283,22 +283,10 @@ qreal Autopilot::getRelativeAngleTo(qreal ar, QPointF gp)
 
 qreal Autopilot::getDistace()
 {
-
     QPointF gps_pos = QPointF(_gpsSensor->Readings().position.longitude,
             _gpsSensor->Readings().position.latitude);
-
     QPointF r = _target_location - gps_pos;
-    qreal d = sqrt(pow(r.x(),2) + pow(r.y(),2));
-
-    LOG_DEBUG(QString("the dist: (%1, %2) - (%3, %4) = (%5, %6)")
-              .arg(_target_location.x())
-              .arg(_target_location.y())
-              .arg(gps_pos.x())
-              .arg(gps_pos.y())
-              .arg(r.x())
-              .arg(r.y()));
-
-    return d;
+    return sqrt(pow(r.x(),2) + pow(r.y(),2));
 }
 
 

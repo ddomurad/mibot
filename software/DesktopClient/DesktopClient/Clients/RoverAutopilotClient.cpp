@@ -29,7 +29,7 @@ void RoverAutopilotClient::onData(QByteArray data)
 
 void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable)
 {
-    SendData(QString("{\"autopilot_enabled\":%1,\"gps_point\":[%2,%3],\"point_id\":%4}")
+    SendData(QString("{\"autopilot_enabled\":%1,\"gps_pos\":[%2,%3],\"point_id\":%4}")
              .arg(enable ? "true" : "false")
              .arg(target.x())
              .arg(target.y())
