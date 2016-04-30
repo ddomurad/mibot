@@ -10,8 +10,9 @@ int main(int argc, char *argv[])
 {
 
 
-    QPointF p1 = QPointF(19.9162,50.063);
-    QPointF p2 = QPointF(50.063,19.9162);
+    QPointF p1 = QPointF(19.8332, 50.0871);
+
+    QPointF p2 = QPointF(50.0662, 19.9173 );
 
 
     QPointF r = p1- p2;

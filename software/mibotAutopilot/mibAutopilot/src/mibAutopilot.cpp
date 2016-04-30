@@ -283,11 +283,16 @@ qreal Autopilot::getRelativeAngleTo(qreal ar, QPointF gp)
 
 qreal Autopilot::getDistace()
 {
+
     QPointF gps_pos = QPointF(_gpsSensor->Readings().position.longitude,
             _gpsSensor->Readings().position.latitude);
 
     QPointF r = _target_location - gps_pos;
-    return sqrt(pow(r.x(),2) + pow(r.y(),2));
+    qreal d = sqrt(pow(r.x(),2) + pow(r.y(),2));
+
+    LOG_DEBUG(QString("the dist: %1").arg(d));
+
+    return d;
 }
 
 
@@ -437,15 +442,15 @@ void Autopilot::setTurningState()
         return;
     }else
     {
-        if(_angleToTurn < 0)
+        if(_angleToTurn > 0)
         {
             _ap_state = Autopilot::DRIVE_LEFT;
-            LOG_DEBUG( QString("Set TurnLeftState: %f").arg(_angleToTurn));
+            LOG_DEBUG( QString("Set TurnLeftState: %1").arg(_angleToTurn));
         }
         else
         {
             _ap_state = Autopilot::DRIVE_RIGHT;
-            LOG_DEBUG( QString("Set TurnRightState: %f").arg(_angleToTurn));
+            LOG_DEBUG( QString("Set TurnRightState: %1").arg(_angleToTurn));
         }
     }
 
