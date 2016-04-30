@@ -16,10 +16,13 @@ public:
 
 private slots:
     void onSensorData(RoverSensors);
+    void onUpdateImter();
 
 private:
     OSMWidget * _osm;
     OSMRoute *_route;
+    OSMRoute *_active_router;
+    QTimer * _update_timer;
 };
 
 #endif // GPSPREVIEWFORM_H

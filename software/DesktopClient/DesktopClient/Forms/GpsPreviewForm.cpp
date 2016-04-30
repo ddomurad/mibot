@@ -1,6 +1,7 @@
 #include "GpsPreviewForm.h"
 #include <QGridLayout>
 #include "Settings/AppSettings.h"
+#include "Other/TrackProvider.h"
 
 GpsPreviewForm::GpsPreviewForm(QWidget *parent) :
     QWidget(parent)
@@ -34,6 +35,10 @@ GpsPreviewForm::GpsPreviewForm(QWidget *parent) :
     _route->getMarker(0)->type = OSMMarkerType::Triangle3;
     _route->editable = false;
     _route->stdFirstMarkerType = OSMMarkerType::Triangle3;
+
+    _update_timer = new QTimer(this);
+    connect(_update_timer, SIGNAL(timeout()), this, SLOT(onUpdateImter()));
+    _update_timer->start(1000);
 }
 
 GpsPreviewForm::~GpsPreviewForm()
@@ -46,4 +51,25 @@ void GpsPreviewForm::onSensorData(RoverSensors sensor)
     _route->getMarker(0)->possition = pos;
     _route->getMarker(0)->rotate = sensor.gpsSensors.course;
     _osm->centreGPSPossition(pos);
+}
+
+void GpsPreviewForm::onUpdateImter()
+{
+    OSMRoute * route = TrackProvider::SelectedRoute();
+    QList<OSMRoute> * routes = _osm->getRoutes();
+
+    while(routes->count() > 1)
+        routes->removeAt(1);
+
+    if(route != nullptr)
+    {
+        route->editable = false;
+        routes->push_back(*route);
+        if(TrackProvider::ActivePoint() != nullptr)
+        {
+            int id = TrackProvider::ActivePointId();
+
+            _osm->setTargetMarker(&((*routes)[1]).route[id]);
+        }
+    }
 }

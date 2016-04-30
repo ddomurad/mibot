@@ -445,12 +445,13 @@ void OSMWidget::renderMarker(QPainter &painter, OSMMarker *m)
     painter.rotate(m->rotate);
 
     qreal marker_size = m->size;
-    if(m == _selectedMarker)
+    if(m == _selectedMarker || m == _targetMarker)
     {
         painter.setPen( m->penWhenSelected );
         painter.setBrush( m->bgBrushWhenSelected );
         marker_size = m->sizeWhenSelected;
-    }else
+    }
+    else
     {
         painter.setPen( m->pen );
         painter.setBrush( m->bgBrush );
@@ -788,6 +789,11 @@ void OSMWidget::setMarkerEdit(OSMMarker *marker)
     _editidMarker = marker;
 }
 
+void OSMWidget::setTargetMarker(OSMMarker *marker)
+{
+    _targetMarker = marker;
+}
+
 void OSMWidget::removeRoute(int index)
 {
     _routes.removeAt( index );
@@ -923,6 +929,11 @@ OSMRoute *OSMWidget::getRoute(QString name)
             return &_routes[i];
 
     return nullptr;
+}
+
+QList<OSMRoute> *OSMWidget::getRoutes()
+{
+    return &_routes;
 }
 
 int OSMWidget::getRouteCount()

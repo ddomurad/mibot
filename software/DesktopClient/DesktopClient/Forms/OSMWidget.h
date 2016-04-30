@@ -102,6 +102,7 @@ public:
 
     OSMRoute *getRoute(int index);
     OSMRoute *getRoute(QString name);
+    QList<OSMRoute> *getRoutes();
     int       getRouteCount();
 
     QPoint widgetCenter();
@@ -119,6 +120,8 @@ public:
     void addMarkerMenu(qint32 id, QString text);
 
     void setMarkerEdit(OSMMarker * marker);
+    void setTargetMarker(OSMMarker * marker);
+
 
     void removeRoute(int index);
     void removeRoute(QString name);
@@ -224,7 +227,9 @@ private:
     QList<OSMMenuItem> _markerMenu;
 
     OSMMarker * _selectedMarker;
+    OSMMarker * _targetMarker;
     OSMRoute * _selectedRoute;
+
 
     OSMMarker  * _editidMarker;
 

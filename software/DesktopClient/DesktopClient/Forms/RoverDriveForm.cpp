@@ -181,6 +181,9 @@ void RoverDriveForm::onAutopilotUpdate(AutopilotState state)
 {
     ui->lineEdit_cd->setText(QString::number(state.angle));
     ui->lineEdit_dist->setText(QString::number(state.dist));
+
+    if(state.arived_at != -1 && ui->pushButton_auto->isChecked())
+        on_spinBox_active_point_valueChanged(state.arived_at + 1);
 }
 
 void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
