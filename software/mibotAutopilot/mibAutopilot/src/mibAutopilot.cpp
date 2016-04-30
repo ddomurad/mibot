@@ -290,7 +290,13 @@ qreal Autopilot::getDistace()
     QPointF r = _target_location - gps_pos;
     qreal d = sqrt(pow(r.x(),2) + pow(r.y(),2));
 
-    LOG_DEBUG(QString("the dist: %1").arg(d));
+    LOG_DEBUG(QString("the dist: (%1, %2) - (%3, %4) = (%5, %6)")
+              .arg(_target_location.x())
+              .arg(_target_location.y())
+              .arg(gps_pos.x())
+              .arg(gps_pos.y())
+              .arg(r.x())
+              .arg(r.y()));
 
     return d;
 }
