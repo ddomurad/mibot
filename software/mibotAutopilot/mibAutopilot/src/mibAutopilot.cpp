@@ -328,9 +328,13 @@ void Autopilot::enableAutopilot()
 
 void Autopilot::disableAutopilot()
 {
-    _ap_state = Autopilot::DISABLED;
+    if(_ap_state != Autopilot::DISABLED)
+    {
+        _ap_state = Autopilot::DISABLED;
+        LOG_DEBUG("Auto pilot disable");
+    }
+
     setMotors(false, false);
-    LOG_DEBUG("Auto pilot disable");
 }
 
 void Autopilot::updateMotors()
