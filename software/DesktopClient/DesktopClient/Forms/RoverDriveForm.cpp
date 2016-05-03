@@ -27,6 +27,7 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
     connect(sensorClient, SIGNAL(newData(RoverSensors)), this, SLOT(onSensorsUpdate(RoverSensors)));
 
     _run_on_autopilot = false;
+    _autopilot_break = true;
 }
 
 RoverDriveForm::~RoverDriveForm()
@@ -40,13 +41,15 @@ void RoverDriveForm::on_checkBox_toggled(bool checked)
     {
         _run_on_autopilot = ui->comboBox_drive_type->currentText() != "Manual";
         UpdateSettings();
+
+        _js->Start(_device_path);
+
         if(_run_on_autopilot)
         {
             _timer->start(200);
         }else
         {
             _timer->start(_update_ms);
-            _js->Start(_device_path);
         }
     }else
     {
@@ -131,10 +134,24 @@ void RoverDriveForm::updateAutopilot()
         return;
     }
 
+    bool turbo_state = _js->btn[_turbo_btn];
+    bool brake_state = _js->btn[_brake_btn];
+
+    if(brake_state)
+        setAutopilotBreak(true);
+    else if(turbo_state)
+        setAutopilotBreak(false);
+
     RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(
                 p->possition,
                 TrackProvider::ActivePointId(),
-                true);
+                !_autopilot_break);
+}
+
+void RoverDriveForm::setAutopilotBreak(bool state)
+{
+    _autopilot_break = state;
+
 }
 
 void RoverDriveForm::on_pushButton_next_point_clicked()
@@ -215,4 +232,9 @@ void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
         _timer->stop();
         _js->Stop();
     }
+}
+
+void RoverDriveForm::on_checkBox_clicked(bool checked)
+{
+    _autopilot_break = checked;
 }
