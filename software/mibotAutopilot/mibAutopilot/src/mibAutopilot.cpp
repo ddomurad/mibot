@@ -38,42 +38,6 @@ Autopilot::~Autopilot()
         _driveSettings->Release();
 }
 
-void Autopilot::SetupTest(AutopilotSettings *autopilotSettings, DriveConfigSettings *driveSettings, GPSSensor *gpsSensor)
-{
-    _autopilotSettings = autopilotSettings;
-    _driveSettings = driveSettings;
-    _gpsSensor = gpsSensor;
-
-    _time_factor = _autopilotSettings->baseTimeFactor->value;
-    connect(_gpsSensor, SIGNAL(onNewGpsData(GPSData)), this, SLOT(onGpsData(GPSData)));
-
-    gpio()->Init();
-    gpio()->DisableAllPwms();
-    gpio()->SetPinMode( _driveSettings->leftAPin->value, PinMode::Output );
-    gpio()->SetPinMode( _driveSettings->leftBPin->value, PinMode::Output );
-    gpio()->SetPinMode( _driveSettings->rightAPin->value, PinMode::Output );
-    gpio()->SetPinMode( _driveSettings->rightBPin->value, PinMode::Output );
-
-    if(!gpio()->EnablePwm( _driveSettings->leftPwmPin->value, true) ||
-        !gpio()->EnablePwm( _driveSettings->rightPwmPin->value, true))
-    {
-            LOG_ERROR("Initializing PWM error.");
-    }
-
-    gpio()->SetPwmValue( _driveSettings->leftPwmPin->value, 0 );
-    gpio()->SetPwmValue( _driveSettings->rightPwmPin->value, 0 );
-
-    _state = new DrivingState();
-    _model = new VehicleDriveModel();
-
-    _model->Init(
-                new WheelDriver( _driveSettings->leftAPin->value, _driveSettings->leftBPin->value, _driveSettings->leftPwmPin->value, gpio() ),
-                new WheelDriver( _driveSettings->rightAPin->value, _driveSettings->rightBPin->value, _driveSettings->rightPwmPin->value, gpio() ),
-                _state );
-
-    _state->fake_gpio = _driveSettings->useFakeGPIO->value ? 0x01 : 0x00;
-}
-
 void Autopilot::processNewData(QByteArray data)
 {
     protocol.PushData(data);
@@ -295,14 +259,15 @@ void Autopilot::updateAutopilot()
     if(!_autopilotSettings->dynamicTimeFactor->value)
         _time_factor = _autopilotSettings->baseTimeFactor->value;
 
+    if(_ap_state == Autopilot::DISABLED)
+        return;
+
     if(!isGpsSignalValid())
     {
         LOG_WARNING("Gps data invalid");
         disableAutopilot();
-    }
-
-    if(_ap_state == Autopilot::DISABLED)
         return;
+    }
 
     updateAutoPilotState();
     updateMotors();
@@ -365,7 +330,7 @@ void Autopilot::disableAutopilot()
 {
     _ap_state = Autopilot::DISABLED;
     setMotors(false, false);
-    LOG_DEBUG("Auto pilot disables");
+    LOG_DEBUG("Auto pilot disable");
 }
 
 void Autopilot::updateMotors()

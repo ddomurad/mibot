@@ -35,29 +35,6 @@ RoverDriveForm::~RoverDriveForm()
     delete ui;
 }
 
-void RoverDriveForm::on_checkBox_toggled(bool checked)
-{
-    if(checked)
-    {
-        _run_on_autopilot = ui->comboBox_drive_type->currentText() != "Manual";
-        UpdateSettings();
-
-        _js->Start(_device_path);
-
-        if(_run_on_autopilot)
-        {
-            _timer->start(200);
-        }else
-        {
-            _timer->start(_update_ms);
-        }
-    }else
-    {
-        _timer->stop();
-        _js->Stop();
-    }
-}
-
 void RoverDriveForm::onUpdateDrive()
 {
     if(!_run_on_autopilot)
@@ -127,10 +104,10 @@ void RoverDriveForm::updateManual()
 
 void RoverDriveForm::updateAutopilot()
 {
-    OSMMarker * p = TrackProvider::ActivePoint();
-    if(p == nullptr)
+    if(!RoverClientsProvider::GetRoverAutopilotClient()->IsConnected())
     {
-        RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(false);
+        LoggerDialog::get()->Warning("Update autopilot", "Autopilot client not connected.");
+        ui->checkBox_drive->setChecked(false);
         return;
     }
 
@@ -142,6 +119,13 @@ void RoverDriveForm::updateAutopilot()
     else if(turbo_state)
         setAutopilotBreak(false);
 
+    OSMMarker * p = TrackProvider::ActivePoint();
+    if(p == nullptr)
+    {
+        RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(false);
+        return;
+    }
+
     RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(
                 p->possition,
                 TrackProvider::ActivePointId(),
@@ -151,7 +135,7 @@ void RoverDriveForm::updateAutopilot()
 void RoverDriveForm::setAutopilotBreak(bool state)
 {
     _autopilot_break = state;
-
+    ui->checkBox->setChecked(state);
 }
 
 void RoverDriveForm::on_pushButton_next_point_clicked()
@@ -218,6 +202,8 @@ void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
     {
         _run_on_autopilot = ui->comboBox_drive_type->currentText() != "Manual";
         UpdateSettings();
+        _js->Start(_device_path);
+
         if(_run_on_autopilot)
         {
             _timer->start(400);
@@ -225,7 +211,6 @@ void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
         {
 
             _timer->start(_update_ms);
-            _js->Start(_device_path);
         }
     }else
     {

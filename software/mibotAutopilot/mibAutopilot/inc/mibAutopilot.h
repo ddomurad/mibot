@@ -23,7 +23,6 @@ public:
     Autopilot(Connection *connection);
     ~Autopilot();
 
-    void SetupTest(AutopilotSettings *autopilotSettings, DriveConfigSettings *driveSettings, GPSSensor *gpsSensor);
     // AbstractSocketStrategy interface
 protected:
     void processNewData(QByteArray data);

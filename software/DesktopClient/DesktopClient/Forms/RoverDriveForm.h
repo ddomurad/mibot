@@ -20,8 +20,6 @@ public:
     ~RoverDriveForm();
 
 private slots:
-    void on_checkBox_toggled(bool checked);
-
     void onUpdateDrive();
 
     void on_pushButton_next_point_clicked();
