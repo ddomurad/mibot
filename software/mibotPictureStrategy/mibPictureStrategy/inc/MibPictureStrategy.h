@@ -33,4 +33,6 @@ private:
 };
 
 }
+
+extern "C" mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection);
 #endif // MIBPICTURESTRATEGY_H

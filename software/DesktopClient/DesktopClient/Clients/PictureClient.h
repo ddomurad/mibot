@@ -1,10 +1,11 @@
-#ifndef VIDEOSERVICECLIENT_H
-#define VIDEOSERVICECLIENT_H
+#ifndef PICTURE_CLIENT_H
+#define PICTURE_CLIENT_H
 
 #include "Socket.h"
 #include "RoverClient.h"
 #include "mibJSONProtocol.h"
 #include <QObject>
+
 
 class PictureClient : public RoverClient
 {

@@ -37,6 +37,14 @@ RoverAutopilotClient *RoverClientsProvider::GetRoverAutopilotClient()
     return roverAutopilotClient;
 }
 
+PictureClient *RoverClientsProvider::GetPictureClient()
+{
+    if(pictureClient == nullptr)
+        pictureClient = new PictureClient();
+
+    return pictureClient;
+}
+
 RoverClientsProvider::~RoverClientsProvider()
 {
 }
@@ -45,3 +53,4 @@ RoverSensorClient * RoverClientsProvider::roverSensorClient = nullptr;
 RoverDriveClient * RoverClientsProvider::roverDriveClient = nullptr;
 VideoServiceClient * RoverClientsProvider::videoServerClient = nullptr;
 RoverAutopilotClient * RoverClientsProvider::roverAutopilotClient = nullptr;
+PictureClient * RoverClientsProvider::pictureClient = nullptr;

@@ -15,6 +15,11 @@ public:
     explicit PictureViewForm(QWidget *parent = 0);
     ~PictureViewForm();
 
+public slots:
+    void onImage(QImage * image);
+private slots:
+    void on_get_clicked();
+
 private:
     Ui::PictureViewForm *ui;
 };

@@ -5,6 +5,7 @@
 #include "RoverDriveClient.h"
 #include "VideoServiceClient.h"
 #include "RoverAutopilotClient.h"
+#include "PictureClient.h"
 
 class RoverClientsProvider
 {
@@ -14,6 +15,7 @@ public:
     static RoverDriveClient * GetRoverDriveClient();
     static VideoServiceClient * GetVideoServiceClient();
     static RoverAutopilotClient * GetRoverAutopilotClient();
+    static PictureClient * GetPictureClient();
 
     ~RoverClientsProvider();
 private:
@@ -23,6 +25,7 @@ private:
     static RoverDriveClient * roverDriveClient;
     static VideoServiceClient * videoServerClient;
     static RoverAutopilotClient *roverAutopilotClient;
+    static PictureClient * pictureClient;
 };
 
 #endif // ROVERCLIENTSPROVIDER_H

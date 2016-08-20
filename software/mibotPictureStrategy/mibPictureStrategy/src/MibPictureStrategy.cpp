@@ -117,3 +117,8 @@ bool PictureStrategy::takePicture(int w, int h, int q, QString path)
     system(systemCommand.toStdString().c_str());
     return true;
 }
+
+mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)
+{
+    return new PictureStrategy(connection);
+}
