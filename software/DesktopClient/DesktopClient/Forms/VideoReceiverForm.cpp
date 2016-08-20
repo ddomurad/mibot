@@ -192,18 +192,25 @@ void VideoReceiverForm::ILog(QString msg) { Log("INFO", msg); }
 void VideoReceiverForm::WLog(QString msg) { Log("WARNING", msg); }
 void VideoReceiverForm::ELog(QString msg) { Log("ERROR", msg); _shall_run = false; }
 
-void VideoReceiverForm::createSwsContext()
+bool VideoReceiverForm::createSwsContext()
 {
+    int rgbPictureBytes = avpicture_get_size(AV_PIX_FMT_RGB32, context->coded_width, context->coded_height);
+
     pictureRGB = av_frame_alloc();
-            //avcodec_alloc_frame();
+    //avcodec_alloc_frame();
 
-    int rgbPictureBytes = avpicture_get_size(AV_PIX_FMT_RGB32, context->width, context->height);
     rgbBuffer = new unsigned char[rgbPictureBytes];
-    avpicture_fill( (AVPicture*) pictureRGB, rgbBuffer, AV_PIX_FMT_RGB32, context->width, context->height);
+    avpicture_fill( (AVPicture*) pictureRGB, rgbBuffer, AV_PIX_FMT_RGB32, context->coded_width, context->coded_height);
 
-    swsContext = sws_getContext(context->width, context->height, context->pix_fmt,
-                                context->width, context->height,AV_PIX_FMT_RGB32, SWS_BILINEAR,
+//    swsContext = sws_getContext(context->coded_width, context->coded_height, context->pix_fmt,
+//                                context->coded_width, context->coded_height,AV_PIX_FMT_RGB32, SWS_BILINEAR,
+//                                NULL,NULL, NULL);
+
+    swsContext = sws_getContext(context->coded_width, context->coded_height, context->sw_pix_fmt,
+                                context->coded_width, context->coded_height,AV_PIX_FMT_RGB32, SWS_BILINEAR,
                                 NULL,NULL, NULL);
+
+    return true;
 }
 
 void VideoReceiverForm::startDecoder()
@@ -230,6 +237,7 @@ void VideoReceiverForm::startDecoder()
     picture = av_frame_alloc();
         //avcodec_alloc_frame();
 
+    //parser = av_parser_init(CODEC_ID_H264);
     parser = av_parser_init(AV_CODEC_ID_H264);
 
     CHECK(parser);
@@ -336,7 +344,8 @@ void VideoReceiverForm::updateFrame(AVPacket *packet)
     _fps_frames++;
     ui->label_frame_cnt->setText( QString::number(_fps_frames, 10) );
     if(swsContext == nullptr)
-        createSwsContext();
+        if(!createSwsContext())
+            return;
 
     sws_scale(swsContext, picture->data, picture->linesize, 0, picture->height,
               pictureRGB->data, pictureRGB->linesize);
@@ -346,7 +355,7 @@ void VideoReceiverForm::updateFrame(AVPacket *packet)
 
 void VideoReceiverForm::displayPicture()
 {
-    QImage image = QImage(rgbBuffer, context->width, context->height, QImage::Format_RGB32);
+    QImage image = QImage(rgbBuffer, context->coded_width, context->coded_height, QImage::Format_RGB32);
     ui->label_image->setPixmap(QPixmap::fromImage(image));
 }
 

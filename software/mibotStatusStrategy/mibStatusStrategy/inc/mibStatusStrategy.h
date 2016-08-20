@@ -27,6 +27,7 @@ private slots:
 protected:
     void processNewData(QByteArray);
     bool init();
+
 private:
     JSONProtocol    _json_protocol;
 

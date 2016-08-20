@@ -12,7 +12,7 @@ TARGET = DesktopClient
 TEMPLATE = app
 CONFIG += c++11
 
-#DEFINES += SHOW_SPLASH
+DEFINES += SHOW_SPLASH
 
 SOURCES += main.cpp\
         ./Forms/MainWindow.cpp \
@@ -45,6 +45,7 @@ SOURCES += main.cpp\
     Forms/Plots/LinePlotForm.cpp \
     Forms/VideoStreamerCtrlForm.cpp \
     Clients/VideoServiceClient.cpp \
+    Clients/PictureClient.cpp \
     Forms/VideoReceiverForm.cpp \
     Forms/GpsPreviewForm.cpp \
     Forms/RecordingForm.cpp \
@@ -52,7 +53,8 @@ SOURCES += main.cpp\
     Other/Replayer.cpp \
     Forms/SettingsEditorForm.cpp \
     Other/TrackProvider.cpp \
-    Clients/RoverAutopilotClient.cpp
+    Clients/RoverAutopilotClient.cpp \
+    Forms/PictureViewForm.cpp
 
 HEADERS  += ./Forms/MainWindow.h \
     ./Forms/OSMWidget.h \
@@ -84,6 +86,7 @@ HEADERS  += ./Forms/MainWindow.h \
     Forms/Plots/LinePlotForm.h \
     Forms/VideoStreamerCtrlForm.h \
     Clients/VideoServiceClient.h \
+    Clients/PictureClient.h \
     Forms/VideoReceiverForm.h \
     Forms/GpsPreviewForm.h \
     Forms/RecordingForm.h \
@@ -91,7 +94,8 @@ HEADERS  += ./Forms/MainWindow.h \
     Other/Replayer.h \
     Forms/SettingsEditorForm.h \
     Other/TrackProvider.h \
-    Clients/RoverAutopilotClient.h
+    Clients/RoverAutopilotClient.h \
+    Forms/PictureViewForm.h
 
 FORMS    += ./Forms/MainWindow.ui \
     ./Forms/SettingsForm.ui \
@@ -106,7 +110,8 @@ FORMS    += ./Forms/MainWindow.ui \
     Forms/VideoStreamerCtrlForm.ui \
     Forms/VideoReceiverForm.ui \
     Forms/RecordingForm.ui \
-    Forms/SettingsEditorForm.ui
+    Forms/SettingsEditorForm.ui \
+    Forms/PictureViewForm.ui
 
 RESOURCES += \
     resources.qrc

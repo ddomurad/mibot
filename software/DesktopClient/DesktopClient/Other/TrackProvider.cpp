@@ -1,4 +1,5 @@
 #include "TrackProvider.h"
+#include <Settings/AppSettings.h>
 
 TrackProvider::TrackProvider()
 {
@@ -28,8 +29,8 @@ QStringList TrackProvider::GetTracks()
 void TrackProvider::LoadRoutesFromFile()
 {
     removeAllRoutes();
-
-    QFile file("./routes");
+    QString routes_file = AppSettings::GetKey(AppSettings::MapEdit_Routes_File).toString();
+    QFile file(routes_file);
     if(!file.open(QIODevice::ReadOnly))
         return;
 

@@ -76,7 +76,7 @@ void MainWindow::onShowCtrlPanel()
 
 void MainWindow::closeCurrentWidget()
 {
-    if(ctrlWidget != nullptr)
+        if(ctrlWidget != nullptr)
         ctrlWidget->setVisible(false);
     if(currentWidget != nullptr)
     {

@@ -169,7 +169,8 @@ void RouteEditorForm::saveLocationsToFile()
 
     QJsonDocument doc(finalObj);
 
-    QFile file("./locations");
+
+    QFile file(getLocationsFilePath());
     if(!file.open(QIODevice::WriteOnly))
         return;
 
@@ -180,7 +181,7 @@ void RouteEditorForm::saveLocationsToFile()
 void RouteEditorForm::loadLocationsFromFile()
 {
     _locations.clear();
-    QFile file("./locations");
+    QFile file(getLocationsFilePath());
     if(!file.open(QIODevice::ReadOnly))
         return;
 
@@ -247,7 +248,7 @@ void RouteEditorForm::removeLocation(QString name)
 
 void RouteEditorForm::saveRoutesToFile()
 {
-    QFile file("./routes");
+    QFile file(getRoutestFilePath());
     if(!file.open(QIODevice::WriteOnly))
         return;
 
@@ -287,7 +288,7 @@ void RouteEditorForm::loadRoutesFromFile()
 {
     ui->widget->removeAllRoutes();
 
-    QFile file("./routes");
+    QFile file(getRoutestFilePath());
     if(!file.open(QIODevice::ReadOnly))
         return;
 
@@ -362,6 +363,16 @@ void RouteEditorForm::goToLocation(QString name)
             break;
         }
     }
+}
+
+QString RouteEditorForm::getLocationsFilePath()
+{
+    return AppSettings::GetKey(AppSettings::MapEdit_Locations_File).toString();
+}
+
+QString RouteEditorForm::getRoutestFilePath()
+{
+    return AppSettings::GetKey(AppSettings::MapEdit_Routes_File).toString();
 }
 
 void RouteEditorForm::on_listWidget_locations_doubleClicked(const QModelIndex &index)

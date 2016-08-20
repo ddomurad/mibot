@@ -11,7 +11,6 @@ TARGET = mibStatusStrategy
 TEMPLATE = lib
 
 DEFINES += MIBSTATUSSTRATEGY_LIBRARY
-
 CONFIG += c++11
 
 INCLUDEPATH += ../../mibotUtils/mibUtils/inc

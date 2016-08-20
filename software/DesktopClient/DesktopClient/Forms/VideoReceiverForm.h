@@ -70,7 +70,7 @@ private:
 
     SwsContext *swsContext;
 
-    void createSwsContext();
+    bool createSwsContext();
     void startDecoder();
     void stopDecoder();
     void updateDecoder();

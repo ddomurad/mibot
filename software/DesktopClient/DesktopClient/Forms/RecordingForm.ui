@@ -163,61 +163,6 @@
           <string>Replay controll:</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="1" column="3" colspan="2">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Replay length [min]:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Time line:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="5">
-           <widget class="QSlider" name="horizontalSlider">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_replay_length">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QPushButton" name="pushButton_resume">
-            <property name="text">
-             <string>Replay</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Replay speed:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
@@ -225,21 +170,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" colspan="2">
-           <widget class="QLabel" name="label_current_time">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1" colspan="2">
-           <widget class="QPushButton" name="pushButton_pause">
-            <property name="text">
-             <string>Pause</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="3" colspan="2">
+          <item row="1" column="3" colspan="2">
            <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -252,34 +183,26 @@
             </property>
            </spacer>
           </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_replay_speed">
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>32.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
+          <item row="1" column="1" colspan="2">
+           <widget class="QPushButton" name="pushButton_pause">
+            <property name="text">
+             <string>Pause</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="3" colspan="2">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+          <item row="0" column="1" colspan="2">
+           <widget class="QLabel" name="label_current_time">
+            <property name="text">
+             <string>TextLabel</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>489</width>
-              <height>20</height>
-             </size>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButton_resume">
+            <property name="text">
+             <string>Replay</string>
             </property>
-           </spacer>
+           </widget>
           </item>
          </layout>
         </widget>

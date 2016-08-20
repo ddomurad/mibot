@@ -61,6 +61,9 @@ private:
 
     void routeSelected(int row);
     void goToLocation(QString name);
+
+    QString getLocationsFilePath();
+    QString getRoutestFilePath();
 };
 
 #endif // ROUTEEDITORFORM_H

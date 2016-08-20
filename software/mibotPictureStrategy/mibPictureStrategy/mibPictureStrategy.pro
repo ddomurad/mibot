@@ -12,13 +12,24 @@ TARGET = mibPictureStrategy
 TEMPLATE = lib
 
 DEFINES += MIBPICTURESTRATEGY_LIBRARY
+CONFIG += c++11
 
-SOURCES += MibPictureStrategy.cpp
+INCLUDEPATH += ../../mibotUtils/mibUtils/inc
+INCLUDEPATH += ../../mibotSettingsClient/mibSettingsClient/inc
+INCLUDEPATH += ../../mibotServer/mibServer/inc
 
-HEADERS += MibPictureStrategy.h\
-        mibpicturestrategy_global.h
+LIBS += /usr/local/lib/mi_bot/libmibUtils.so
+LIBS += /usr/local/lib/mi_bot/libmibSettingsClient.so
+LIBS += /usr/local/lib/mi_bot/libmibServer.so
+
+
+SOURCES += ./src/MibPictureStrategy.cpp
+
+HEADERS += ./inc/MibPictureStrategy.h\
+        ./inc/mibPictureStrategyGlobal.h
+
 
 unix {
-    target.path = /usr/lib
+    target.path = /usr/local/lib/mi_bot
     INSTALLS += target
 }

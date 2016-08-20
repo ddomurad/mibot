@@ -11,8 +11,13 @@ int main(int argc, char *argv[])
     QPixmap splashPixMap(":/other/resources/rover.png");
     QSplashScreen splash(splashPixMap);
     splash.show();
-    a.processEvents();
-    QThread::sleep(5);
+
+    for(int i=0;i<5;i++)
+    {
+        a.processEvents();
+        QThread::sleep(1);
+    }
+
     splash.close();
 #endif //SHOW_SPLASH
 
