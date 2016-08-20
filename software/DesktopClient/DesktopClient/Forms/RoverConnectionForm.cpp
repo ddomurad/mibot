@@ -26,11 +26,13 @@ void RoverConnectionForm::on_update()
     bool driveConnected = RoverClientsProvider::GetRoverDriveClient()->IsConnected();
     bool videoConnected = RoverClientsProvider::GetVideoServiceClient()->IsConnected();
     bool autopilotConnected = RoverClientsProvider::GetRoverAutopilotClient()->IsConnected();
+    bool pictureConnected = RoverClientsProvider::GetPictureClient()->IsConnected();
 
     ui->label_sensors_state->setText( sensorsConnected ? "connected" : "disconnected");
     ui->label_drive_state->setText( driveConnected ? "connected" : "disconnected");
     ui->label_video_state->setText( videoConnected ? "connected" : "disconnected");
     ui->label_autopilot_state->setText( autopilotConnected ? "connected" : "disconnected");
+    ui->label_picture_state->setText( pictureConnected ? "connected" : "disconnected");
 }
 
 
@@ -40,6 +42,7 @@ void RoverConnectionForm::on_pushButton_disconnect_all_clicked()
     RoverClientsProvider::GetRoverDriveClient()->Disconnect();
     RoverClientsProvider::GetVideoServiceClient()->Disconnect();
     RoverClientsProvider::GetRoverAutopilotClient()->Disconnect();
+    RoverClientsProvider::GetPictureClient()->Disconnect();
 }
 
 void RoverConnectionForm::on_pushButton_connect_all_clicked()
@@ -48,6 +51,7 @@ void RoverConnectionForm::on_pushButton_connect_all_clicked()
     RoverClientsProvider::GetRoverDriveClient()->Connect();
     RoverClientsProvider::GetVideoServiceClient()->Connect();
     RoverClientsProvider::GetRoverAutopilotClient()->Connect();
+    RoverClientsProvider::GetPictureClient()->Connect();
 }
 
 void RoverConnectionForm::on_pushButton_disconnect_video_clicked()
@@ -88,4 +92,14 @@ void RoverConnectionForm::on_pushButton_connect_autopilot_clicked()
 void RoverConnectionForm::on_pushButton_disconnect_autopilot_clicked()
 {
     RoverClientsProvider::GetRoverAutopilotClient()->Disconnect();
+}
+
+void RoverConnectionForm::on_pushButton_connect_picture_clicked()
+{
+    RoverClientsProvider::GetPictureClient()->Connect();
+}
+
+void RoverConnectionForm::on_pushButton_disconnect_picture_clicked()
+{
+    RoverClientsProvider::GetPictureClient()->Disconnect();
 }

@@ -32,6 +32,10 @@ private slots:
 
     void on_pushButton_disconnect_autopilot_clicked();
 
+    void on_pushButton_connect_picture_clicked();
+
+    void on_pushButton_disconnect_picture_clicked();
+
 private:
     Ui::RoverConnectionForm *ui;
     QTimer *_updateTimer;

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>390</width>
-    <height>218</height>
+    <height>237</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -46,10 +46,23 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0" rowspan="2">
-          <widget class="QLabel" name="label_3">
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_video_state">
            <property name="text">
-            <string>Drive:</string>
+            <string>unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QPushButton" name="pushButton_connect_video">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>18</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Con.</string>
            </property>
           </widget>
          </item>
@@ -73,8 +86,15 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="3">
-          <widget class="QPushButton" name="pushButton_connect_video">
+         <item row="4" column="1">
+          <widget class="QLabel" name="label_picture_state">
+           <property name="text">
+            <string>unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QPushButton" name="pushButton_connect_picture">
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -86,10 +106,37 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QLabel" name="label_video_state">
+         <item row="5" column="3">
+          <widget class="QPushButton" name="pushButton_connect_autopilot">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>18</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Con.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" rowspan="6">
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="label_autopilot_state">
            <property name="text">
             <string>unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Autopilot:</string>
            </property>
           </widget>
          </item>
@@ -103,6 +150,26 @@
            </property>
            <property name="text">
             <string>Disc.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="4">
+          <widget class="QPushButton" name="pushButton_disconnect_picture">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>18</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Disc.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" rowspan="2">
+          <widget class="QLabel" name="label_drive_state">
+           <property name="text">
+            <string>unknown</string>
            </property>
           </widget>
          </item>
@@ -132,10 +199,30 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" rowspan="2">
-          <widget class="QLabel" name="label_drive_state">
+         <item row="5" column="4">
+          <widget class="QPushButton" name="pushButton_disconnect_autopilot">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>18</height>
+            </size>
+           </property>
            <property name="text">
-            <string>unknown</string>
+            <string>Disc.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Picture:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Drive:</string>
            </property>
           </widget>
          </item>
@@ -149,53 +236,6 @@
            </property>
            <property name="text">
             <string>Con.</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Autopilot:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="label_autopilot_state">
-           <property name="text">
-            <string>unknown</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2" rowspan="5">
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="3">
-          <widget class="QPushButton" name="pushButton_connect_autopilot">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Con.</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="4">
-          <widget class="QPushButton" name="pushButton_disconnect_autopilot">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>18</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Disc.</string>
            </property>
           </widget>
          </item>

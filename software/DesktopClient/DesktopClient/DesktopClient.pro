@@ -12,7 +12,7 @@ TARGET = DesktopClient
 TEMPLATE = app
 CONFIG += c++11
 
-DEFINES += SHOW_SPLASH
+#DEFINES += SHOW_SPLASH
 
 SOURCES += main.cpp\
         ./Forms/MainWindow.cpp \

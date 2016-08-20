@@ -50,6 +50,13 @@
       <string>Display</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="4">
+       <widget class="QToolButton" name="toolButton">
+        <property name="text">
+         <string>Video Receiver</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QToolButton" name="toolButton_sensors">
         <property name="text">
@@ -57,10 +64,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QToolButton" name="toolButton">
+      <item row="0" column="1">
+       <widget class="QToolButton" name="toolButton_plots">
         <property name="text">
-         <string>Video Receiver</string>
+         <string>Plots</string>
         </property>
        </widget>
       </item>
@@ -71,10 +78,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="toolButton_plots">
+      <item row="0" column="3">
+       <widget class="QToolButton" name="toolButton_pict">
         <property name="text">
-         <string>Plots</string>
+         <string>Picture</string>
         </property>
        </widget>
       </item>
