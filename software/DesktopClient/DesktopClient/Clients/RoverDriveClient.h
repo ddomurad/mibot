@@ -22,7 +22,6 @@ protected:
 public:
     bool Connect();
 
-
 };
 
 #endif // ROVERDRIVECLIENT_H

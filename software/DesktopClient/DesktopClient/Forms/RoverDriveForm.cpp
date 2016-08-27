@@ -214,7 +214,7 @@ void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
             }
         }else
         {
-            if(us_brake_cnt>0)
+            if(_us_brake_cnt>0)
                 _us_brake_cnt--;
         }
     }
