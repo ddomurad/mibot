@@ -13,82 +13,155 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Controll</string>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Connection:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_connection">
+        <property name="text">
+         <string>Connection</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Controll</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="toolButton_sound">
         <property name="text">
          <string>Sound</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QToolButton" name="toolButton_drive">
-        <property name="text">
-         <string>Drive</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
+      <item>
        <widget class="QToolButton" name="toolButton_video_controll">
         <property name="text">
          <string>VideoCtrl</string>
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>Display</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="4">
-       <widget class="QToolButton" name="toolButton">
+      <item>
+       <widget class="QToolButton" name="toolButton_drive">
         <property name="text">
-         <string>Video Receiver</string>
+         <string>Drive</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Display</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="toolButton_sensors">
         <property name="text">
          <string>Sensors</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item>
        <widget class="QToolButton" name="toolButton_plots">
         <property name="text">
          <string>Plots</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
+      <item>
        <widget class="QToolButton" name="toolButton_2">
         <property name="text">
          <string>GPS Preview</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
+      <item>
        <widget class="QToolButton" name="toolButton_pict">
         <property name="text">
          <string>Picture</string>
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QToolButton" name="toolButton">
+        <property name="text">
+         <string>Video Receiver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_recorder">
+        <property name="text">
+         <string>Recorder</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="5">
+   <item>
+    <widget class="QMdiArea" name="mdiArea"/>
+   </item>
+   <item>
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -100,41 +173,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Connection</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QToolButton" name="toolButton_connection">
-        <property name="text">
-         <string>Connection</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="10">
-    <widget class="QMdiArea" name="mdiArea"/>
-   </item>
-   <item row="0" column="4">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string>Other</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="QToolButton" name="toolButton_recorder">
-        <property name="text">
-         <string>Recorder</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
    </item>
   </layout>
  </widget>

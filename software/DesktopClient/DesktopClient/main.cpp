@@ -2,11 +2,13 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QSplashScreen>
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
 #ifdef SHOW_SPLASH
     QPixmap splashPixMap(":/other/resources/rover.png");
     QSplashScreen splash(splashPixMap);

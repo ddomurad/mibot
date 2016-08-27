@@ -46,6 +46,7 @@ private slots:
 
     void on_toolButton_pict_clicked();
 
+
 private:
     Ui::CtrlPanelForm *ui;
 
