@@ -112,3 +112,4 @@ QString AppSettings::JS_Swap_Drive = "JS_Swap_Drive";
 QString AppSettings::JS_Swap_Trun = "JS_Swap_Turn";
 
 QString AppSettings::Recording_Store_Dir = "Recording_Store_Dir";
+QString AppSettings::Picture_Store_Dir = "Picture_Store_Dir";

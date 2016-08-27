@@ -120,6 +120,10 @@ private slots:
 
     void on_lineEdit_picture_textChanged(const QString &arg1);
 
+    void on_toolButton_get_picture_Storage_dir_clicked();
+
+    void on_lineEdit_picture_Storage_dir_textChanged(const QString &arg1);
+
 private:
     Ui::SettingsForm *ui;
 

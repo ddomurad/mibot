@@ -42,6 +42,9 @@ private slots:
 
     void on_checkBox_clicked(bool checked);
 
+    void on_checkBox_brake_on_us_toggled(bool checked);
+    void on_spinBox_dist_valueChanged(int arg1);
+
 private:
     void UpdateSettings();
     Ui::RoverDriveForm *ui;
@@ -72,6 +75,10 @@ private:
 
     bool _run_on_autopilot;
     bool _autopilot_break;
+
+    bool _us_brake;
+    int _us_brake_dist;
+    int _us_brake_cnt;
 };
 
 #endif // ROVERDRIVEFORM_H

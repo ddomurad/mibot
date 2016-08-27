@@ -147,6 +147,9 @@ ReplayerClientInterface *Replayer::GetRoverClientByName(QString clientName)
     if(clientName == "RoverAutopilotClient")
         return new ReplayerRoverClientInterface(RoverClientsProvider::GetRoverAutopilotClient());
 
+    if(clientName == "PictureClient")
+        return new ReplayerRoverClientInterface(RoverClientsProvider::GetPictureClient());
+
     if(clientName == "Video")
         return new ReplayerVideoClientInterface();
 

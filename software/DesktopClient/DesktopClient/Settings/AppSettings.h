@@ -53,6 +53,7 @@ public:
     static QString JS_Swap_Trun;
 
     static QString Recording_Store_Dir;
+    static QString Picture_Store_Dir;
 
     ~AppSettings();
     static AppSettings * get();

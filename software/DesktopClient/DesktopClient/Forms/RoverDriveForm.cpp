@@ -5,6 +5,8 @@
 #include "ui_RoverDriveForm.h"
 #include "Other/TrackProvider.h"
 
+#define US_BRAKE_MAX_CNT 5
+
 RoverDriveForm::RoverDriveForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RoverDriveForm),
@@ -14,6 +16,7 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
 
     _timer = new QTimer(this);
     _js = new JsInput(this);
+
     connect(_timer, SIGNAL(timeout()), this, SLOT(onUpdateDrive()));
 
     TrackProvider::LoadRoutesFromFile();
@@ -28,6 +31,10 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
 
     _run_on_autopilot = false;
     _autopilot_break = true;
+
+    _us_brake = false;
+    _us_brake_dist = 100;
+    _us_brake_cnt = 0;
 }
 
 RoverDriveForm::~RoverDriveForm()
@@ -194,6 +201,23 @@ void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
                                 .arg(readings.gpsSensors.latitude));
 
     ui->lineEdit_cc->setText(QString::number(readings.gpsSensors.course));
+
+    if(_us_brake)
+    {
+        if(readings.arduinoSensors.us <= _us_brake_dist)
+        {
+            _us_brake_cnt++;
+            if(_us_brake_cnt >= US_BRAKE_MAX_CNT)
+            {
+                setAutopilotBreak(true);
+                _us_brake_cnt = US_BRAKE_MAX_CNT;
+            }
+        }else
+        {
+            if(us_brake_cnt>0)
+                _us_brake_cnt--;
+        }
+    }
 }
 
 void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
@@ -222,4 +246,15 @@ void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
 void RoverDriveForm::on_checkBox_clicked(bool checked)
 {
     _autopilot_break = checked;
+}
+
+void RoverDriveForm::on_checkBox_brake_on_us_toggled(bool checked)
+{
+    _us_brake = checked;
+}
+
+
+void RoverDriveForm::on_spinBox_dist_valueChanged(int arg1)
+{
+    _us_brake_dist = arg1;
 }

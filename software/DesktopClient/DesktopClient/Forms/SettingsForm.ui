@@ -59,7 +59,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabOpenStreetMap">
       <attribute name="title">
@@ -943,13 +943,32 @@
         <rect>
          <x>20</x>
          <y>90</y>
-         <width>481</width>
-         <height>181</height>
+         <width>341</width>
+         <height>91</height>
         </rect>
        </property>
        <property name="title">
-        <string>Settings client defaults:</string>
+        <string>Picture storage:</string>
        </property>
+       <layout class="QGridLayout" name="gridLayout_15">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_36">
+          <property name="text">
+           <string>Storage dir:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="lineEdit_picture_Storage_dir"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QToolButton" name="toolButton_get_picture_Storage_dir">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </widget>
