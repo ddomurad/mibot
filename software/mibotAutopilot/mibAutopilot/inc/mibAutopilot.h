@@ -59,6 +59,7 @@ private:
     DrivingState * _drive_state;
 
     bool _ap_enabled;
+    bool _invalid_gps_data;
     bool _new_gps_data;
 
     QPointF _ap_target;
