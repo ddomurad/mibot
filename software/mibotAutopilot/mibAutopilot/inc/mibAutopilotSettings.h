@@ -15,11 +15,9 @@ public:
     IntSettingsValue * statuTimerInterval;
     DoubleSettingsValue * maxDistance;
     StringSettingsValue * driveSettings;
-
     DoubleSettingsValue * angleTreshold;
-    DoubleSettingsValue * baseTimeFactor;
-    DoubleSettingsValue * forwardDriveTime;
-    BoolSettingsValue * dynamicTimeFactor;
+
+    IntSettingsValue * turnTime;
 };
 }
 #endif // AUTOPILOTSETTINGS_H

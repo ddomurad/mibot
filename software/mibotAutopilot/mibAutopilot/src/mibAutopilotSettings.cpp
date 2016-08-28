@@ -9,12 +9,8 @@ AutopilotSettings::AutopilotSettings(QString res):
     driveSettings = new StringSettingsValue("drive_settings");
     maxDistance = new DoubleSettingsValue("max_dist");
     statuTimerInterval = new IntSettingsValue("status_interval");
-
     angleTreshold = new DoubleSettingsValue("angle_treshold");
-    baseTimeFactor = new DoubleSettingsValue("base_time_factor");
-    dynamicTimeFactor = new BoolSettingsValue("dynamic_time_factor");
-
-    forwardDriveTime = new DoubleSettingsValue("forward_drive_time");
+    turnTime = new IntSettingsValue("turn_time");
 
     AddValue(watchDogTimerInterval);
     AddValue(driveSettings);
@@ -22,9 +18,7 @@ AutopilotSettings::AutopilotSettings(QString res):
     AddValue(statuTimerInterval);
 
     AddValue(angleTreshold);
-    AddValue(baseTimeFactor);
-    AddValue(dynamicTimeFactor);
-    AddValue(forwardDriveTime);
+    AddValue(turnTime);
 }
 
 AutopilotSettings::~AutopilotSettings()

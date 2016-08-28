@@ -2,6 +2,7 @@
 #include "inc/mibAutopilot.h"
 
 using namespace mibot;
+#define THE_PI 3.1415926535
 
 Autopilot::Autopilot(Connection *connection) :
     AbstractSocketStrategy(connection)
@@ -14,11 +15,12 @@ Autopilot::Autopilot(Connection *connection) :
     connect(_driver_update_timer, SIGNAL(timeout()), this, SLOT(onDriverTimer()));
     connect(_state_update_timer, SIGNAL(timeout()), this, SLOT(onStateTimer()));
 
-    _angleToTurn = 0;
     _watchdog_state = false;
-    _finished = false;
-    _gps_data_recived = false;
-    _ap_state = Autopilot::DISABLED;
+    _ap_enabled = false;
+    _ap_finished = false;
+    _ap_relative_angle = 0.0;
+    _ap_distance = 0.0;
+    _wait_for_second_gps = true;
 }
 
 Autopilot::~Autopilot()
@@ -26,8 +28,8 @@ Autopilot::~Autopilot()
     _watch_dog_timer->stop();
     _driver_update_timer->stop();
 
-    if(_model != nullptr)
-        delete _model;
+    if(_drive_model != nullptr)
+        delete _drive_model;
 
     gpio()->DisableAllPwms();
 
@@ -75,7 +77,6 @@ bool Autopilot::init()
         return false;
     }
 
-    _time_factor = _autopilotSettings->baseTimeFactor->value;
 
     _gpsSensor = GPSSensor::get();
     connect(_gpsSensor, SIGNAL(onNewGpsData(GPSData)), this, SLOT(onGpsData(GPSData)));
@@ -97,20 +98,21 @@ bool Autopilot::init()
         !gpio()->EnablePwm( _driveSettings->rightPwmPin->value, true))
     {
             LOG_ERROR("Initializing PWM error.");
+            return false;
     }
 
     gpio()->SetPwmValue( _driveSettings->leftPwmPin->value, 0 );
     gpio()->SetPwmValue( _driveSettings->rightPwmPin->value, 0 );
 
-    _state = new DrivingState();
-    _model = new VehicleDriveModel();
+    _drive_state = new DrivingState();
+    _drive_model = new VehicleDriveModel();
 
-    _model->Init(
+    _drive_model->Init(
                 new WheelDriver( _driveSettings->leftAPin->value, _driveSettings->leftBPin->value, _driveSettings->leftPwmPin->value, gpio() ),
                 new WheelDriver( _driveSettings->rightAPin->value, _driveSettings->rightBPin->value, _driveSettings->rightPwmPin->value, gpio() ),
-                _state );
+                _drive_state );
 
-    _state->fake_gpio = _driveSettings->useFakeGPIO->value ? 0x01 : 0x00;
+    _drive_state->fake_gpio = _driveSettings->useFakeGPIO->value ? 0x01 : 0x00;
 
     _watch_dog_timer->setInterval(_autopilotSettings->watchDogTimerInterval->value);
     _watch_dog_timer->start();
@@ -121,6 +123,13 @@ bool Autopilot::init()
     _state_update_timer->setInterval(_autopilotSettings->statuTimerInterval->value);
     _state_update_timer->start();
 
+    _last_gps_pos = QPointF(0,0);
+    _current_gps_pos = QPointF(0,0);
+
+    _wait_for_second_gps = true;
+    _ap_enabled = false;
+    _invalid_gps_data = true;
+
     return true;
 }
 
@@ -128,11 +137,10 @@ void Autopilot::onWatchDogTimer()
 {
     if(_watchdog_state)
     {
-        if(_state->brake != 0x01)
-            LOG_WARNING("Emergency brake");
+        if(_drive_state->brake != 0x01)
+            LOG_WARNING("WDT Emergency brake");
 
-        disableAutopilot();
-        _state->brake = 0x01;
+        _drive_state->brake = 0x01;
     }
 
     _watchdog_state = true;
@@ -140,8 +148,8 @@ void Autopilot::onWatchDogTimer()
 
 void Autopilot::onDriverTimer()
 {
-    updateAutopilot();
-    _model->Update( float(_driveSettings->updateRatio->value)/1000.0f );
+    updateDriveState();
+    _drive_model->Update( float(_driveSettings->updateRatio->value)/1000.0f );
 }
 
 void Autopilot::onStateTimer()
@@ -151,10 +159,41 @@ void Autopilot::onStateTimer()
 
 void Autopilot::onGpsData(GPSData data)
 {
-    if(_ap_state == Autopilot::DRIVE_FORWARD)
-        _gps_data.append(data);
+    if(!data.isValid)
+    {
+        if(_ap_enabled)
+        {
+            LOG_WARNING("Invalid GPS DATA");
+            _ap_enabled = false;
+            _invalid_gps_data = true;
+        }
+        return;
+    }
 
-    _gps_data_recived = true;
+    if(_current_gps_data.position.latitude != data.position.latitude
+        || _current_gps_data.position.longitude != data.position.longitude)
+    {
+        _invalid_gps_data = false;
+        _last_gps_pos = _current_gps_pos;
+        _current_gps_data = data;
+        _current_gps_pos.setX(data.position.longitude);
+        _current_gps_pos.setY(data.position.latitude);
+
+        if(_last_gps_pos.x() != 0 && _last_gps_pos.y() != 0 && _wait_for_second_gps)
+        {
+            LOG_INFO("Second gps pos received.");
+            _wait_for_second_gps = false;
+        }else
+        {
+            LOG_INFO("Waiting for second gps pos.");
+        }
+
+        LOG_DEBUG(QString("Gps position received: [%1, %2]")
+                  .arg(_current_gps_pos.x())
+                  .arg(_current_gps_pos.y()));
+
+        _new_gps_data = true;
+    }
 }
 
 void Autopilot::tryRemoveCoruptedJSONProtocolData()
@@ -182,13 +221,9 @@ void Autopilot::processCommand(QJsonObject &obj)
         bool enabled = obj["autopilot_enabled"].toBool();
 
         if(enabled)
-            _state->brake = 0x00;
+            _drive_state->brake = 0x00;
 
-        if(enabled && _ap_state == Autopilot::DISABLED)
-            enableAutopilot();
-        else if(!enabled && _ap_state != Autopilot::DISABLED)
-            disableAutopilot();
-
+        _ap_enabled = enabled;
     }
 
     if(obj["gps_pos"].isArray() && obj["point_id"].isDouble())
@@ -199,6 +234,122 @@ void Autopilot::processCommand(QJsonObject &obj)
         int id = obj["point_id"].toDouble();
 
         setTarget(QPointF(log,lat), id);
+    }
+}
+
+void Autopilot::setTarget(QPointF p, int id)
+{
+    _ap_target = p;
+    _ap_target_id = id;
+    _ap_finished = false;
+
+   LOG_INFO(QString("New target: [%1, %2] id %3")
+            .arg(p.x())
+            .arg(p.y())
+            .arg(id));
+}
+
+void Autopilot::updateDriveState()
+{
+    if(!_ap_enabled || _ap_finished || _invalid_gps_data)
+    {
+        _drive_state->turbo = 0x0;
+        _drive_state->turn_axis = 0x0;
+        _drive_state->drive_axis = 0x0;
+        return;
+    }else
+    {
+        _drive_state->turbo = 0x01;
+        _drive_state->drive_axis = 0x01;
+    }
+
+    if(_new_gps_data)
+    {
+        _new_gps_data = false;
+        calcNewAngleAndDist();
+
+        if(_ap_distance <= _autopilotSettings->maxDistance->value)
+        {
+            _ap_finished = true;
+            return;
+        }
+
+        if(fabs(_ap_relative_angle) > _autopilotSettings->angleTreshold->value)
+        {
+            if(_ap_relative_angle > 0)
+                _drive_state->turn_axis = 1;
+            else
+                _drive_state->turn_axis = -1;
+
+            _turn_timer.restart();
+        }else
+        {
+            _drive_state->turn_axis = 0;
+        }
+
+        return;
+    }
+
+    if(_drive_state->turn_axis != 0)
+    {
+        if(_turn_timer.elapsed() > _autopilotSettings->turnTime->value)
+            _drive_state->turn_axis = 0;
+    }
+}
+
+GPIO *Autopilot::gpio()
+{
+    return GPIO::GetGPIO( !_driveSettings->useFakeGPIO->value);
+}
+
+void Autopilot::sendStatusMessage()
+{
+    QString msg;
+    if(!_invalid_gps_data)
+    {
+        if(_ap_finished)
+        {
+            msg = QString("{\"distance\":%1,\"angle\":%2,\"arrived_at\":%3}")
+                    .arg(_ap_distance) // distance
+                    .arg(_ap_relative_angle) // angle
+                    .arg(_ap_target_id);
+        }else
+        {
+            msg = QString("{\"distance\":%1,\"angle\":%2}")
+                    .arg(_ap_distance) //disance
+                    .arg(_ap_relative_angle); //angle
+        }
+    }else
+    {
+        msg = QString("{\"no_gps\":1}");
+    }
+
+    _connection->TcpSocket->write(msg.toUtf8());
+}
+
+void Autopilot::calcNewAngleAndDist()
+{
+    //dist
+    QPointF _relative_target = _ap_target - _current_gps_pos;
+    _ap_distance = sqrt(pow(_relative_target.x(),2) + pow(_relative_target.y(),2));
+
+    //relative angle
+
+    //a1 - angle to target
+    double a1 = atan2(_relative_target.y(), _relative_target.x());
+
+    if(!_wait_for_second_gps)
+    {
+        //a2 - angle last position - cource
+        QPointF relative_disp = _last_gps_pos - _current_gps_pos;
+        double a2 = atan2(relative_disp.y(), relative_disp.x());
+
+        _ap_relative_angle = a2 - a1;
+        if(_ap_relative_angle > THE_PI) _ap_relative_angle-=2*THE_PI;
+        if(_ap_relative_angle < -THE_PI) _ap_relative_angle+=2*THE_PI;
+    }else
+    {
+        _ap_relative_angle = a1;
     }
 }
 
@@ -223,264 +374,44 @@ void Autopilot::processCommand(QJsonObject &obj)
 
 */
 
-GPIO *Autopilot::gpio()
-{
-    return GPIO::GetGPIO( !_driveSettings->useFakeGPIO->value);
-}
+//qreal Autopilot::getRelativeAngleTo(qreal ar, QPointF gp)
+//{
+//    //    qreal ar = gpsCource() - 180.0;
+//    //    QPointF gp = gpsPosition();
 
-qreal Autopilot::getRelativeAngleTo(qreal ar, QPointF gp)
-{
-    //    qreal ar = gpsCource() - 180.0;
-    //    QPointF gp = gpsPosition();
+//    ar -= 180.0;
+//    QPointF rp = _target_location - gp;
+//    qreal ap = atan2(rp.y(), rp.x()) * 180.0/3.1415926535;
 
-    ar -= 180.0;
-    QPointF rp = _target_location - gp;
-    qreal ap = atan2(rp.y(), rp.x()) * 180.0/3.1415926535;
+//    qreal a = ap - ar;
 
-    qreal a = ap - ar;
-
-    if(a > 180) a-=360;
-    if(a < -180) a+=360;
-    return a;
-}
+//    if(a > 180) a-=360;
+//    if(a < -180) a+=360;
+//    return a;
+//}
 
 
-qreal Autopilot::getDistace()
-{
-    QPointF gps_pos = QPointF(_gpsSensor->Readings().position.longitude,
-            _gpsSensor->Readings().position.latitude);
-    QPointF r = _target_location - gps_pos;
-    return sqrt(pow(r.x(),2) + pow(r.y(),2));
-}
+//qreal Autopilot::calcTurnData()
+//{
+////    if(_gps_data.length() < 3)
+////    {
+////        LOG_ERROR("_gps_data.length() < 3");
+////        return 0.0;
+////    }
+
+////    QPointF last_gps_pos = QPointF(_gpsSensor->Readings().position.longitude,
+////                                   _gpsSensor->Readings().position.latitude);
+
+////    qreal av_angle = 0;
+////    for(int i=1;i<_gps_data.length();i++)
+////        av_angle += _gps_data[i].movement.course;
+
+////    av_angle /= qreal(_gps_data.length() - 1);
+
+////    return getRelativeAngleTo(av_angle, last_gps_pos);
+//}
 
 
-void Autopilot::updateAutopilot()
-{
-    if(!_autopilotSettings->dynamicTimeFactor->value)
-        _time_factor = _autopilotSettings->baseTimeFactor->value;
-
-    if(_ap_state == Autopilot::DISABLED)
-        return;
-
-    if(!isGpsSignalValid())
-    {
-        LOG_WARNING("Gps data invalid");
-        disableAutopilot();
-        return;
-    }
-
-    updateAutoPilotState();
-    updateMotors();
-    updateTargetState();
-}
-
-void Autopilot::setTarget(QPointF p, int id)
-{
-    if(_target_location == p && _target_id == id)
-        return;
-
-    LOG_INFO(QString("New target set: (%1,%2), id: %3")
-             .arg(p.x())
-             .arg(p.y())
-             .arg(id));
-
-    _finished = false;
-    _target_location = p;
-    _target_id = id;
-}
-
-void Autopilot::sendStatusMessage()
-{
-    QString msg;
-    if(_gpsSensor->Readings().isValid)
-    {
-        if(_finished)
-        {
-            msg = QString("{\"distance\":%1,\"angle\":%2,\"arrived_at\":%3}")
-                    .arg(getDistace()) // distance
-                    .arg(_angleToTurn) // angle
-                    .arg(_target_id);
-        }else
-        {
-            msg = QString("{\"distance\":%1,\"angle\":%2}")
-                    .arg(getDistace()) //disance
-                    .arg(_angleToTurn); //angle
-        }
-    }else
-    {
-        msg = QString("{\"no_gps\":1}");
-    }
-
-    _connection->TcpSocket->write(msg.toUtf8());
-}
-
-bool Autopilot::isGpsSignalValid()
-{
-    return _gpsSensor->Readings().isValid;
-}
-
-void Autopilot::enableAutopilot()
-{
-    setForwardState();
-    _state->brake = 0x00;
-    LOG_DEBUG("Auto pilot enabled");
-}
-
-void Autopilot::disableAutopilot()
-{
-    if(_ap_state != Autopilot::DISABLED)
-    {
-        _ap_state = Autopilot::DISABLED;
-        LOG_DEBUG("Auto pilot disable");
-    }
-
-    setMotors(false, false);
-}
-
-void Autopilot::updateMotors()
-{
-    switch(_ap_state)
-    {
-        case Autopilot::DISABLED:
-        case Autopilot::WAIT_FOR_GPS_DATA:
-            setMotors(false, false); break;
-        case Autopilot::DRIVE_FORWARD:
-            setMotors(true, true); break;
-        case Autopilot::DRIVE_LEFT:
-            setMotors(true, false); break;
-        case Autopilot::DRIVE_RIGHT:
-            setMotors(false, true); break;
-    }
-}
-
-void Autopilot::updateAutoPilotState()
-{
-    if(_ap_state == Autopilot::DRIVE_FORWARD)
-    {
-        if(_state_timer.elapsed() >= _autopilotSettings->forwardDriveTime->value)
-            setWaitForGpsState();
-    }
-
-    if(_ap_state == Autopilot::WAIT_FOR_GPS_DATA)
-    {
-        if(_gps_data_recived)
-            setTurningState();
-        return;
-    }
-
-    if(_ap_state == Autopilot::DRIVE_LEFT || _ap_state == Autopilot::DRIVE_RIGHT)
-    {
-        if(_state_timer.elapsed() >= _time_factor * fabs(_angleToTurn))
-            setForwardState();
-        return;
-    }
-}
-
-void Autopilot::updateTargetState()
-{
-    if(getDistace() <= _autopilotSettings->maxDistance->value)
-    {
-        LOG_INFO( QString("Arrived at target: %d").arg(_target_id));
-        _finished = true;
-        disableAutopilot();
-    }
-}
-
-void Autopilot::setWaitForGpsState()
-{
-    LOG_DEBUG("Set WaitForGpsState");
-    _ap_state = Autopilot::WAIT_FOR_GPS_DATA;
-    _gps_data_recived = false;
-    setMotors(false,false);
-}
-
-void Autopilot::setTurningState()
-{
-    _angleToTurn = calcTurnData();
-
-    if(fabs(_angleToTurn) < _autopilotSettings->angleTreshold->value)
-    {
-        LOG_DEBUG( QString("Skip turning state: %f").arg(_angleToTurn));
-        setForwardState();
-        return;
-    }else
-    {
-        if(_angleToTurn > 0)
-        {
-            _ap_state = Autopilot::DRIVE_LEFT;
-            LOG_DEBUG( QString("Set TurnLeftState: %1").arg(_angleToTurn));
-        }
-        else
-        {
-            _ap_state = Autopilot::DRIVE_RIGHT;
-            LOG_DEBUG( QString("Set TurnRightState: %1").arg(_angleToTurn));
-        }
-    }
-
-    _state_timer.restart();
-}
-
-void Autopilot::setForwardState()
-{
-    LOG_DEBUG("Set DriveForwardState");
-    _ap_state = Autopilot::DRIVE_FORWARD;
-    _gps_data.clear();
-    _state_timer.restart();
-}
-
-qreal Autopilot::calcTurnData()
-{
-    if(_gps_data.length() < 3)
-    {
-        LOG_ERROR("_gps_data.length() < 3");
-        return 0.0;
-    }
-
-    QPointF last_gps_pos = QPointF(_gpsSensor->Readings().position.longitude,
-                                   _gpsSensor->Readings().position.latitude);
-
-    qreal av_angle = 0;
-    for(int i=1;i<_gps_data.length();i++)
-        av_angle += _gps_data[i].movement.course;
-
-    av_angle /= qreal(_gps_data.length() - 1);
-
-    return getRelativeAngleTo(av_angle, last_gps_pos);
-}
-
-void Autopilot::setMotors(bool left, bool right)
-{
-    if(!left && !right)
-    {
-        _state->turn_axis = 0;
-        _state->drive_axis = 0;
-        return;
-    }
-
-    if(left && !right)
-    {
-        _state->turn_axis = -1;
-        _state->drive_axis = 1;
-        _state->turbo = 1;
-        return;
-    }
-
-    if(!left && right)
-    {
-        _state->turn_axis = 1;
-        _state->drive_axis = 1;
-        _state->turbo = 1;
-        return;
-    }
-
-    if(left && right)
-    {
-        _state->turn_axis = 0;
-        _state->drive_axis = 1;
-        _state->turbo = 1;
-        return;
-    }
-}
 
 mibot::AbstractSocketStrategy *createStrategy(mibot::Connection *connection)
 {

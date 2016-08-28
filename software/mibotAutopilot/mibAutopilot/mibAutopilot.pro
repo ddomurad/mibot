@@ -31,13 +31,11 @@ LIBS += /usr/local/lib/mi_bot/libmibGPIOInterface.so
 LIBS += /usr/local/lib/mi_bot/libmibDriveStrategy.so
 
 SOURCES += src/mibAutopilot.cpp \
-    src/mibAutopilotSettings.cpp \
-    src/mibAutopilotModels.cpp
+    src/mibAutopilotSettings.cpp
 
 HEADERS += inc/mibAutopilot.h \
     inc/mibAutopilotGlobal.h \
-    inc/mibAutopilotSettings.h \
-    inc/mibAutopilotModels.h
+    inc/mibAutopilotSettings.h
 
 unix {
     target.path = /usr/local/lib/mi_bot
