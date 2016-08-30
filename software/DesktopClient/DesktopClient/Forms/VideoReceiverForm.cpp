@@ -337,6 +337,7 @@ void VideoReceiverForm::procDecoder(u_int8_t *data, int size)
         return;
 
     updateFrame(&packet);
+    av_free_packet(&packet);
 }
 
 void VideoReceiverForm::updateFrame(AVPacket *packet)

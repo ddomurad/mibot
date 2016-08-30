@@ -163,7 +163,7 @@ void Autopilot::onGpsData(GPSData data)
     {
         if(_ap_enabled)
         {
-            LOG_WARNING("Invalid GPS DATA");
+            LOG_WARNING("Invalid GPS DATA. Disabling autopilot.");
             _ap_enabled = false;
             _invalid_gps_data = true;
         }
@@ -265,6 +265,8 @@ void Autopilot::updateDriveState()
 
     if(_new_gps_data)
     {
+        LOG_DEBUG("New GPS data");
+
         _new_gps_data = false;
         calcNewAngleAndDist();
 
@@ -277,9 +279,16 @@ void Autopilot::updateDriveState()
         if(fabs(_ap_relative_angle) > _autopilotSettings->angleTreshold->value)
         {
             if(_ap_relative_angle > 0)
+            {
+                LOG_DEBUG("Start turning (a>0)");
                 _drive_state->turn_axis = 1;
+            }
             else
+            {
+                LOG_DEBUG("Start turning (a<0)");
                 _drive_state->turn_axis = -1;
+            }
+
 
             _turn_timer.restart();
         }else
@@ -293,7 +302,10 @@ void Autopilot::updateDriveState()
     if(_drive_state->turn_axis != 0)
     {
         if(_turn_timer.elapsed() > _autopilotSettings->turnTime->value)
+        {
+            LOG_DEBUG("Stop turning");
             _drive_state->turn_axis = 0;
+        }
     }
 }
 
@@ -351,6 +363,9 @@ void Autopilot::calcNewAngleAndDist()
     {
         _ap_relative_angle = a1;
     }
+
+    LOG_DEBUG("New distance calculated: " + QString::number(_ap_distance*180.0/THE_PI));
+    LOG_DEBUG("New relative angle calculated: " + QString::number(_ap_relative_angle*180.0/THE_PI));
 }
 
 /*
