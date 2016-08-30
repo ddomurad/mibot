@@ -70,6 +70,10 @@ void RoverAutopilotClient::processObj(QJsonObject &obj)
     if(obj["arrived_at"].isDouble())
         state.arived_at = obj["arrived_at"].toDouble();
 
+    if(obj["no_gps"].isDouble())
+        if(obj["no_gps"].toDouble() == 1)
+            LoggerDialog::get()->Write("Autopilot: NO GPS!");
+
     emit StateUpdate(state);
 }
 

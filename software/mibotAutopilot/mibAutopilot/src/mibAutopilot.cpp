@@ -239,14 +239,17 @@ void Autopilot::processCommand(QJsonObject &obj)
 
 void Autopilot::setTarget(QPointF p, int id)
 {
+    if(_ap_target != p)
+    {
+        LOG_INFO(QString("New target: [%1, %2] id %3")
+             .arg(p.x())
+             .arg(p.y())
+             .arg(id));
+    }
+
     _ap_target = p;
     _ap_target_id = id;
     _ap_finished = false;
-
-   LOG_INFO(QString("New target: [%1, %2] id %3")
-            .arg(p.x())
-            .arg(p.y())
-            .arg(id));
 }
 
 void Autopilot::updateDriveState()
