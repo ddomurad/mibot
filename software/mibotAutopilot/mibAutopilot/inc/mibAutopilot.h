@@ -64,6 +64,7 @@ private:
 
     QPointF _ap_target;
     int _ap_target_id;
+    QString _ap_drive_type;
 
     double _ap_relative_angle;
     double _ap_distance;

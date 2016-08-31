@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/res">
+        <file>left.jpeg</file>
+        <file>right.jpeg</file>
+        <file>up.jpeg</file>
+        <file>none.jpeg</file>
+    </qresource>
+</RCC>

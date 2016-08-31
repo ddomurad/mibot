@@ -21,6 +21,7 @@ Autopilot::Autopilot(Connection *connection) :
     _ap_relative_angle = 0.0;
     _ap_distance = 0.0;
     _wait_for_second_gps = true;
+    _ap_drive_type = "";
 }
 
 Autopilot::~Autopilot()
@@ -259,6 +260,7 @@ void Autopilot::updateDriveState()
         _drive_state->turbo = 0x0;
         _drive_state->turn_axis = 0x0;
         _drive_state->drive_axis = 0x0;
+        _ap_drive_type = "";
         return;
     }else
     {
@@ -285,18 +287,20 @@ void Autopilot::updateDriveState()
             {
                 LOG_DEBUG("Start turning (a>0)");
                 _drive_state->turn_axis = 1;
+                _ap_drive_type = "L";
             }
             else
             {
                 LOG_DEBUG("Start turning (a<0)");
                 _drive_state->turn_axis = -1;
+                _ap_drive_type = "R";
             }
-
 
             _turn_timer.restart();
         }else
         {
             _drive_state->turn_axis = 0;
+            _ap_drive_type = "F";
         }
 
         return;
@@ -308,6 +312,7 @@ void Autopilot::updateDriveState()
         {
             LOG_DEBUG("Stop turning");
             _drive_state->turn_axis = 0;
+            _ap_drive_type = "F";
         }
     }
 }
@@ -330,9 +335,10 @@ void Autopilot::sendStatusMessage()
                     .arg(_ap_target_id);
         }else
         {
-            msg = QString("{\"distance\":%1,\"angle\":%2}")
+            msg = QString("{\"distance\":%1,\"angle\":%2,\"drive_type\":\"%3\"}")
                     .arg(_ap_distance) //disance
-                    .arg(_ap_relative_angle); //angle
+                    .arg(_ap_relative_angle) //angle
+                    .arg(_ap_drive_type);
         }
     }else
     {
