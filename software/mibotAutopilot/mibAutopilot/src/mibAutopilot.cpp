@@ -328,13 +328,13 @@ void Autopilot::updateDriveState()
             {
                 LOG_DEBUG("Start turning (a>0)");
                 _drive_state->turn_axis = 1;
-                _ap_drive_type = "L";
+                _ap_drive_type = "R";
             }
             else
             {
                 LOG_DEBUG("Start turning (a<0)");
                 _drive_state->turn_axis = -1;
-                _ap_drive_type = "R";
+                _ap_drive_type = "L";
             }
 
             _turn_timer.restart();
