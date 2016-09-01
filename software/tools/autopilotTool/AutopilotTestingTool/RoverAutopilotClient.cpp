@@ -32,7 +32,7 @@ void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enab
              .arg(target.x())
              .arg(target.y())
              .arg(target_id)
-             .arg(fake_pos ? "1", "0")
+             .arg(fake_pos ? "1": "0")
              .arg(fp1.x())
              .arg(fp1.y())
              .arg(fp2.x())
@@ -46,7 +46,7 @@ void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enab
              .arg(target.x())
              .arg(target.y())
              .arg(target_id)
-             .arg(fake_pos ? "1", "0"));
+             .arg(fake_pos ? "1": "0"));
 }
 
 void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable)

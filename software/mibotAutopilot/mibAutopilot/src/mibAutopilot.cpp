@@ -247,6 +247,11 @@ void Autopilot::processCommand(QJsonObject &obj)
 
     if(obj["fake_pos"].isBool())
     {
+        if(_use_fake_gps_data == false)
+        {
+            LOG_INFO("Setting to fake gpio....");
+        }
+
         _use_fake_gps_data = obj["fake_pos"].toBool();
 
         if(obj["fp1"].isArray())
