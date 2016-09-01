@@ -108,6 +108,9 @@ void MainWindow::apStateUpdate(AutopilotState state)
         image.load(":/new/res/up.jpeg");
     else image.load(":/new/res/none.jpeg");
 
+    if(state.arived_at != -1)
+        ui->checkBox->setChecked(false);
+
     pixmap = QPixmap::fromImage(image);
     ui->dstate->setPixmap(pixmap);
 }

@@ -131,6 +131,7 @@ bool Autopilot::init()
     _wait_for_second_gps = true;
     _ap_enabled = false;
     _invalid_gps_data = true;
+    _ap_target_id = -1;
 
     return true;
 }
@@ -280,17 +281,17 @@ void Autopilot::processCommand(QJsonObject &obj)
 
 void Autopilot::setTarget(QPointF p, int id)
 {
-    if(_ap_target != p)
+    if(_ap_target != p && _ap_target_id != id)
     {
         LOG_INFO(QString("New target: [%1, %2] id %3")
              .arg(p.x())
              .arg(p.y())
              .arg(id));
-    }
 
-    _ap_target = p;
-    _ap_target_id = id;
-    _ap_finished = false;
+        _ap_target = p;
+        _ap_target_id = id;
+        _ap_finished = false;
+    }
 }
 
 void Autopilot::updateDriveState()
