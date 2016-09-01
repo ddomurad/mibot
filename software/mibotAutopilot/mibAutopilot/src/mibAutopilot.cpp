@@ -398,6 +398,7 @@ void Autopilot::calcNewAngleAndDist()
 
     //a1 - angle to target
     double a1 = atan2(_relative_target.y(), _relative_target.x());
+    LOG_DEBUG(QString("a1: %1").arg(a1*180.0/THE_PI));
 
     if(!_wait_for_second_gps)
     {
@@ -405,7 +406,10 @@ void Autopilot::calcNewAngleAndDist()
         QPointF relative_disp = _last_gps_pos - _current_gps_pos;
         double a2 = atan2(relative_disp.y(), relative_disp.x());
 
+        LOG_DEBUG(QString("a2: %1").arg(a2*180.0/THE_PI));
+
         _ap_relative_angle = a2 - a1;
+        LOG_DEBUG(QString("a2 - a1: %1").arg(_ap_relative_angle*180.0/THE_PI));
         if(_ap_relative_angle > THE_PI) _ap_relative_angle-=2*THE_PI;
         if(_ap_relative_angle < -THE_PI) _ap_relative_angle+=2*THE_PI;
     }else
@@ -413,7 +417,7 @@ void Autopilot::calcNewAngleAndDist()
         _ap_relative_angle = a1;
     }
 
-    LOG_DEBUG("New distance calculated: " + QString::number(_ap_distance*180.0/THE_PI));
+    LOG_DEBUG("New distance calculated: " + QString::number(_ap_distance));
     LOG_DEBUG("New relative angle calculated: " + QString::number(_ap_relative_angle*180.0/THE_PI));
 }
 

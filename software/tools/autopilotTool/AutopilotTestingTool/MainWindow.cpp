@@ -97,8 +97,8 @@ void MainWindow::newSensorData(RoverSensors data)
 
 void MainWindow::apStateUpdate(AutopilotState state)
 {
-    ui->angle->setText( QString::number(state.angle));
-    ui->angle->setText( QString::number(state.dist));
+    ui->distance->setText( QString::number(state.dist));
+    ui->angle->setText( QString::number(state.angle * 180.0/3.141592));
 
     if(state.drive_type == "R")
         image.load(":/new/res/right.jpeg");
