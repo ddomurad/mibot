@@ -317,11 +317,12 @@ void Autopilot::updateDriveState()
 
         if(_ap_distance <= _autopilotSettings->maxDistance->value)
         {
+            LOG_DEBUG("finish...");
             _ap_finished = true;
             return;
         }
 
-        if(fabs(_ap_relative_angle) > _autopilotSettings->angleTreshold->value)
+        if(fabs(_ap_relative_angle*180.0/THE_PI) > _autopilotSettings->angleTreshold->value)
         {
             if(_ap_relative_angle > 0)
             {
@@ -403,7 +404,7 @@ void Autopilot::calcNewAngleAndDist()
     if(!_wait_for_second_gps)
     {
         //a2 - angle last position - cource
-        QPointF relative_disp = _last_gps_pos - _current_gps_pos;
+        QPointF relative_disp = _current_gps_pos - _last_gps_pos;
         double a2 = atan2(relative_disp.y(), relative_disp.x());
 
         LOG_DEBUG(QString("a2: %1").arg(a2*180.0/THE_PI));
