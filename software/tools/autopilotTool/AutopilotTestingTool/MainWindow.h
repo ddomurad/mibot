@@ -26,6 +26,10 @@ private slots:
 
     void on_checkBox_toggled(bool checked);
     void onTimer();
+    void on_checkBox_2_toggled(bool checked);
+
+    void on_toolButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QImage image;
@@ -36,9 +40,16 @@ private:
 
     QPointF _rover_gps_pos;
     QPointF _rover_goal;
-    bool _ap_enabled;
 
+    QPointF _fake_gps1;
+    QPointF _fake_gps2;
+
+    bool _ap_enabled;
+    bool _fg_enabled;
+    bool _fg_update;
     QTimer *_update_timer;
+
+    void updateMarkers();
 };
 
 #endif // MAINWINDOW_H

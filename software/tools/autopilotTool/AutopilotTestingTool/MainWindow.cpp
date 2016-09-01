@@ -1,6 +1,10 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#define SET_GOAL_CMD 100
+#define SET_FAKE_GPS1 201
+#define SET_FAKE_GPS2 202
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -24,7 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->_osm->setZoomRange(5,18);
     ui->_osm->setZoom(15);
     ui->_osm->centreGPSPossition(QPointF(19.9229, 50.0767));
-    ui->_osm->addMapMenu(123,"SetGoal");
+    ui->_osm->addMapMenu(SET_GOAL_CMD,"SetGoal");
+
+    ui->_osm->addMapMenu(SET_FAKE_GPS1,"Fake GPS 1");
+    ui->_osm->addMapMenu(SET_FAKE_GPS2,"Fake GPS 2");
 
     connect(ui->_osm, SIGNAL(menuAction(OSMMenuItem)), this, SLOT(onGPSMenu(OSMMenuItem)));
     connect(apClient, SIGNAL(StateUpdate(AutopilotState)), this , SLOT(apStateUpdate(AutopilotState)));
@@ -33,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
     _update_timer = new QTimer(this);
     connect(_update_timer, SIGNAL(timeout()), this, SLOT(onTimer()));
     _update_timer->start(100);
+
+    _ap_enabled = false;
+    _fg_enabled = false;
 }
 
 MainWindow::~MainWindow()
@@ -48,30 +58,22 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::onGPSMenu(OSMMenuItem m)
 {
-    if(m.id = 123)
-    {
+    if(m.id == SET_GOAL_CMD)
         _rover_goal = m.gpsPos;
 
-        ui->lat->setText( QString::number(_rover_goal.x()) );
-        ui->lot->setText( QString::number(_rover_goal.y()) );
-
-        ui->_osm->removeAllRoutes();
-
-        OSMRoute route;
-        route.addPoint(_rover_goal,0);
-        route.name = "goal";
-        route.stdFirstMarkerType = OSMMarkerType::Triangle2;
-        route.editable = false;
-
-        OSMRoute route2;
-        route2.addPoint(_rover_gps_pos,0);
-        route2.name = "rover";
-        route2.editable = false;
-        route2.stdFirstMarkerType = OSMMarkerType::Square;
-
-        ui->_osm->addRoute(route);
-        ui->_osm->addRoute(route2);
+    if(m.id == SET_FAKE_GPS1)
+    {
+        _fake_gps1 = m.gpsPos;
+        _fg_update = true;
     }
+
+    if(m.id == SET_FAKE_GPS2)
+    {
+        _fake_gps2 = m.gpsPos;
+        _fg_update = true;
+    }
+
+    updateMarkers();
 }
 
 void MainWindow::newSensorData(RoverSensors data)
@@ -119,7 +121,7 @@ void MainWindow::onTimer()
 {
     if(!apClient->IsConnected())
     {
-        ui->checkBox->setEnabled(false);
+        ui->checkBox->setChecked(false);
         return;
     }
 
@@ -129,5 +131,60 @@ void MainWindow::onTimer()
         return;
     }
 
-    apClient->SetAutopilot( _rover_goal, 1, true);
+    if(!_fg_enabled)
+    {
+        apClient->SetAutopilot( _rover_goal, 1, true);
+    }else
+    {
+        if(_fg_update)
+        {
+            apClient->SetAutopilot(_rover_goal, 1, true, true, _fake_gps1, _fake_gps2);
+            _fg_update = false;
+        }else
+        {
+            apClient->SetAutopilot(_rover_goal, 1, true, true);
+        }
+    }
+}
+
+void MainWindow::on_checkBox_2_toggled(bool checked)
+{
+    _fg_enabled = checked;
+}
+
+void MainWindow::updateMarkers()
+{
+    ui->lat->setText( QString::number(_rover_goal.x()) );
+    ui->lot->setText( QString::number(_rover_goal.y()) );
+
+    ui->_osm->removeAllRoutes();
+
+    OSMRoute route;
+    route.addPoint(_rover_goal,0);
+    route.name = "goal";
+    route.stdFirstMarkerType = OSMMarkerType::Triangle2;
+    route.editable = false;
+
+    OSMRoute route2;
+    route2.addPoint(_rover_gps_pos,0);
+    route2.name = "rover";
+    route2.editable = false;
+    route2.stdFirstMarkerType = OSMMarkerType::Square;
+
+
+    OSMRoute route3;
+    route3.addPoint(_fake_gps1, 0);
+    route3.addPoint(_fake_gps2, 10);
+    route3.name = "fake_pos";
+    route3.editable = false;
+    route3.stdFirstMarkerType = OSMMarkerType::Square;
+
+    ui->_osm->addRoute(route);
+    ui->_osm->addRoute(route2);
+    ui->_osm->addRoute(route3);
+}
+
+void MainWindow::on_toolButton_clicked()
+{
+    _fg_update = true;
 }

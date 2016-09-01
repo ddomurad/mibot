@@ -25,6 +25,8 @@ public:
     bool Connect(QString addr, int port);
     void onData(QByteArray data);
 
+    void SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos, QPointF fp1, QPointF fp2);
+    void SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos);
     void SetAutopilot(QPointF target, int target_id, bool enable);
     void SetAutopilot(bool enable);
 

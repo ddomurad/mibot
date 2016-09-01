@@ -163,20 +163,6 @@
        <string>Input</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="3" colspan="2">
-        <widget class="QLineEdit" name="port1">
-         <property name="text">
-          <string>10450</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="port2">
-         <property name="text">
-          <string>10411</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label">
          <property name="text">
@@ -184,7 +170,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1" colspan="5">
+       <item row="5" column="1" colspan="5">
         <widget class="QPushButton" name="pushButton">
          <property name="text">
           <string>Connect</string>
@@ -198,20 +184,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLineEdit" name="addr">
-         <property name="text">
-          <string>10.1.1.102</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1" colspan="5">
-        <widget class="QCheckBox" name="checkBox">
-         <property name="text">
-          <string>Enabled</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
@@ -219,11 +191,53 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="5">
+       <item row="0" column="1" colspan="2">
+        <widget class="QLineEdit" name="addr">
+         <property name="text">
+          <string>10.1.1.102</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>Enabled</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="6">
+        <widget class="QLineEdit" name="lot"/>
+       </item>
+       <item row="1" column="1" colspan="6">
         <widget class="QLineEdit" name="lat"/>
        </item>
-       <item row="2" column="1" colspan="5">
-        <widget class="QLineEdit" name="lot"/>
+       <item row="3" column="3" colspan="2">
+        <widget class="QCheckBox" name="checkBox_2">
+         <property name="text">
+          <string>Enable fake GPS</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5" colspan="2">
+        <widget class="QToolButton" name="toolButton">
+         <property name="text">
+          <string>F</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="port1">
+         <property name="text">
+          <string>10450</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4" colspan="3">
+        <widget class="QLineEdit" name="port2">
+         <property name="text">
+          <string>10411</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

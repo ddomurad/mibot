@@ -23,7 +23,8 @@ Socket::~Socket()
 bool Socket::ConnectToRover(QString host, int port)
 {
     this->connectToHost(host, port);
-    return this->waitForConnected(5000);
+    _sucessfulConnected = this->waitForConnected(5000);
+    return _sucessfulConnected;
 }
 
 bool Socket::SucessfulConnected()

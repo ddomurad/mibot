@@ -22,6 +22,7 @@ Autopilot::Autopilot(Connection *connection) :
     _ap_distance = 0.0;
     _wait_for_second_gps = true;
     _ap_drive_type = "";
+    _use_fake_gps_data = false;
 }
 
 Autopilot::~Autopilot()
@@ -160,6 +161,13 @@ void Autopilot::onStateTimer()
 
 void Autopilot::onGpsData(GPSData data)
 {
+    if(_use_fake_gps_data)
+    {
+        _invalid_gps_data = false;
+        _wait_for_second_gps = false;
+        return;
+    }
+
     if(!data.isValid)
     {
         if(_ap_enabled)
@@ -235,6 +243,31 @@ void Autopilot::processCommand(QJsonObject &obj)
         int id = obj["point_id"].toDouble();
 
         setTarget(QPointF(log,lat), id);
+    }
+
+    if(obj["fake_pos"].isBool())
+    {
+        _use_fake_gps_data = obj["fake_pos"].toBool();
+
+        if(obj["fp1"].isArray())
+        {
+            QJsonArray arr = obj["fp1"].toArray();
+            double log = arr.at(0).toDouble();
+            double lat = arr.at(1).toDouble();
+            _current_gps_pos.setX(log);
+            _current_gps_pos.setY(lat);
+            _new_gps_data = true;
+        }
+
+        if(obj["fp2"].isArray())
+        {
+            QJsonArray arr = obj["fp2"].toArray();
+            double log = arr.at(0).toDouble();
+            double lat = arr.at(1).toDouble();
+            _last_gps_pos.setX(log);
+            _last_gps_pos.setY(lat);
+            _new_gps_data = true;
+        }
     }
 }
 
