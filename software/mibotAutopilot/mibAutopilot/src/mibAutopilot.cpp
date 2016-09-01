@@ -253,6 +253,8 @@ void Autopilot::processCommand(QJsonObject &obj)
         }
 
         _use_fake_gps_data = obj["fake_pos"].toBool();
+        _invalid_gps_data = false;
+        _wait_for_second_gps = false;
 
         if(obj["fp1"].isArray())
         {
