@@ -11,6 +11,7 @@ AutopilotSettings::AutopilotSettings(QString res):
     statuTimerInterval = new IntSettingsValue("status_interval");
     angleTreshold = new DoubleSettingsValue("angle_treshold");
     turnTime = new IntSettingsValue("turn_time");
+    usTime = new IntSettingsValue("us_time");
 
     AddValue(watchDogTimerInterval);
     AddValue(driveSettings);
@@ -19,6 +20,7 @@ AutopilotSettings::AutopilotSettings(QString res):
 
     AddValue(angleTreshold);
     AddValue(turnTime);
+    AddValue(usTime);
 }
 
 AutopilotSettings::~AutopilotSettings()

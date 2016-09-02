@@ -23,6 +23,9 @@ Autopilot::Autopilot(Connection *connection) :
     _wait_for_second_gps = true;
     _ap_drive_type = "";
     _use_fake_gps_data = false;
+    _ap_avoid_dist = 0;
+    _avoid_maneuver = false;
+    _us_timer.restart();
 }
 
 Autopilot::~Autopilot()
@@ -79,8 +82,15 @@ bool Autopilot::init()
         return false;
     }
 
+    if(!ArduinoSensorNode::get()->Initialize())
+    {
+        LOG_ERROR("Can't initialzie Arduino sesnors");
+        return false;
+    }
 
     _gpsSensor = GPSSensor::get();
+    _arduinoSensors = ArduinoSensorNode::get();
+
     connect(_gpsSensor, SIGNAL(onNewGpsData(GPSData)), this, SLOT(onGpsData(GPSData)));
 
     if(!gpio()->Init())
@@ -246,6 +256,14 @@ void Autopilot::processCommand(QJsonObject &obj)
         setTarget(QPointF(log,lat), id);
     }
 
+    if(obj["avoid_dist"].isDouble())
+    {
+        _ap_avoid_dist = (int)obj["avoid_dist"].toDouble();
+    }else
+    {
+        _ap_avoid_dist = 0;
+    }
+
     if(obj["fake_pos"].isBool())
     {
         if(_use_fake_gps_data == false)
@@ -279,6 +297,14 @@ void Autopilot::processCommand(QJsonObject &obj)
     }
 }
 
+int Autopilot::usDistance()
+{
+    if(_arduinoSensors != nullptr)
+        return _arduinoSensors->Readings().us;
+
+    return 201;
+}
+
 void Autopilot::setTarget(QPointF p, int id)
 {
     if(_ap_target != p || _ap_target_id != id)
@@ -303,11 +329,47 @@ void Autopilot::updateDriveState()
         _drive_state->drive_axis = 0x0;
         _ap_drive_type = "";
         return;
-    }else
-    {
-        _drive_state->turbo = 0x01;
-        _drive_state->drive_axis = 0x01;
     }
+
+    if(_ap_avoid_dist != 0)
+    {
+        if(_avoid_maneuver)
+        {
+            if(usDistance() <= _ap_avoid_dist)
+            {
+                _us_timer.restart();
+            }
+            else if(_us_timer.elapsed() >= _autopilotSettings->usTime->value)
+            {
+                LOG_DEBUG("Stop avoiding");
+                _us_timer.restart();
+                _avoid_maneuver = false;
+            }
+            return;
+        }
+
+        if(usDistance() > _ap_avoid_dist)
+        {
+            _us_timer.restart();
+        }
+
+        if(_us_timer.elapsed() >= _autopilotSettings->usTime->value)
+        {
+            LOG_DEBUG("Start avoiding");
+            _avoid_maneuver = true;
+
+            _us_timer.restart();
+            _drive_state->drive_axis = 0x00;
+            _drive_state->turn_axis = _ap_relative_angle > 0 ? 1 : -1;
+            _ap_drive_type = _ap_relative_angle > 0 ? "R" : "L";
+            _drive_state->turbo = 0x01;
+
+            return;
+        }
+    }
+
+    _drive_state->drive_axis = 0x01;
+    _drive_state->turbo = 0x01;
 
     if(_new_gps_data)
     {

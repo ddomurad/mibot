@@ -108,8 +108,6 @@ void MainWindow::apStateUpdate(AutopilotState state)
         image.load(":/new/res/up.jpeg");
     else image.load(":/new/res/none.jpeg");
 
-    if(state.arived_at != -1)
-        ui->checkBox->setChecked(false);
 
     pixmap = QPixmap::fromImage(image);
     ui->dstate->setPixmap(pixmap);
@@ -136,7 +134,7 @@ void MainWindow::onTimer()
 
     if(!_fg_enabled)
     {
-        apClient->SetAutopilot( _rover_goal, 1, true);
+        apClient->SetAutopilot( _rover_goal, 1, true, ui->us->text().toInt());
     }else
     {
         if(_fg_update)

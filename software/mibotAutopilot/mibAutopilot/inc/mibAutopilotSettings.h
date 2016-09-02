@@ -18,6 +18,7 @@ public:
     DoubleSettingsValue * angleTreshold;
 
     IntSettingsValue * turnTime;
+    IntSettingsValue * usTime;
 };
 }
 #endif // AUTOPILOTSETTINGS_H

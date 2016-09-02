@@ -24,7 +24,7 @@ public:
     bool Connect();
     void onData(QByteArray data);
 
-    void SetAutopilot(QPointF target, int target_id, bool enable);
+    void SetAutopilot(QPointF target, int target_id, bool enable, int _us_avoid_dist);
     void SetAutopilot(bool enable);
 
 signals:

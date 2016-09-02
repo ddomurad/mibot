@@ -23,25 +23,15 @@ private slots:
     void onUpdateDrive();
 
     void on_pushButton_next_point_clicked();
-
     void on_pushButton_prev_point_clicked();
-
-    void on_pushButton_auto_clicked();
-
-    void on_comboBox_drive_type_currentTextChanged(const QString &arg1);
-
     void on_comboBox_track_currentIndexChanged(const QString &arg1);
-
     void on_spinBox_active_point_valueChanged(int arg1);
-
     void on_comboBox_drive_type_currentIndexChanged(const QString &arg1);
 
     void onAutopilotUpdate(AutopilotState state);
     void onSensorsUpdate(class RoverSensors readings);
     void on_checkBox_drive_toggled(bool checked);
-
     void on_checkBox_clicked(bool checked);
-
     void on_checkBox_brake_on_us_toggled(bool checked);
     void on_spinBox_dist_valueChanged(int arg1);
 
@@ -76,9 +66,8 @@ private:
     bool _run_on_autopilot;
     bool _autopilot_break;
 
-    bool _us_brake;
-    int _us_brake_dist;
-    int _us_brake_cnt;
+    bool _us_avoid;
+    int _us_avoid_dist;
 };
 
 #endif // ROVERDRIVEFORM_H

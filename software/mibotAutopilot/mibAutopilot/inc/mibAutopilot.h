@@ -34,12 +34,16 @@ public slots:
     void onStateTimer();
 
     void onGpsData(GPSData);
+
 private:
     JSONProtocol protocol;
     void tryRemoveCoruptedJSONProtocolData();
     void processCommand(QJsonObject &obj);
+    int usDistance();
 
     GPSSensor * _gpsSensor;
+    ArduinoSensorNode *_arduinoSensors;
+
     QTimer *_watch_dog_timer;
     QTimer *_driver_update_timer;
     QTimer *_state_update_timer;
@@ -62,6 +66,7 @@ private:
     bool _invalid_gps_data;
     bool _new_gps_data;
     bool _use_fake_gps_data;
+    bool _avoid_maneuver;
 
     QPointF _ap_target;
     int _ap_target_id;
@@ -69,6 +74,7 @@ private:
 
     double _ap_relative_angle;
     double _ap_distance;
+    int _ap_avoid_dist;
 
     bool _ap_finished;
     bool _wait_for_second_gps;
@@ -77,6 +83,7 @@ private:
     QPointF _current_gps_pos;
 
     QElapsedTimer _turn_timer;
+    QElapsedTimer _us_timer;
 };
 
 }

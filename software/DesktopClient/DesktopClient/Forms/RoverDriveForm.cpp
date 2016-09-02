@@ -32,9 +32,8 @@ RoverDriveForm::RoverDriveForm(QWidget *parent) :
     _run_on_autopilot = false;
     _autopilot_break = true;
 
-    _us_brake = false;
-    _us_brake_dist = 100;
-    _us_brake_cnt = 0;
+    _us_avoid = false;
+    _us_avoid_dist = 150;
 }
 
 RoverDriveForm::~RoverDriveForm()
@@ -136,7 +135,8 @@ void RoverDriveForm::updateAutopilot()
     RoverClientsProvider::GetRoverAutopilotClient()->SetAutopilot(
                 p->possition,
                 TrackProvider::ActivePointId(),
-                !_autopilot_break);
+                !_autopilot_break,
+                _us_avoid ? _us_avoid_dist : 0);
 }
 
 void RoverDriveForm::setAutopilotBreak(bool state)
@@ -155,15 +155,6 @@ void RoverDriveForm::on_pushButton_prev_point_clicked()
 {
     TrackProvider::PrevPoint();
     updateStats();
-}
-
-void RoverDriveForm::on_pushButton_auto_clicked()
-{
-}
-
-void RoverDriveForm::on_comboBox_drive_type_currentTextChanged(const QString &arg1)
-{
-
 }
 
 void RoverDriveForm::on_comboBox_track_currentIndexChanged(const QString &arg1)
@@ -201,23 +192,6 @@ void RoverDriveForm::onSensorsUpdate(class RoverSensors readings)
                                 .arg(readings.gpsSensors.latitude));
 
     ui->lineEdit_cc->setText(QString::number(readings.gpsSensors.course));
-
-    if(_us_brake)
-    {
-        if(readings.arduinoSensors.us <= _us_brake_dist)
-        {
-            _us_brake_cnt++;
-            if(_us_brake_cnt >= US_BRAKE_MAX_CNT)
-            {
-                setAutopilotBreak(true);
-                _us_brake_cnt = US_BRAKE_MAX_CNT;
-            }
-        }else
-        {
-            if(_us_brake_cnt>0)
-                _us_brake_cnt--;
-        }
-    }
 }
 
 void RoverDriveForm::on_checkBox_drive_toggled(bool checked)
@@ -250,11 +224,11 @@ void RoverDriveForm::on_checkBox_clicked(bool checked)
 
 void RoverDriveForm::on_checkBox_brake_on_us_toggled(bool checked)
 {
-    _us_brake = checked;
+    _us_avoid = checked;
 }
 
 
 void RoverDriveForm::on_spinBox_dist_valueChanged(int arg1)
 {
-    _us_brake_dist = arg1;
+    _us_avoid_dist = arg1;
 }

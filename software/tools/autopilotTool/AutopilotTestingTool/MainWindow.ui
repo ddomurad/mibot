@@ -151,7 +151,7 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="1" rowspan="2">
      <widget class="QGroupBox" name="groupBox_2">
       <property name="maximumSize">
        <size>
@@ -238,6 +238,16 @@
           <string>10411</string>
          </property>
         </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>US</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="us"/>
        </item>
       </layout>
      </widget>
