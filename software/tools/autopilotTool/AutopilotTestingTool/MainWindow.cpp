@@ -82,16 +82,18 @@ void MainWindow::newSensorData(RoverSensors data)
     {
         ui->R_lat->setText("NO_GPS");
         ui->R_lot->setText("NO_GPS");
-        return;
     }
 
     ui->R_lat->setText(QString::number(data.gpsSensors.latitude));
     ui->R_lot->setText(QString::number(data.gpsSensors.lognitude));
 
     OSMRoute *rover = ui->_osm->getRoute("rover");
-    rover->getMarker(0)->possition.setX(data.gpsSensors.latitude);
-    rover->getMarker(0)->possition.setY(data.gpsSensors.lognitude);
-
+    if(rover != nullptr)
+    {
+        rover->getMarker(0)->possition.setX(data.gpsSensors.latitude);
+        rover->getMarker(0)->possition.setY(data.gpsSensors.lognitude);
+    }
+    ui->us_dust->setText(QString::number(data.arduinoSensors.us));
     ui->_osm->update();
 }
 
@@ -139,11 +141,11 @@ void MainWindow::onTimer()
     {
         if(_fg_update)
         {
-            apClient->SetAutopilot(_rover_goal, 1, true, true, _fake_gps1, _fake_gps2);
+            apClient->SetAutopilot(_rover_goal, 1, true, true, _fake_gps1, _fake_gps2, ui->us->text().toInt());
             _fg_update = false;
         }else
         {
-            apClient->SetAutopilot(_rover_goal, 1, true, true);
+            apClient->SetAutopilot(_rover_goal, 1, true, true, ui->us->text().toInt());
         }
     }
 }

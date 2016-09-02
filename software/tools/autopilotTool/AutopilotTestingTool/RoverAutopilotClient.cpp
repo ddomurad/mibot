@@ -25,9 +25,9 @@ void RoverAutopilotClient::onData(QByteArray data)
     }
 }
 
-void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos, QPointF fp1, QPointF fp2)
+void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos, QPointF fp1, QPointF fp2, int avoid_dist)
 {
-    SendData(QString("{\"autopilot_enabled\":%1,\"gps_pos\":[%2,%3],\"point_id\":%4,\"fake_pos\":%5,\"fp1\":[%6,%7],\"fp2\":[%8,%9]}")
+    SendData(QString("{\"autopilot_enabled\":%1,\"gps_pos\":[%2,%3],\"point_id\":%4,\"fake_pos\":%5,\"fp1\":[%6,%7],\"fp2\":[%8,%9],\"avoid_dist\":%10}")
              .arg(enable ? "true" : "false")
              .arg(target.x())
              .arg(target.y())
@@ -36,17 +36,19 @@ void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enab
              .arg(fp1.x())
              .arg(fp1.y())
              .arg(fp2.x())
-             .arg(fp2.y()));
+             .arg(fp2.y())
+             .arg(avoid_dist));
 }
 
-void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos)
+void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable, bool fake_pos , int avoid_dist)
 {
-    SendData(QString("{\"autopilot_enabled\":%1,\"gps_pos\":[%2,%3],\"point_id\":%4,\"fake_pos\":%5}")
+    SendData(QString("{\"autopilot_enabled\":%1,\"gps_pos\":[%2,%3],\"point_id\":%4,\"fake_pos\":%5,\"avoid_dist\":%6}")
              .arg(enable ? "true" : "false")
              .arg(target.x())
              .arg(target.y())
              .arg(target_id)
-             .arg(fake_pos ? "true": "false"));
+             .arg(fake_pos ? "true": "false")
+             .arg(avoid_dist));
 }
 
 void RoverAutopilotClient::SetAutopilot(QPointF target, int target_id, bool enable, int avoid_dist)
