@@ -213,7 +213,13 @@ void Autopilot::onGpsData(GPSData data)
                   .arg(_current_gps_pos.y()));
 
         _new_gps_data = true;
-    }
+    }else
+	{
+		        LOG_DEBUG(QString("OLD Gps position received: [%1, %2]")
+                  .arg(_current_gps_pos.x())
+                  .arg(_current_gps_pos.y()));
+
+	}
 }
 
 void Autopilot::tryRemoveCoruptedJSONProtocolData()
